@@ -1,0 +1,10 @@
+﻿PC Side
+-------
+	- store received counts in a binary file - or save in memory, just no text file
+
+Arduino
+-------
+	- eliminate Serial.print () after initialization
+	- need a socket PrintOnPC ("-----");
+
+

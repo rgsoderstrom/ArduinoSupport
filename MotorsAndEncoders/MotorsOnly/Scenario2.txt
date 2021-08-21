@@ -1,0 +1,14 @@
+
+// Scenario2
+
+// time, seconds  |  left wheel speed  | right wheel speed
+	0					0					0
+	2					400					400
+	5					400					400
+	7					400				    400
+	9					400					0
+	11					400					0
+	13					400					0
+	14					0					0
+	
+	

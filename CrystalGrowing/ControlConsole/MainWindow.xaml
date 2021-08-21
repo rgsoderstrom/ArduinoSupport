@@ -1,0 +1,82 @@
+﻿<Window x:Class="ControlConsole.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:PlottingLibVer2="clr-namespace:PlottingLibVer2;assembly=PlottingLibVer2"
+        mc:Ignorable="d"
+        Title="MainWindow" Width="1250" Name="TheMainWindow">
+    
+    <Window.Resources>
+        <Style x:Key="GrayOut">
+            <Style.Triggers>
+                <Trigger Property="Control.IsEnabled" Value="False">
+                    <Setter Property="Control.Foreground" Value ="#FF6D6D6D" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>    
+    
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Left">
+            <GroupBox Header="Controller Commands" Margin="3,3,6,3" BorderThickness="2">
+                <Button MinWidth ="20" HorizontalAlignment="Left" Padding="10,0,10,0" Margin="3" Content="Clear Display" ToolTip="Clear this display and local history" Click="ClearDisplayButton_Click"/>
+            </GroupBox>
+
+            <GroupBox Header="Client Commands" Margin="3,3,6,3" BorderThickness="2">
+                <StackPanel Name="ClientButtons" IsEnabled="False">
+                    <Button Content="Send Status"    MinWidth ="20" Margin="3" ToolTip="Command Arduinos to send status"    Click="SendStatusButton_Click"/>
+                    <Button Content="Start Sampling" MinWidth ="20" Margin="3" ToolTip="Command Arduinos to start sampling" Click="StartSamplingButton_Click"/>
+
+                    <GroupBox Header="Sampling Period" Style="{StaticResource GrayOut}">
+                        <StackPanel Name="SampleRateButtons" Margin="3" HorizontalAlignment="Center" ToolTip="Takes effect after next StartSampling cmd">
+                            <!-- populated in code -->
+                        </StackPanel>
+                    </GroupBox>
+
+                    <Button Content="Stop Sampling"        MinWidth ="20" Margin="3" ToolTip="Command Arduinos to stop sampling"       Click="StopSamplingButton_Click"/>
+                    <Button Content="Clear History"        MinWidth ="20" Margin="3" ToolTip="Clear Arduinos stored data"              Click="ClearHistoryButton_Click"/>
+                    <Button Content="Send History"         MinWidth ="20" Margin="3" ToolTip="Command Arduino to send stored data"     Click="SendHistoryButton_Click"/>
+                    <!--
+                    <Button Content="Send Continuously"    MinWidth ="20" Margin="3" ToolTip="Command Arduino to send each new sample" Click="StartSendContButton_Click"/>
+                    <Button Content="Stop Cont. Send"      MinWidth ="20" Margin="3" ToolTip="Command Arduino to stop sending"         Click="StopSendContButton_Click"/>
+                    -->
+                    <Button Content="Disconnect"           MinWidth ="20" Margin="3" ToolTip="Command Arduino to disconnect socket"    Click="DisconnectButton_Click"/>
+                    
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Client Status" Margin="3,3,6,3" BorderThickness="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border BorderBrush="Black" BorderThickness="1" Margin="8">
+                        <Rectangle Grid.Row="0" Grid.Column="0" Name="IsSampling" Fill="White"/>
+                    </Border>
+                    
+                    <Label    Grid.Row="0" Grid.Column="1" Margin="4" Content="Sampling" VerticalAlignment="Center"/>
+                    <TextBox  Grid.Row="1" Grid.Column="0" Name="StoredSamples" BorderThickness="1" BorderBrush="Black" TextAlignment="Right" Padding="2" Text="" MinWidth="50" VerticalAlignment="Center"/>
+                    <Label    Grid.Row="1" Grid.Column="1" Content="Stored Samples"/>
+                </Grid>
+            </GroupBox>
+            
+        </StackPanel>
+
+        <Border Margin="3,10,3,3" BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Bottom" MinHeight="200" MaxHeight="200">
+            <TextBox Name="TextDisplay"  VerticalScrollBarVisibility="Visible"/>
+        </Border>
+
+        <PlottingLibVer2:Bare2DPlot Name="temperaturePlot" MinHeight="200"/>
+        
+    </DockPanel>
+</Window>
