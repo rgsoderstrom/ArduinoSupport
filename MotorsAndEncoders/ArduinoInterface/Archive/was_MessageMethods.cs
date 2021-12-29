@@ -8,7 +8,7 @@ namespace ArduinoInterface
 {
  //****************************************************************************************************************************
 
-    public partial class KeepAliveMsg
+    public partial class KeepAliveMsg  
     {
         public KeepAliveMsg ()
         {     
