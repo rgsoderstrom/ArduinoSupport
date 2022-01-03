@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using SocketLib;
 using ArduinoInterface;
 
 namespace zUnitTest_msgs
@@ -14,24 +15,17 @@ namespace zUnitTest_msgs
         {
             try
             {
-                ProfileSectionRcvdMessage ppp = new ProfileSectionRcvdMessage ();
+                var msg = new MotorSpeedProfileMsg (1234, 2345, 3456, 5555);
 
 
-                List<double> profile1 = new List<double> () {1, 2, 3, 4, 5, -1, -2, -3, -4, -5};
-                List<double> profile2 = new List<double> () {31, 32, 33, 34, 35, -31, -32, -33, -34, -35};
-                ProfileSectionMsg psm = new ProfileSectionMsg (123, profile1, profile2);
+                Console.WriteLine ("first, type : " + msg.GetType ().ToString ());
+                Console.WriteLine (msg.ToString ());
 
-                byte[] pb = psm.ToBytes ();
+                byte [] msgBytes = msg.ToBytes ();
 
-                ProfileSectionMsg psm2 = new ProfileSectionMsg (pb);
-
-                //ClearProfileMsg cpm = new ClearProfileMsg ();
-
-                //BufferStatusMessage bm = new BufferStatusMessage (0);
-                //byte [] tb = bm.ToBytes ();
-                //BufferStatusMessage bm2 = new BufferStatusMessage (tb);
-
-                //Console.WriteLine (bm2.data);
+                var msg2 = new MotorSpeedProfileMsg (msgBytes);
+                Console.WriteLine ("\n\nsecond, type : " + msg2.GetType ().ToString ());
+                Console.WriteLine (msg2.ToString ());
 
 
             }

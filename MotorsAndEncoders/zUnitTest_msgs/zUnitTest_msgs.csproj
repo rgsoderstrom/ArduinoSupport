@@ -36,6 +36,10 @@
     <Reference Include="ArduinoInterface">
       <HintPath>..\ArduinoInterface\bin\Debug\ArduinoInterface.dll</HintPath>
     </Reference>
+    <Reference Include="SocketLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ArduinoInterface\bin\Debug\SocketLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
