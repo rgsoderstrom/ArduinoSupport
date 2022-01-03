@@ -1,12 +1,21 @@
-﻿using System;
+﻿
+//
+// MessageMethods.cs - messages between Laptop and Arduino
+//
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices; // for StructLayout
 
 using SocketLib;
 
+public delegate void PrintCallback (string str);
+
 namespace ArduinoInterface
 {
- //****************************************************************************************************************************
+    //*******************************************************************************************************
+    // PC -> Arduino messages *******************************************************************************
+    //*******************************************************************************************************
 
     public partial class KeepAliveMsg
     {
@@ -15,29 +24,57 @@ namespace ArduinoInterface
             MessageId = (ushort) CommandMessageIDs.KeepAlive;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
+
+        public KeepAliveMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
     }
 
  //****************************************************************************************************************************
 
-    public partial class MotorSpeedMsg
+    public partial class StatusRequestMsg
     {
-        public MotorSpeedMsg (int v1, int v2)
+        public StatusRequestMsg ()
         {
-            header = new Header ();
-            header.MessageId = (ushort) CommandMessageIDs.MotorSpeed;
-            header.ByteCount = (ushort) (Marshal.SizeOf (header) 
-                                       + Marshal.SizeOf (vel1)
-                                       + Marshal.SizeOf (vel2));
-            vel1 = (short) v1;
-            vel2 = (short) v2;
+            MessageId = (ushort) CommandMessageIDs.StatusRequest;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public MotorSpeedMsg (byte[] fromBytes) // convert received byte stream to message
+        public StatusRequestMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
+    }
+
+ //****************************************************************************************************************************
+
+    public partial class MotorSpeedProfileMsg
+    {
+        public MotorSpeedProfileMsg (short _index,     // 0 -> (MaxNumberSegments - 1)
+                                     short _motorID,   // 1 or 2, left or right
+                                     short _speed,     // -15 -> 15
+                                     short _duration)  // tenths of second, 0 -> 25.5
+        {
+            header = new Header ();
+            data = new Segment ();
+
+            header.MessageId = (ushort)CommandMessageIDs.MotorProfileSegment;
+            header.ByteCount = (ushort) (Marshal.SizeOf (header) + Marshal.SizeOf (data));
+
+            data.index = _index;
+            data.motorID = _motorID;
+            data.speed = _speed;
+            data.duration = _duration;
+        }
+
+        public MotorSpeedProfileMsg (byte[] fromBytes) // convert received byte stream to message
         {
             header  = new Header (fromBytes);
+            data    = new Segment ();
 
-            vel1  = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedMsg> ("vel1"));
-            vel2  = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedMsg> ("vel2"));
+            data.index    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("index"));
+            data.motorID  = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("motorID"));
+            data.speed    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("speed"));
+            data.duration = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("duration"));
         }
 
         public byte[] ToBytes () // convert to byte stream to be sent out socket
@@ -45,46 +82,84 @@ namespace ArduinoInterface
             byte[] msgBytes = header.ToBytes ();
 
             List<byte> dataBytes = new List<byte> ();
-            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (vel1));
-            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (vel2));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.index));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.motorID));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.speed));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.duration));
 
           // append data bytes to header bytes
             dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
             
             return msgBytes;
         }
-    }
 
- //****************************************************************************************************************************
-
-    public partial class StartCollectionMsg
-    {
-        public StartCollectionMsg ()
+        public override string ToString ()
         {
-            MessageId = (ushort) CommandMessageIDs.StartCollection;
-            ByteCount = (ushort) Marshal.SizeOf (this);  
+            string str = header.ToString ();
+
+            str += data.index + ", " + data.motorID + ", " + data.speed + ", " + data.duration;
+
+            return str;
         }
     }
 
  //****************************************************************************************************************************
 
-    public partial class StopCollectionMsg
+    public partial class ClearSpeedProfile
     {
-        public StopCollectionMsg ()
+        public ClearSpeedProfile ()
         {
-            MessageId = (ushort) CommandMessageIDs.StopCollection;
+            MessageId = (ushort)CommandMessageIDs.ClearMotorProfile;
             ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public ClearSpeedProfile (byte[] fromBytes) : base (fromBytes)
+        {
         }
     }
 
  //****************************************************************************************************************************
 
-    public partial class ClearCollectionMsg
+    public partial class RunMotorsMsg
     {
-        public ClearCollectionMsg ()
+        public RunMotorsMsg ()
         {
-            MessageId = (ushort) CommandMessageIDs.ClearCollection;
+            MessageId = (ushort) CommandMessageIDs.RunMotors;
             ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public RunMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
+    }
+
+ //****************************************************************************************************************************
+
+    public partial class SlowStopMotorsMsg
+    {
+        public SlowStopMotorsMsg ()
+        {
+            MessageId = (ushort) CommandMessageIDs.SlowStopMotors;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public SlowStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
+    }
+
+ //****************************************************************************************************************************
+
+    public partial class FastStopMotorsMsg
+    {
+        public FastStopMotorsMsg ()
+        {
+            MessageId = (ushort) CommandMessageIDs.FastStopMotors;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public FastStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        {
         }
     }
 
@@ -94,70 +169,184 @@ namespace ArduinoInterface
     {
         public SendFirstCollectionMsg ()
         {
-            MessageId = (ushort) CommandMessageIDs.SendFirstCollection;
+            MessageId = (ushort)CommandMessageIDs.SendFirstCollection;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
+
+        public SendFirstCollectionMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
     }
+
+ //****************************************************************************************************************************
 
     public partial class SendNextCollectionMsg
     {
-        public SendNextCollectionMsg () : base ()
+        public SendNextCollectionMsg ()
         {
-            MessageId = (ushort) CommandMessageIDs.SendNextCollection;
-            ByteCount = (ushort) Marshal.SizeOf (this);
+            MessageId = (ushort)CommandMessageIDs.SendNextCollection;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public SendNextCollectionMsg (byte[] fromBytes) : base (fromBytes)
+        {
         }
     }
+
+    //****************************************************************************************************************************
+
+    public partial class DisconnectMsg
+    {
+        public DisconnectMsg () : base ()
+        {
+            MessageId = (ushort)CommandMessageIDs.Disconnect;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public DisconnectMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
+    }
+
+    //*******************************************************************************************************
+    // Arduino -> PC messages *******************************************************************************
     //*******************************************************************************************************
 
-    public delegate void PrintCallback (string str);
-
-    public partial class CollectionData
+    public partial class AcknowledgeMessage
     {
-        public CollectionData () 
+        public AcknowledgeMessage (short sequenceNumber)
         {
-            put = 0;
+            header = new Header ();
+            data   = new AckData ();
+
+            header.MessageId = (ushort) ArduinoMessageIDs.AcknowledgeMsgId;
+            header.ByteCount = (ushort) Marshal.SizeOf (this);
+
+            data.MsgSequenceNumber = sequenceNumber;
+        }
+
+        public AcknowledgeMessage (byte[] fromBytes)
+        {
+            try
+            {
+                header = new Header (fromBytes);
+                data   = new AckData ();
+
+                int offset = (int) Marshal.OffsetOf<AcknowledgeMessage> ("data") + (int) Marshal.OffsetOf<AckData> ("MsgSequenceNumber");
+                data.MsgSequenceNumber = BitConverter.ToInt16  (fromBytes, offset);
+            }
+
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+            }
+        }
+
+        public byte[] ToBytes () // convert to byte stream to be sent out socket 
+        {
+            byte [] msgBytes = header.ToBytes ();
+
+            List<byte> dataBytes = new List<byte> ();
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.MsgSequenceNumber));
+
+            // append data bytes to header bytes
+            dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
+
+            return msgBytes;
+        }
+
+        public override string ToString ()
+        {
+            string str = header.ToString ();
+            str += data.MsgSequenceNumber.ToString ();
+            return str;
         }
     }
 
-    public partial class CollectionDataMessage
-    {
-        public CollectionDataMessage ()
+    //*******************************************************************************************************
+
+    public partial class StatusMessage
+    {        
+        public StatusMessage ()
         {
             header = new Header ();
-            data   = new CollectionData ();
+            data   = new StatusData ();
+
+            header.MessageId = (ushort) ArduinoMessageIDs.StatusMsgId;
+            header.ByteCount = (ushort) Marshal.SizeOf (this);
+        }
+
+        public StatusMessage (byte[] fromBytes) // for byte stream received from Arduino
+        {
+            try
+            {
+                header  = new Header (fromBytes);
+                data = new StatusData ();
+
+                int offset = (int) Marshal.OffsetOf<StatusMessage> ("data") + (int)Marshal.OffsetOf<StatusData> ("readyForMessages");
+                data.readyForMessages  = BitConverter.ToInt16  (fromBytes, offset);
+
+                offset = (int) Marshal.OffsetOf<StatusMessage> ("data") + (int)Marshal.OffsetOf<StatusData> ("motorsRunning");
+                data.motorsRunning  = BitConverter.ToInt16  (fromBytes, offset);
+            }
+
+            catch (Exception ex)
+            {
+                string str = ex.Message;
+            }
+        }
+
+        public byte[] ToBytes () // convert to byte stream to be sent out socket 
+        {
+            byte [] msgBytes = header.ToBytes ();
+
+            List<byte> dataBytes = new List<byte> ();
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.readyForMessages));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.motorsRunning));
+
+            // append data bytes to header bytes
+            dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
+
+            return msgBytes;
+        }
+
+        public override string ToString ()
+        {
+            string str = header.ToString ();
+
+            str += "Ready = " + data.readyForMessages + ", Running = " + data.motorsRunning;
+
+            return str;
+        }
+    }
+
+    //*******************************************************************************************************
+
+    public partial class EncoderCountsMessage
+    {
+        public EncoderCountsMessage ()
+        {
+            header = new Header ();
+            data   = new Batch ();
 
             header.MessageId = (ushort) ArduinoMessageIDs.CollectedDataMsgId;
-            ushort s1 = (ushort) Marshal.SizeOf (header);            
-            ushort s2 = (ushort)(Marshal.SizeOf (data.put) + CollectionData.MsgBufferSize * Marshal.SizeOf<EncoderCounts> ());
-            header.ByteCount = (ushort) (s1 + s2);
+
+            header.ByteCount = (ushort) (Marshal.SizeOf (header) +
+                                         Marshal.SizeOf (data.put) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
         }
 
         //*****************************************************************************
 
-        public bool Add (uint tt, short e1, short e2, byte s1, byte s2)
+        public bool Add (byte e1, byte e2)
         {
-            if (data.put < CollectionData.MsgBufferSize)
+            if (data.put < Batch.MaxNumberSamples)
             {
-                data.counts [data.put].time = tt;
                 data.counts [data.put].enc1 = e1;
                 data.counts [data.put].enc2 = e2;
-                data.counts [data.put].s1 = s1;
-                data.counts [data.put].s2 = s2;
                 data.put++;
             }
 
-            return (data.put < CollectionData.MsgBufferSize); // false when no more room
-        }
-
-        public bool Add (EncoderCounts ec)
-        {
-            if (data.put < CollectionData.MsgBufferSize)
-            {
-                data.counts [data.put] = ec;
-                data.put++;
-            }
-
-            return (data.put < CollectionData.MsgBufferSize); // false when no more room
+            return (data.put < Batch.MaxNumberSamples); // false when no more room
         }
 
         //*****************************************************************************
@@ -169,36 +358,25 @@ namespace ArduinoInterface
 
         //*****************************************************************************
 
-        public CollectionDataMessage (byte [] fromBytes, PrintCallback print) // for byte stream received from Arduino
+        public EncoderCountsMessage (byte [] fromBytes)
         {
             header  = new Header (fromBytes);
 
-            try
+            int dataOffset = (int)Marshal.OffsetOf<EncoderCountsMessage> ("data");
+
+            data = new Batch ();
+            data.put = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("put"));
+
+            int firstRecordStart = (int)Marshal.OffsetOf<Batch> ("counts");
+
+            int recordSize = (int)Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ();
+
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
             {
-                int dataOffset = (int)Marshal.OffsetOf<CollectionDataMessage> ("data");
+                int thisRecordStart = dataOffset + firstRecordStart + i * recordSize;
 
-                data = new CollectionData ();
-                data.put = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<CollectionData> ("put"));
-
-                int firstRecordStart = (int)Marshal.OffsetOf<CollectionData> ("counts");
-
-                int recordSize = (int)Marshal.SizeOf<EncoderCounts> ();
-
-                for (int i = 0; i<CollectionData.MsgBufferSize; i++)
-                {
-                    int thisRecordStart = dataOffset + firstRecordStart + i * recordSize;
-
-                    data.counts [i].time = BitConverter.ToUInt32 (fromBytes, thisRecordStart + (int)Marshal.OffsetOf<EncoderCounts> ("time"));
-                    data.counts [i].enc1 = BitConverter.ToInt16 (fromBytes, thisRecordStart + (int)Marshal.OffsetOf<EncoderCounts> ("enc1"));
-                    data.counts [i].enc2 = BitConverter.ToInt16 (fromBytes, thisRecordStart + (int)Marshal.OffsetOf<EncoderCounts> ("enc2"));
-                    data.counts [i].s1   = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCounts> ("s1")];
-                    data.counts [i].s2   = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCounts> ("s2")];
-                }
-            }
-
-            catch (Exception ex)
-            {
-                print (string.Format ("Exception in EncoderCountsMessage ctor: {0}", ex.Message));
+                data.counts [i].enc1 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc1")];
+                data.counts [i].enc2 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc2")];
             }
         }
 
@@ -209,13 +387,10 @@ namespace ArduinoInterface
             List<byte> dataBytes = new List<byte> ();
             dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.put));
 
-            for (int i = 0; i<CollectionData.MsgBufferSize; i++)
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
             {
-                dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.counts [i].time));
-                dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.counts [i].enc1));
-                dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.counts [i].enc2));
-                dataBytes.Add (data.counts [i].s1);
-                dataBytes.Add (data.counts [i].s2);
+                dataBytes.Add (data.counts [i].enc1);
+                dataBytes.Add (data.counts [i].enc2);
             }
 
             // append data bytes to header bytes
@@ -226,24 +401,16 @@ namespace ArduinoInterface
 
         public override string ToString ()
         {
-            string str = ""; //  header.ToString ();
+            string str = header.ToString ();
+            str += "put = " + data.put + '\n';
 
-            for (int i = 0; i<CollectionData.MsgBufferSize; i++)
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
             {
-                str += string.Format ("{0},  ", data.counts [i].time);
                 str += string.Format ("{0},  ", data.counts [i].enc1);
                 str += string.Format ("{0},  ", data.counts [i].enc2);
-                str += string.Format ("{0},  ", data.counts [i].s1);
-                str += string.Format ("{0};", data.counts [i].s2);
 
-                if (i<CollectionData.MsgBufferSize - 1)
+                if (i<Batch.MaxNumberSamples - 1)
                     str += "\n";
-
-                //str += string.Format ("Time, milliseconds = {0}\n", data.counts [i].time);
-                //str += string.Format ("enc1 = {0}\n", data.counts [i].enc1);
-                //str += string.Format ("enc2 = {0}\n", data.counts [i].enc2);
-                //str += string.Format ("s11 =  {0}\n", data.counts [i].s1);
-                //str += string.Format ("s22 =  {0}\n", data.counts [i].s2);
             }
 
             return str;
@@ -274,129 +441,6 @@ namespace ArduinoInterface
         }
     }
 
-
-
-
-
-    //****************************************************************************************************************************
-
-    public partial class DisconnectMsg
-    {
-        public DisconnectMsg () : base ()
-        {
-            MessageId = (ushort)CommandMessageIDs.Disconnect;
-            ByteCount = (ushort) Marshal.SizeOf (this);  
-        }
-    }
-
- //****************************************************************************************************************************
-
-    public partial class ClearProfileMsg
-    {
-        public ClearProfileMsg () : base ()
-        {
-            MessageId = (ushort) CommandMessageIDs.ClearProfile;
-            ByteCount = (ushort) Marshal.SizeOf (this);
-        }
-    }
-
- //****************************************************************************************************************************
-
-    public partial class ProfileSectionMsg
-    {
-        public ProfileSectionMsg (int indexOfFirst, List<double> leftSpeeds, List<double> rightSpeeds)
-        {
-            if (leftSpeeds.Count != rightSpeeds.Count) throw new Exception ("ProfileSectionMsg ctor: left and right profile data must be same length");
-
-            header = new Header ();
-            data = new ProfileSection ();
-
-            header.MessageId = (ushort) CommandMessageIDs.ProfileSection;
-            header.ByteCount = (ushort) (Marshal.SizeOf (header)
-                                       + Marshal.SizeOf (data.index)
-                                       + Marshal.SizeOf (data.numberValues)
-                                       + 2 * ProfileSection.MaxNumberValues * Marshal.SizeOf (data.LeftSpeed [0]));
-
-            data.index = (short) indexOfFirst;
-            data.numberValues = (short) Math.Min (ProfileSection.MaxNumberValues, leftSpeeds.Count);
-
-            for (int i=0; i<data.numberValues; i++)
-            {
-                data.LeftSpeed  [i] = (short) leftSpeeds [i];
-                data.RightSpeed [i] = (short) rightSpeeds [i];
-            }
-
-            for (int i=data.numberValues; i<ProfileSection.MaxNumberValues; i++) // zero any unused entries
-                data.LeftSpeed [i] = data.RightSpeed [i] = 0;
-        }
-
-        public ProfileSectionMsg (byte[] fromBytes) // convert received byte stream to message
-        {
-            try
-            {
-                header  = new Header (fromBytes);
-                data = new ProfileSection ();
-
-                int offset = (int) Marshal.OffsetOf<ProfileSectionMsg> ("data") + (int) Marshal.OffsetOf<ProfileSection> ("index");
-                data.index        = BitConverter.ToInt16  (fromBytes, offset);
-
-                offset = (int) Marshal.OffsetOf<ProfileSectionMsg> ("data") + (int) Marshal.OffsetOf<ProfileSection> ("numberValues");
-                data.numberValues = BitConverter.ToInt16  (fromBytes, offset);
-
-                for (int i=0; i<data.numberValues; i++)
-                {
-                    offset = (int) Marshal.OffsetOf<ProfileSectionMsg> ("data") + (int) Marshal.OffsetOf<ProfileSection> ("LeftSpeed") + i * sizeof (short);
-                    data.LeftSpeed [i] = BitConverter.ToInt16  (fromBytes, offset);
-                }
-
-                for (int i=0; i<data.numberValues; i++)
-                {
-                    offset = (int) Marshal.OffsetOf<ProfileSectionMsg> ("data") + (int) Marshal.OffsetOf<ProfileSection> ("LeftSpeed") + (data.numberValues + i) * sizeof (short);
-                    data.RightSpeed [i] = BitConverter.ToInt16  (fromBytes, offset);
-                }
-            }
-
-            catch (Exception ex)
-            {
-                string str = ex.Message;
-            }
-
-        }
-
-        public byte[] ToBytes () // convert to byte stream to be sent out socket
-        {
-            byte[] msgBytes = header.ToBytes ();
-
-            List<byte> dataBytes = new List<byte> ();
-            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.index));
-            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.numberValues));
-
-            for (int i=0; i<data.numberValues; i++)
-                dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.LeftSpeed [i]));
-
-            for (int i=0; i<data.numberValues; i++)
-                dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.RightSpeed [i]));
-
-          // append data bytes to header bytes
-            dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
-            
-            return msgBytes;
-        }
-    }
-
-    //*******************************************************************************************************
-
-    public partial class RunProfileMsg
-    {
-        public RunProfileMsg () : base ()
-        {
-            MessageId = (ushort) CommandMessageIDs.RunProfile;
-            ByteCount = (ushort) Marshal.SizeOf (this);
-        }
-    }
-
-    //*******************************************************************************************************
-    // Arduino -> PC messages *******************************************************************************
     //*******************************************************************************************************
 
     public partial class TextMessage
@@ -404,14 +448,14 @@ namespace ArduinoInterface
         public TextMessage (string txt)
         {
             header = new Header ();
-            header.ByteCount = (ushort) (Marshal.SizeOf<Header> () + txt.Length);
+            header.ByteCount = (ushort)(Marshal.SizeOf<Header> () + txt.Length);
             header.MessageId = (ushort)ArduinoMessageIDs.TextMsgId;
             text = txt.ToCharArray ();
         }
 
         //********************************************************************************
 
-        public TextMessage (byte[] fromBytes) // for byte stream received from Arduino
+        public TextMessage (byte [] fromBytes) // for byte stream received from Arduino
         {
             header  = new Header (fromBytes);
 
@@ -421,15 +465,15 @@ namespace ArduinoInterface
             text = new char [charCount];
 
             for (int i = 0; i<charCount; i++)
-                text [i] = (char) fromBytes [dataOffset + i];
+                text [i] = (char)fromBytes [dataOffset + i];
         }
 
         //********************************************************************************
 
-        public byte[] ToBytes () // convert to byte stream to be sent out socket
+        public byte [] ToBytes () // convert to byte stream to be sent out socket
         {
-            byte[] headerBytes = header.ToBytes ();
-            byte[] textBytes   = System.Text.Encoding.GetEncoding ("UTF-8").GetBytes (text);
+            byte [] headerBytes = header.ToBytes ();
+            byte [] textBytes = System.Text.Encoding.GetEncoding ("UTF-8").GetBytes (text);
 
             // append data bytes to header bytes
             byte [] msgBytes = new byte [headerBytes.Length];
@@ -437,69 +481,6 @@ namespace ArduinoInterface
             headerBytes.CopyTo (msgBytes, 0);
             textBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
 
-            return msgBytes;
-        }
-    }
-
-    //*******************************************************************************************************
-
-    public partial class BufferStatusMessage
-    {
-        public BufferStatusMessage (int d)
-        {
-            header = new Header ();
-            header.ByteCount = (ushort) Marshal.SizeOf<BufferStatusMessage> ();
-            header.MessageId = (ushort) ArduinoMessageIDs.BufferStatusMsgId;
-            data = (byte) d;
-        }
-
-        //********************************************************************************
-
-        public BufferStatusMessage (byte [] fromBytes) // for byte stream received from Arduino
-        {
-            header  = new Header (fromBytes);
-            int dataOffset = (int)Marshal.OffsetOf<BufferStatusMessage> ("data");
-            data = fromBytes [dataOffset];
-        }
-
-        //********************************************************************************
-
-        public byte[] ToBytes () // convert to byte stream to be sent out socket
-        {
-            byte[] headerBytes = header.ToBytes ();
-
-            // append data bytes to header bytes
-            byte [] msgBytes = new byte [headerBytes.Length];
-
-            headerBytes.CopyTo (msgBytes, 0);
-            msgBytes [Marshal.SizeOf (header)] = data;
-
-            return msgBytes;
-        }
-    }
-
-    //*******************************************************************************************************
-    //*******************************************************************************************************
-    //*******************************************************************************************************
-
-    public partial class ProfileSectionRcvdMessage
-    {
-        public ProfileSectionRcvdMessage ()
-        {
-            MessageId = (ushort) ArduinoMessageIDs.ProfileSectionRcvdMsgId;
-            ByteCount = (ushort) Marshal.SizeOf<Header> ();
-        }
-
-        public ProfileSectionRcvdMessage (byte[] fromBytes)
-        {
-            Header temp = new Header (fromBytes);
-            MessageId = temp.MessageId;
-            ByteCount = temp.ByteCount;
-        }
-
-        public new byte[] ToBytes ()
-        {
-            byte[] msgBytes = base.ToBytes ();
             return msgBytes;
         }
     }

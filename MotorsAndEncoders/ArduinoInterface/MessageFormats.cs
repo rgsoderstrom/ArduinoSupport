@@ -1,6 +1,6 @@
 ﻿
 //
-// Messages.cs - 
+// MessageFormats.cs - messages between Laptop and Arduino
 //
 
 using System;
@@ -17,18 +17,18 @@ namespace ArduinoInterface
     //
     public enum CommandMessageIDs 
     {
-        KeepAlive       = 0,  // no action required, just keeps socket open
-        MotorSpeed      = 1,
-        StartCollection = 2,
-        StopCollection  = 3,
-        ClearCollection = 4,
-        SendFirstCollection = 5,
-        SendNextCollection  = 6,
-        Disconnect          = 8,
+        KeepAlive     = 1,  // no action required, just keeps socket open
+        StatusRequest = 2,
 
-        ClearProfile   = 100,  // for MotorOnly
-        ProfileSection = 101,  // for MotorOnly
-        RunProfile     = 102,  // for MotorOnly
+        MotorProfileSegment = 3, // one duration and speed for one motor
+        ClearMotorProfile   = 4, // command to clear all speed/durations
+
+        RunMotors         = 5,  // execute previously sent MotorTimeAndSpeed profile
+        SlowStopMotors    = 6,  // slowly stop motors
+        FastStopMotors    = 7,  // immediately stop motors
+        SendFirstCollection = 8,
+        SendNextCollection  = 9,
+        Disconnect          = 99,
     };
 
     //**********************************************************************
@@ -37,25 +37,59 @@ namespace ArduinoInterface
     public partial class KeepAliveMsg : Header
     {
     }
-    
+
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class StartCollectionMsg : Header
+    public partial class StatusRequestMsg : Header
+    {
+    }
+
+    //**********************************************************************
+
+    // Motor Speed Profile Message
+
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class MotorSpeedProfileMsg
+    {
+        [StructLayout (LayoutKind.Sequential, Pack = 1)]
+        public class Segment
+        {
+            public short index;     // 0 -> (MaxNumberSegments - 1)
+            public short motorID;   // 1 or 2, left or right
+            public short speed;     // -15 -> 15
+            public short duration;  // tenths of second, 0 -> 25.5
+        }
+
+        public Header  header;
+        public Segment data;
+    }
+
+    //**********************************************************************
+
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public partial class ClearSpeedProfile : Header
     {
     }
     
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class StopCollectionMsg : Header
+    public partial class RunMotorsMsg : Header
     {
     }
     
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class ClearCollectionMsg : Header
+    public partial class SlowStopMotorsMsg : Header
+    {
+    }
+    
+    //**********************************************************************
+
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public partial class FastStopMotorsMsg : Header
     {
     }
     
@@ -63,13 +97,16 @@ namespace ArduinoInterface
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
     public partial class SendFirstCollectionMsg : Header
-    {        
+    {
     }
     
+    //**********************************************************************
+
     [StructLayout(LayoutKind.Sequential, Pack=1)]
     public partial class SendNextCollectionMsg : Header
-    {        
+    {
     }
+    
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
@@ -77,64 +114,34 @@ namespace ArduinoInterface
     {
     }
     
-    //**********************************************************************
-
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class MotorSpeedMsg
-    {
-        public Header header;
-        public short vel1;
-        public short vel2;
-    }
-
-    //**********************************************************************
-
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class ClearProfileMsg : Header
-    {
-    }
-    
-    //**********************************************************************
-
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public class ProfileSection
-    {
-        static public readonly int MaxNumberValues = 10;
-        
-        public short index; // of this msg Values [0] in the entire profile
-        public short numberValues;
-        public short[] LeftSpeed  = new short [MaxNumberValues];
-        public short[] RightSpeed = new short [MaxNumberValues];
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class ProfileSectionMsg
-    {
-        public Header header;
-        public ProfileSection data;
-    }
-    
-    //**********************************************************************
-
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class RunProfileMsg : Header
-    {
-    }
-    
     //*******************************************************************************************************
     // Arduino -> PC messages *******************************************************************************
     //*******************************************************************************************************
 
-    public enum ArduinoMessageIDs {TextMsgId   = 2,
-                                   BufferStatusMsgId  = 3,
+    public enum ArduinoMessageIDs {AcknowledgeMsgId  = 1,
+                                   TextMsgId   = 2,
+                                   StatusMsgId = 3,
                                    CollectedDataMsgId = 4,
                                    CollSendCompleteMsgId = 5,
-
-                                   ProfileSectionRcvdMsgId = 101,
     };
 
     //************************************************************************************************
     //************************************************************************************************
+    //************************************************************************************************
+
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class AcknowledgeMessage
+    {
+        [StructLayout(LayoutKind.Sequential, Pack=1)]
+        public class AckData
+        {
+            public short MsgSequenceNumber;
+        }
+
+        public Header  header;
+        public AckData data;
+    };
+
     //************************************************************************************************
 
     [StructLayout (LayoutKind.Sequential, Pack = 1)]
@@ -146,54 +153,50 @@ namespace ArduinoInterface
 
     //************************************************************************************************
 
-    [StructLayout (LayoutKind.Sequential, Pack = 1)]
-    public partial class BufferStatusMessage
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public partial class StatusMessage
     {
-        public Header header;
-        public byte   data;
-    };
+        [StructLayout(LayoutKind.Sequential, Pack=1)]
+        public class StatusData
+        {
+            public short readyForMessages;
+            public short motorsRunning; 
+        }
 
+        public Header     header;
+        public StatusData data;
+    }
     //************************************************************************************************
     
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public struct EncoderCounts
+    public partial class EncoderCountsMessage
     {
-        public uint  time;   // 32 bit millis, from time "run" command received
-        public short enc1; 
-        public short enc2;
-        public byte  s1;  // was char
-        public byte  s2;
-    }
+        [StructLayout(LayoutKind.Sequential, Pack=1)]
+        public partial class Batch
+        {
+            [StructLayout(LayoutKind.Sequential, Pack=1)]
+            public struct Sample
+            {
+                public byte enc1; 
+                public byte enc2;
+            }
 
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class CollectionData
-    {
-        static public readonly int MsgBufferSize = 10;
+            static public readonly int MaxNumberSamples = 16;
 
-        public short put;
-        public EncoderCounts [] counts = new EncoderCounts [MsgBufferSize];
-    }
+            public short put;
+            public Sample [] counts = new Sample [MaxNumberSamples];
+        }
 
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class CollectionDataMessage
-    {
-        public bool Empty {get {return data.put == 0;}}
+        public bool IsEmpty {get {return data.put == 0;}}
 
-        public Header         header;
-        public CollectionData data;      
+        public Header header;
+        public Batch  data;      
     }
 
     //************************************************************************************************
-
+    
     [StructLayout (LayoutKind.Sequential, Pack = 1)]
     public partial class CollSendCompleteMessage : Header
-    {
-    };
-
-    //************************************************************************************************
-
-    [StructLayout (LayoutKind.Sequential, Pack = 1)]
-    public partial class ProfileSectionRcvdMessage : Header
     {
     };
 }
