@@ -70,6 +70,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ButtonHandlers.cs" />
+    <Compile Include="MessageHandlers_App.cs" />
+    <Compile Include="MessageHandlers_Sys.cs" />
+    <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
