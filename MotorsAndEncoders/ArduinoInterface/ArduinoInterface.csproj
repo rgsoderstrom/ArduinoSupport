@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="MessageFormats.cs" />
     <Compile Include="MessageMethods.cs" />
+    <Compile Include="MessageQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

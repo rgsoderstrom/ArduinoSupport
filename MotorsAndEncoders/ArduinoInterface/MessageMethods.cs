@@ -95,11 +95,7 @@ namespace ArduinoInterface
 
         public override string ToString ()
         {
-            string str = header.ToString ();
-
-            str += data.index + ", " + data.motorID + ", " + data.speed + ", " + data.duration;
-
-            return str;
+            return header.ToString () + data.index + ", " + data.motorID + ", " + data.speed + ", " + data.duration;
         }
     }
 
@@ -214,7 +210,7 @@ namespace ArduinoInterface
 
     public partial class AcknowledgeMessage
     {
-        public AcknowledgeMessage (short sequenceNumber)
+        public AcknowledgeMessage (ushort sequenceNumber)
         {
             header = new Header ();
             data   = new AckData ();
@@ -233,7 +229,7 @@ namespace ArduinoInterface
                 data   = new AckData ();
 
                 int offset = (int) Marshal.OffsetOf<AcknowledgeMessage> ("data") + (int) Marshal.OffsetOf<AckData> ("MsgSequenceNumber");
-                data.MsgSequenceNumber = BitConverter.ToInt16  (fromBytes, offset);
+                data.MsgSequenceNumber = BitConverter.ToUInt16  (fromBytes, offset);
             }
 
             catch (Exception ex)
@@ -267,13 +263,21 @@ namespace ArduinoInterface
 
     public partial class StatusMessage
     {        
+        public string Name {get {return data.name.ToString ();} set {data.name = value.ToCharArray (0, StatusData.MaxNameLength);}}
+
         public StatusMessage ()
         {
             header = new Header ();
             data   = new StatusData ();
 
             header.MessageId = (ushort) ArduinoMessageIDs.StatusMsgId;
-            header.ByteCount = (ushort) Marshal.SizeOf (this);
+
+            header.ByteCount = (ushort) (Marshal.SizeOf (header) +
+                                         StatusData.MaxNameLength * Marshal.SizeOf<char> ()  +
+                                         Marshal.SizeOf (data.readyForMessages) + 
+                                         Marshal.SizeOf (data.readyToRun) + 
+                                         Marshal.SizeOf (data.motorsRunning) + 
+                                         Marshal.SizeOf (data.readyToSend));
         }
 
         public StatusMessage (byte[] fromBytes) // for byte stream received from Arduino
@@ -283,11 +287,33 @@ namespace ArduinoInterface
                 header  = new Header (fromBytes);
                 data = new StatusData ();
 
-                int offset = (int) Marshal.OffsetOf<StatusMessage> ("data") + (int)Marshal.OffsetOf<StatusData> ("readyForMessages");
+                int offset = (int) Marshal.OffsetOf<StatusMessage> ("data") + (int)Marshal.OffsetOf<StatusData> ("name");
+                
+                for (int i=0; i<StatusData.MaxNameLength; i++)
+                {
+                    if (fromBytes [offset + i] == 0)
+                        break;
+
+                    char c = (char) (fromBytes [offset + i]);
+
+                    if (Char.IsLetterOrDigit (c))
+                        data.name [i] = c;
+                }
+
+                offset = (int) Marshal.OffsetOf<StatusMessage> ("data") 
+                       - 4 + StatusData.MaxNameLength * Marshal.SizeOf<char> () 
+                       + (int) Marshal.OffsetOf<StatusData> ("readyForMessages");
+
                 data.readyForMessages  = BitConverter.ToInt16  (fromBytes, offset);
 
-                offset = (int) Marshal.OffsetOf<StatusMessage> ("data") + (int)Marshal.OffsetOf<StatusData> ("motorsRunning");
+                offset += Marshal.SizeOf<short> ();
+                data.readyToRun = BitConverter.ToInt16  (fromBytes, offset);
+
+                offset += Marshal.SizeOf<short> ();
                 data.motorsRunning  = BitConverter.ToInt16  (fromBytes, offset);
+
+                offset += Marshal.SizeOf<short> ();
+                data.readyToSend  = BitConverter.ToInt16  (fromBytes, offset);
             }
 
             catch (Exception ex)
@@ -301,8 +327,21 @@ namespace ArduinoInterface
             byte [] msgBytes = header.ToBytes ();
 
             List<byte> dataBytes = new List<byte> ();
+
+            int length = Math.Min (StatusData.MaxNameLength, data.name.Length);
+
+            for (int i=0; i<length; i++)
+                dataBytes.Add ((byte) data.name [i]);
+
+            int pad = StatusData.MaxNameLength - length;
+
+            for (int i=0; i<pad; i++)
+                dataBytes.Add (0);
+
             dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.readyForMessages));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.readyToRun));
             dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.motorsRunning));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.readyToSend));
 
             // append data bytes to header bytes
             dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
@@ -312,9 +351,12 @@ namespace ArduinoInterface
 
         public override string ToString ()
         {
-            string str = header.ToString ();
-
-            str += "Ready = " + data.readyForMessages + ", Running = " + data.motorsRunning;
+            string str = header.ToString ()
+                       + "Name = " + new string (data.name).TrimEnd ('\0') 
+                       + ", Ready for messages = " + data.readyForMessages 
+                       + ", Ready to run = "       + data.readyToRun 
+                       + ", Running = "            + data.motorsRunning
+                       + ", Ready To Send = "      + data.readyToSend;
 
             return str;
         }
@@ -329,11 +371,28 @@ namespace ArduinoInterface
             header = new Header ();
             data   = new Batch ();
 
-            header.MessageId = (ushort) ArduinoMessageIDs.CollectedDataMsgId;
+            header.MessageId = (ushort) ArduinoMessageIDs.EncoderCountsMsgId;
 
             header.ByteCount = (ushort) (Marshal.SizeOf (header) +
-                                         Marshal.SizeOf (data.put) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
+                                         Marshal.SizeOf (data.put) + Marshal.SizeOf (data.more) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
         }
+
+        public EncoderCountsMessage (EncoderCountsMessage.Batch batch)
+        {
+            header = new Header ();
+            data   = batch;
+
+            header.MessageId = (ushort) ArduinoMessageIDs.EncoderCountsMsgId;
+
+            header.ByteCount = (ushort) (Marshal.SizeOf (header) +
+                                         Marshal.SizeOf (data.put) + Marshal.SizeOf (data.more) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
+        }
+
+        //*****************************************************************************
+
+        public bool More    {get {return data.more != 0;} set {data.more = value == true ? (short) 1 : (short) 0;}}
+        //public bool IsEmpty {get {return data.put == 0;}}
+        //public bool IsFull  {get {return data.put == Batch.MaxNumberSamples;}}
 
         //*****************************************************************************
 
@@ -365,7 +424,8 @@ namespace ArduinoInterface
             int dataOffset = (int)Marshal.OffsetOf<EncoderCountsMessage> ("data");
 
             data = new Batch ();
-            data.put = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("put"));
+            data.put  = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("put"));
+            data.more = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("more"));
 
             int firstRecordStart = (int)Marshal.OffsetOf<Batch> ("counts");
 
@@ -386,6 +446,7 @@ namespace ArduinoInterface
 
             List<byte> dataBytes = new List<byte> ();
             dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.put));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.more));
 
             for (int i = 0; i<Batch.MaxNumberSamples; i++)
             {
@@ -403,6 +464,7 @@ namespace ArduinoInterface
         {
             string str = header.ToString ();
             str += "put = " + data.put + '\n';
+            str += "more = " + data.more + '\n';
 
             for (int i = 0; i<Batch.MaxNumberSamples; i++)
             {
@@ -423,7 +485,7 @@ namespace ArduinoInterface
     {
         public CollSendCompleteMessage ()
         {
-            MessageId = (ushort)ArduinoMessageIDs.CollSendCompleteMsgId;
+            MessageId = (ushort)ArduinoMessageIDs.EncoderCountsCompleteMsgId;
             ByteCount = (ushort)Marshal.SizeOf<Header> ();
         }
 

@@ -121,8 +121,8 @@ namespace ArduinoInterface
     public enum ArduinoMessageIDs {AcknowledgeMsgId  = 1,
                                    TextMsgId   = 2,
                                    StatusMsgId = 3,
-                                   CollectedDataMsgId = 4,
-                                   CollSendCompleteMsgId = 5,
+                                   EncoderCountsMsgId = 4,
+                                   EncoderCountsCompleteMsgId = 5,
     };
 
     //************************************************************************************************
@@ -135,7 +135,7 @@ namespace ArduinoInterface
         [StructLayout(LayoutKind.Sequential, Pack=1)]
         public class AckData
         {
-            public short MsgSequenceNumber;
+            public ushort MsgSequenceNumber;
         }
 
         public Header  header;
@@ -159,8 +159,13 @@ namespace ArduinoInterface
         [StructLayout(LayoutKind.Sequential, Pack=1)]
         public class StatusData
         {
+            static public readonly int MaxNameLength = 8;
+
+            public char [] name = new char [MaxNameLength];
             public short readyForMessages;
-            public short motorsRunning; 
+            public short readyToRun; 
+            public short motorsRunning;
+            public short readyToSend;
         }
 
         public Header     header;
@@ -183,11 +188,10 @@ namespace ArduinoInterface
 
             static public readonly int MaxNumberSamples = 16;
 
-            public short put;
+            public short put;  // number of samples in this batch
+            public short more; // non-zero means this is not last batch
             public Sample [] counts = new Sample [MaxNumberSamples];
         }
-
-        public bool IsEmpty {get {return data.put == 0;}}
 
         public Header header;
         public Batch  data;      
