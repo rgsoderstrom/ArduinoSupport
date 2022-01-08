@@ -13,11 +13,12 @@ namespace ArduinoSimulator
     {
         public static int Main (string [] args)
         {
-            EventLog.Open ("..\\..\\Log.txt", true);
+            EventLog.Open (@"..\..\Log.txt", true);
             EventLog.WriteLine ("Arduino Simulator");
 
             try
             {
+
                 ArduinoSim arduino1 = new ArduinoSim ();
                 //ArduinoSim arduino2 = new ArduinoSim ();
 
@@ -26,7 +27,9 @@ namespace ArduinoSimulator
                 };
 
                 foreach (Task t in allTasks)
+                {
                     t.Start ();
+                }
 
                 Task.WaitAll (allTasks);
             }
@@ -36,7 +39,7 @@ namespace ArduinoSimulator
                 EventLog.WriteLine (string.Format ("Exception: {0}", ex.Message));
             }
 
-            var c = Console.ReadKey ();                
+            //var c = Console.ReadKey ();                
             return 0;
         }
 

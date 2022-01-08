@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArduinoSim.cs" />
-    <Compile Include="Encoder.cs" />
+    <Compile Include="DriveWheelEncoders.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

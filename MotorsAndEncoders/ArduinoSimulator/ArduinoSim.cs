@@ -14,11 +14,13 @@ namespace ArduinoSimulator
 {
     public class ArduinoSim
     {
-        bool Verbose = false;
+        bool Verbose = true;
         Timer Timer1 = null;
 
         SocketLib.TcpClient thisClientSocket = null;
         DateTime startTime = DateTime.Now;
+
+        DriveWheelEncoders encoders = new DriveWheelEncoders ();
 
         //****************************************************************************
 
@@ -36,9 +38,9 @@ namespace ArduinoSimulator
                 thisClientSocket = new SocketLib.TcpClient (PrintToLog); // (PrintToConsole);
             }
 
-            catch (Exception)
+            catch (Exception ex)
             {
-                Console.WriteLine ("Exception in Main");
+                Console.WriteLine ("Exception in Main: " + ex.Message);
             }
 
             if (thisClientSocket.Connected == false)
@@ -51,6 +53,10 @@ namespace ArduinoSimulator
 
             thisClientSocket.MessageHandler += MessageHandler;
             thisClientSocket.PrintHandler   += PrintToLog; // PrintToConsole;
+
+            StatusMessage msg = new StatusMessage ();
+            msg.data.readyForMessages = 1;
+            thisClientSocket.Send (msg.ToBytes ());
 
             //Timer1 = new Timer (Timer1Interrupt, this, 5000, 1000);
 
@@ -88,34 +94,66 @@ namespace ArduinoSimulator
 
             switch (header.MessageId)
             {
-                case (ushort)CommandMessageIDs.ProfileSection:
+                case (ushort) CommandMessageIDs.MotorProfileSegment:
                 {
-                    ProfileSectionMsg rcvd = new ProfileSectionMsg (msgBytes);
-                    Console.WriteLine (string.Format ("received ProfileSection message, index: {0}, count: {1}", rcvd.data.index, rcvd.data.numberValues));
-
-                    for (int i=0; i<rcvd.data.numberValues; i++)
-                    {
-                        Console.WriteLine (string.Format ("  {0}, {1}", rcvd.data.LeftSpeed [i], rcvd.data.RightSpeed [i]));
-                    }
-
-                    ProfileSectionRcvdMessage msg = new ProfileSectionRcvdMessage ();
-                    thisClientSocket.Send (msg.ToBytes ());
+                    MotorSpeedProfileMsg rcvd = new MotorSpeedProfileMsg (msgBytes);
+                    encoders.AddProfileSegment (rcvd.data);
+                    //Console.WriteLine (string.Format ("received MotorSpeed message: Motor {0}, Index {1}, Speed {2}, Duration {3}", rcvd.data.motorID, rcvd.data.index, rcvd.data.speed, rcvd.data.duration));
                 }
                 break;
 
-                case (ushort)CommandMessageIDs.RunProfile:
-                    Console.WriteLine ("received RunProfile command");
+                case (ushort)CommandMessageIDs.ClearMotorProfile:
+                    encoders.ClearSpeedProfile ();
                     break;
 
-                case (ushort)CommandMessageIDs.ClearProfile:
-                    Console.WriteLine ("received ClearProfile command");
+                case (ushort) CommandMessageIDs.RunMotors:
+                    //Console.WriteLine ("received RunMotors command");
+
+                    //TextMessage tm = new TextMessage ("run");
+                    //thisClientSocket.Send (tm.ToBytes ());
+
+                    break;
+
+                case (ushort) CommandMessageIDs.SlowStopMotors:
+                    //Console.WriteLine ("received SlowStopMotors command");
+                    break;
+
+                case (ushort) CommandMessageIDs.FastStopMotors:
+                    //Console.WriteLine ("received FastStopMotors command");
                     break;
 
                 case (ushort) CommandMessageIDs.KeepAlive:
-                {
                     if (Verbose) Console.WriteLine ("Received KeepAlive msg");
+                    break;
+
+
+
+                case (ushort) CommandMessageIDs.SendFirstCollection:
+                {
+                    //Common.EventLog.WriteLine ("SendFirst");
+                    EncoderCountsMessage.Batch batch = encoders.GetFirstSampleBatch ();
+                    EncoderCountsMessage ecm = new EncoderCountsMessage (batch);
+                    thisClientSocket.Send (ecm.ToBytes ());
                 }
                 break;
+
+
+                case (ushort) CommandMessageIDs.SendNextCollection:
+                {
+                    //Common.EventLog.WriteLine ("SendNext");
+                    EncoderCountsMessage.Batch batch = encoders.GetNextSampleBatch ();
+                    EncoderCountsMessage ecm = new EncoderCountsMessage (batch);
+
+                    //Common.EventLog.WriteLine (ecm.ToString ());
+
+                    thisClientSocket.Send (ecm.ToBytes ());
+                }
+                break;
+
+
+
+
+
 
                 case (ushort) CommandMessageIDs.Disconnect:
                 {
@@ -129,6 +167,10 @@ namespace ArduinoSimulator
                     Console.WriteLine ("Received unrecognized message");
                     break;
             }
+
+            Header hdr = new Header (msgBytes);
+            AcknowledgeMessage msg = new AcknowledgeMessage (hdr.SequenceNumber);
+            thisClientSocket.Send (msg.ToBytes ());
         }
     }
 }
