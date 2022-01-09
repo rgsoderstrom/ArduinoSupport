@@ -18,8 +18,57 @@ namespace ShaftEncoders
 {
     public partial class MainWindow
     {
+        //*******************************************************************************************************
+
+        private void StatusMessageHandler (byte[] msgBytes)
+        {
+            StatusMessage msg = new StatusMessage (msgBytes);
+            StatusMessage.StatusData data = msg.data;
+
+            Print ("Status from " + msg.data.Name);
+
+            Print (msg.ToString ());
+
+            SendProfileButton.IsEnabled = true;
+
+            if (data.readyForMessages == 0) messageQueue.ArduinoNotReady ();
+            else                            messageQueue.ArduinoReady ();
+
+            //
+            // enable/disable buttons based on status
+            //
+            RunProfileButton.IsEnabled = data.readyToRun       != 0 ? true : false;
+            SlowStopButton.IsEnabled   = data.motorsRunning    != 0 ? true : false;
+            FastStopButton.IsEnabled   = data.motorsRunning    != 0 ? true : false;
+
+            //
+            // update OMI status indicators
+            //
+            ReadyCommunicateEllipse.Fill = data.readyForMessages != 0 ? Brushes.Green : Brushes.White;
+            ReadyRunEllipse.Fill         = data.readyToRun       != 0 ? Brushes.Green : Brushes.White;
+            MotorsRunningEllipse.Fill    = data.motorsRunning    != 0 ? Brushes.Green : Brushes.White;
+        }
 
         //*******************************************************************************************************
+
+        private void EncoderCountsMessageHandler (byte [] msgBytes)
+        {
+            EncoderCountsMessage msg = new EncoderCountsMessage (msgBytes);
+
+            ExtractEncoderCounts (msg);
+
+            if (msg.More)
+            {
+                SendNextCollectionMsg msg2 = new SendNextCollectionMsg ();
+                messageQueue.AddMessage (msg2.ToBytes ());
+            }
+
+            else
+            {
+                PlotSpeeds ();
+            }
+        }
+
         //*******************************************************************************************************
         //*******************************************************************************************************
 

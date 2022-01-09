@@ -6,53 +6,117 @@
         xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
         xmlns:local="clr-namespace:ShaftEncoders"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="950" Top="100" Loaded="Window_Loaded">
+        Title="MainWindow" Height="1010" Width="1100" Left="60" Top="20" Loaded="Window_Loaded">
     <DockPanel>
-        <StackPanel DockPanel.Dock="Left">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 100 10 10">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Orientation="Vertical">
+                    <Label HorizontalAlignment="Center" FontSize="16">Motor 1 Speed, Duration</Label>
+                    <Grid Name="Motor1_Grid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Row="0" Grid.Column="0" Margin="10, 20, 10, 0" Orientation="Vertical">
-                    <TextBox HorizontalAlignment="Center" Padding="10,0,10,0" Text="5" MinWidth="60" MaxLength="3" ToolTip="-15 to 15, integer" Name="Speed1_TextBox"/>
-                    <Label HorizontalAlignment="Center">Motor 1 Speed</Label>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Row="0" Grid.Column="0" Tag="00" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Tag="01" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="0" Tag="10" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Tag="11" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="0" Tag="20" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Tag="21" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="0" Tag="30" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Tag="31" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="0" Tag="40" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Tag="41" ToolTip="0 to 25.5"/>
+                    </Grid>
                 </StackPanel>
 
-                <StackPanel Grid.Row="0" Grid.Column="1" Margin="10, 20, 10, 0" Orientation="Vertical">
-                    <TextBox HorizontalAlignment="Center" Padding="10,0,10,0" Text="6" MinWidth="60" MaxLength="3" ToolTip="-15 to 15, integer" Name="Speed2_TextBox"/>
-                    <Label HorizontalAlignment="Center">Motor 2 Speed</Label>
+                <StackPanel Margin="0,0,0,0" Orientation="Vertical">
+                    <Label HorizontalAlignment="Center" FontSize="16">Motor 2 Speed, Duration</Label>
+
+                    <Grid Name="Motor2_Grid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBox Grid.Row="0" Grid.Column="0" Tag="00" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Tag="01" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="0" Tag="10" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Tag="11" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="0" Tag="20" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" Tag="21" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="0" Tag="30" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" Tag="31" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="0" Tag="40" ToolTip="-15 to 15, integer" HorizontalContentAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Tag="41" ToolTip="0 to 25.5"          HorizontalContentAlignment="Center"/>
+                    </Grid>
+
                 </StackPanel>
-            </Grid>
+            </StackPanel>
 
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Send Speeds"      Click="SendSpeedsButton_Click"/>
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Start Collection" Click="StartCollectionButton_Click"/>
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Stop Collection"  Click="StopCollectionButton_Click"/>
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Send Collection"  Click="SendCollectionButton_Click"/>
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Clear Collection" Click="ClearCollectionButton_Click"/>
-            <Button MinWidth="80" MaxWidth="120" Padding="10,0,10,0" Margin="3" Content="Disconnect"       Click="DisconnectButton_Click"/>
+            <StackPanel Name="ButtonStack" Orientation="Vertical">
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Local Profile" Name="ClearProfileButton" Click="ClearProfileButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Plot Profile"        Name="PlotProfileButton"  Click="PlotProfileButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Clear Plots"         Name="ClearPlotsButton"   Click="ClearPlotsButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Profile"        Name="SendProfileButton"  Click="SendProfileButton_Click" IsEnabled="False"/>
 
-            <Border BorderBrush="Black" BorderThickness="1" Padding="10,0,10,0" Margin="20, 3, 20, 0">
-                <StackPanel Orientation="Horizontal">
-                    <CheckBox VerticalAlignment="Center" HorizontalAlignment="Center" Name="CollectionComplete" IsEnabled="False" IsChecked="False"></CheckBox>
-                    <Label HorizontalAlignment="Center">Collection Complete</Label>
-                </StackPanel>
-            </Border>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Remote Profile" IsEnabled="False" Name="ClearRemoteProfileButton" Click="ClearRemoteProfileButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Run Profile"          IsEnabled="False" Name="RunProfileButton"         Click="RunProfileButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Slow Stop"            IsEnabled="False" Name="SlowStopButton"           Click="SlowStopButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Fast Stop"            IsEnabled="False" Name="FastStopButton"           Click="FastStopButton_Click"/>
+                <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Measurements"    IsEnabled="False" Name="SendMeasurementsButton"   Click="SendMeasurementsButton_Click"/>
 
+                <Border BorderBrush="Black" BorderThickness="1" Padding="10,0,10,0" Margin="20, 10, 20, 0">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" ToolTip="Green means Ready To Communicate">
+                            <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ReadyCommunicateEllipse"></Ellipse>
+                            <Label HorizontalAlignment="Center" FontSize="14">Ready For Messages</Label>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" ToolTip="Green when profile loaded">
+                            <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ReadyRunEllipse"></Ellipse>
+                            <Label HorizontalAlignment="Center" FontSize="14">Ready To Run</Label>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" ToolTip="Green means Running" Margin="0 0 0 0">
+                            <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="MotorsRunningEllipse"></Ellipse>
+                            <Label HorizontalAlignment="Center" FontSize="14">Motors Running</Label>
+                        </StackPanel>
+                        
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
         </StackPanel>
 
-        <Border Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Bottom" Height="125">
+        <Border Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Bottom" Height="130">
             <TextBox Name="LocalTextDisplay"  VerticalScrollBarVisibility="Visible"/>
         </Border>
 
-        <Border Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Bottom" Height="125">
+        <Border Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" DockPanel.Dock="Bottom" Height="130">
             <TextBox Name="RemoteTextDisplay"  VerticalScrollBarVisibility="Visible"/>
         </Border>
 
-        <Plot2D_Embedded:Bare2DPlot Name="PlotArea" MinHeight="350"/>
+        <StackPanel Orientation="Vertical">
+            <Plot2D_Embedded:Bare2DPlot Name="PlotArea" Height="350"/>
+            <Plot2D_Embedded:Bare2DPlot Name="PlotArea2" Height="350"/>
+        </StackPanel>
     </DockPanel>
 </Window>

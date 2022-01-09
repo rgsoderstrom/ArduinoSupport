@@ -101,15 +101,15 @@ namespace ArduinoInterface
 
  //****************************************************************************************************************************
 
-    public partial class ClearSpeedProfile
+    public partial class ClearSpeedProfileMsg
     {
-        public ClearSpeedProfile ()
+        public ClearSpeedProfileMsg ()
         {
             MessageId = (ushort)CommandMessageIDs.ClearMotorProfile;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public ClearSpeedProfile (byte[] fromBytes) : base (fromBytes)
+        public ClearSpeedProfileMsg (byte[] fromBytes) : base (fromBytes)
         {
         }
     }
@@ -262,8 +262,13 @@ namespace ArduinoInterface
     //*******************************************************************************************************
 
     public partial class StatusMessage
-    {        
-        public string Name {get {return data.name.ToString ();} set {data.name = value.ToCharArray (0, StatusData.MaxNameLength);}}
+    {
+        public partial class StatusData
+        {
+            public string Name {
+                get {return new string (name).TrimEnd ('\0');} 
+                set {name = value.ToCharArray (0, Math.Min (value.Length, StatusData.MaxNameLength));}}
+        }
 
         public StatusMessage ()
         {
@@ -278,6 +283,11 @@ namespace ArduinoInterface
                                          Marshal.SizeOf (data.readyToRun) + 
                                          Marshal.SizeOf (data.motorsRunning) + 
                                          Marshal.SizeOf (data.readyToSend));
+        }
+
+        public StatusMessage (StatusData source) : this ()
+        {
+            data = source;
         }
 
         public StatusMessage (byte[] fromBytes) // for byte stream received from Arduino
@@ -391,8 +401,6 @@ namespace ArduinoInterface
         //*****************************************************************************
 
         public bool More    {get {return data.more != 0;} set {data.more = value == true ? (short) 1 : (short) 0;}}
-        //public bool IsEmpty {get {return data.put == 0;}}
-        //public bool IsFull  {get {return data.put == Batch.MaxNumberSamples;}}
 
         //*****************************************************************************
 
@@ -476,30 +484,6 @@ namespace ArduinoInterface
             }
 
             return str;
-        }
-    }
-
-    //*******************************************************************************************************
-
-    public partial class CollSendCompleteMessage
-    {
-        public CollSendCompleteMessage ()
-        {
-            MessageId = (ushort)ArduinoMessageIDs.EncoderCountsCompleteMsgId;
-            ByteCount = (ushort)Marshal.SizeOf<Header> ();
-        }
-
-        public CollSendCompleteMessage (byte [] fromBytes)
-        {
-            Header temp = new Header (fromBytes);
-            MessageId = temp.MessageId;
-            ByteCount = temp.ByteCount;
-        }
-
-        public new byte [] ToBytes ()
-        {
-            byte [] msgBytes = base.ToBytes ();
-            return msgBytes;
         }
     }
 

@@ -68,6 +68,13 @@ namespace ArduinoInterface
 
         //**********************************************************************
 
+        public void ArduinoNotReady ()
+        {
+            arduinoReady = false;
+        }
+
+        //**********************************************************************
+
         public void ArduinoReady ()
         {
             if (pendingMessages.Count > 0)

@@ -68,7 +68,7 @@ namespace ArduinoInterface
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class ClearSpeedProfile : Header
+    public partial class ClearSpeedProfileMsg : Header
     {
     }
     
@@ -122,7 +122,6 @@ namespace ArduinoInterface
                                    TextMsgId   = 2,
                                    StatusMsgId = 3,
                                    EncoderCountsMsgId = 4,
-                                   EncoderCountsCompleteMsgId = 5,
     };
 
     //************************************************************************************************
@@ -157,7 +156,7 @@ namespace ArduinoInterface
     public partial class StatusMessage
     {
         [StructLayout(LayoutKind.Sequential, Pack=1)]
-        public class StatusData
+        public partial class StatusData
         {
             static public readonly int MaxNameLength = 8;
 
@@ -199,9 +198,5 @@ namespace ArduinoInterface
 
     //************************************************************************************************
     
-    [StructLayout (LayoutKind.Sequential, Pack = 1)]
-    public partial class CollSendCompleteMessage : Header
-    {
-    };
 }
 

@@ -22,6 +22,8 @@ namespace ArduinoSimulator
 
         DriveWheelEncoders encoders = new DriveWheelEncoders ();
 
+        StatusMessage.StatusData statusData;
+
         //****************************************************************************
 
         public ArduinoSim ()
@@ -34,7 +36,10 @@ namespace ArduinoSimulator
         {
             try
             {
-                Console.WriteLine ("Connect to server");
+                statusData = new StatusMessage.StatusData ();
+                statusData.Name = "ArdSim";
+
+                Console.WriteLine ("Connecting to server");
                 thisClientSocket = new SocketLib.TcpClient (PrintToLog); // (PrintToConsole);
             }
 
@@ -54,8 +59,9 @@ namespace ArduinoSimulator
             thisClientSocket.MessageHandler += MessageHandler;
             thisClientSocket.PrintHandler   += PrintToLog; // PrintToConsole;
 
-            StatusMessage msg = new StatusMessage ();
-            msg.data.readyForMessages = 1;
+
+            statusData.readyForMessages = 1;
+            StatusMessage msg = new StatusMessage (statusData);
             thisClientSocket.Send (msg.ToBytes ());
 
             //Timer1 = new Timer (Timer1Interrupt, this, 5000, 1000);
@@ -98,55 +104,48 @@ namespace ArduinoSimulator
                 {
                     MotorSpeedProfileMsg rcvd = new MotorSpeedProfileMsg (msgBytes);
                     encoders.AddProfileSegment (rcvd.data);
-                    //Console.WriteLine (string.Format ("received MotorSpeed message: Motor {0}, Index {1}, Speed {2}, Duration {3}", rcvd.data.motorID, rcvd.data.index, rcvd.data.speed, rcvd.data.duration));
+                    statusData.readyToRun = 1;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                 }
                 break;
 
                 case (ushort)CommandMessageIDs.ClearMotorProfile:
                     encoders.ClearSpeedProfile ();
+                    statusData.readyToRun = 0;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.RunMotors:
-                    //Console.WriteLine ("received RunMotors command");
-
-                    //TextMessage tm = new TextMessage ("run");
-                    //thisClientSocket.Send (tm.ToBytes ());
-
+                    statusData.motorsRunning = 1;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.SlowStopMotors:
-                    //Console.WriteLine ("received SlowStopMotors command");
+                    statusData.motorsRunning = 0;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.FastStopMotors:
-                    //Console.WriteLine ("received FastStopMotors command");
+                    statusData.motorsRunning = 0;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.KeepAlive:
                     if (Verbose) Console.WriteLine ("Received KeepAlive msg");
                     break;
 
-
-
                 case (ushort) CommandMessageIDs.SendFirstCollection:
                 {
-                    //Common.EventLog.WriteLine ("SendFirst");
                     EncoderCountsMessage.Batch batch = encoders.GetFirstSampleBatch ();
-                    EncoderCountsMessage ecm = new EncoderCountsMessage (batch);
-                    thisClientSocket.Send (ecm.ToBytes ());
+                    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
                 }
                 break;
 
 
                 case (ushort) CommandMessageIDs.SendNextCollection:
                 {
-                    //Common.EventLog.WriteLine ("SendNext");
                     EncoderCountsMessage.Batch batch = encoders.GetNextSampleBatch ();
-                    EncoderCountsMessage ecm = new EncoderCountsMessage (batch);
-
-                    //Common.EventLog.WriteLine (ecm.ToString ());
-
-                    thisClientSocket.Send (ecm.ToBytes ());
+                    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
                 }
                 break;
 

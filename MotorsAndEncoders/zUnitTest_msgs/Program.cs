@@ -15,7 +15,18 @@ namespace zUnitTest_msgs
         {
             try
             {
-                var msg = new MotorSpeedProfileMsg (1234, 2345, 3456, 5555);
+                StatusMessage.StatusData _data = new StatusMessage.StatusData ();
+
+                _data.Name = "pQ3456789012";
+                _data.readyForMessages = 1234;
+                _data.readyToRun = 2468;
+                _data.motorsRunning = 3456;
+                _data.readyToSend = 9876;
+
+                var msg = new StatusMessage ();
+                msg = new StatusMessage (_data);
+
+
 
 
                 Console.WriteLine ("first, type : " + msg.GetType ().ToString ());
@@ -23,11 +34,17 @@ namespace zUnitTest_msgs
 
                 byte [] msgBytes = msg.ToBytes ();
 
-                var msg2 = new MotorSpeedProfileMsg (msgBytes);
+                Console.WriteLine ("");
+
+                for (int i = 0; i<msgBytes.Length; i++)
+                    Console.WriteLine (msgBytes [i]);
+
+
+                var msg2 = new StatusMessage (msgBytes);
                 Console.WriteLine ("\n\nsecond, type : " + msg2.GetType ().ToString ());
                 Console.WriteLine (msg2.ToString ());
 
-
+                Console.WriteLine ("\n\n\nNNNN = " + msg2.data.Name);
             }
 
             catch (Exception ex)

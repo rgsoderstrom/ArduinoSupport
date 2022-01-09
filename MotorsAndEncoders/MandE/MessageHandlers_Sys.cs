@@ -35,53 +35,12 @@ namespace ShaftEncoders
 
                 switch (MsgId)
                 {
-                    case (ushort)ArduinoMessageIDs.TextMsgId:
-                        TextMessage tm = new TextMessage (msgBytes);
-                        string str = new string (tm.text);
-                        RemotePrint (str);
-                        break;
+                    case (ushort) ArduinoMessageIDs.TextMsgId:          TextMessageHandler          (msgBytes); break;
+                    case (ushort) ArduinoMessageIDs.StatusMsgId:        StatusMessageHandler        (msgBytes); break;
+                    case (ushort) ArduinoMessageIDs.AcknowledgeMsgId:   AcknowledgeMessageHandler   (msgBytes); break;
+                    case (ushort) ArduinoMessageIDs.EncoderCountsMsgId: EncoderCountsMessageHandler (msgBytes); break;
 
-                    case (ushort) ArduinoMessageIDs.StatusMsgId:
-                    {
-                        StatusMessage bs = new StatusMessage (msgBytes);
-
-                        if (bs.data.readyForMessages != 0)
-                            messageQueue.ArduinoReady ();
-                    }
-                    break;
-
-                    case (ushort) ArduinoMessageIDs.AcknowledgeMsgId:
-                    {
-                        AcknowledgeMessage msg = new AcknowledgeMessage (msgBytes);
-                        bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
-
-                        if (found == false)
-                            Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
-                    }
-
-                    break;
-
-                    case (ushort)ArduinoMessageIDs.EncoderCountsMsgId:
-                    {
-                        EncoderCountsMessage msg = new EncoderCountsMessage (msgBytes);
-                        ExtractEncoderCounts (msg);
-
-                        if (msg.More)
-                        {
-                            SendNextCollectionMsg msg2 = new SendNextCollectionMsg ();
-                            messageQueue.AddMessage (msg2.ToBytes ());
-                        }
-
-                        else
-                        {
-                            PlotSpeeds ();
-                        }
-                    }
-                    break;
-
-                    default:
-                        Print ("Unrecognized message ID");
-                        break;
+                    default: Print ("Unrecognized message ID"); break;
                 }
             }
 
@@ -89,6 +48,27 @@ namespace ShaftEncoders
             {
                 Print (String.Format ("MessageProcessing Exception: {0}", ex.Message));
             }
+        }
+
+        //*******************************************************************************************************
+        
+        private void AcknowledgeMessageHandler (byte [] msgBytes)
+        {
+            AcknowledgeMessage msg = new AcknowledgeMessage (msgBytes);
+
+            bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
+
+            if (found == false)
+                Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
+        }
+
+        //*******************************************************************************************************
+
+        private void TextMessageHandler (byte[] msgBytes)
+        {
+            TextMessage msg = new TextMessage (msgBytes);
+            string str = new string (msg.text);
+            RemotePrint (str);
         }
 
         //*******************************************************************************************************

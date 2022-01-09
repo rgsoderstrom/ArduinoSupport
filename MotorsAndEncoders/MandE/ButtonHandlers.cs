@@ -21,7 +21,8 @@ namespace ShaftEncoders
 
         private void ClearRemoteProfileButton_Click (object sender, RoutedEventArgs e)
         {
-            RunProfileButton.IsEnabled = false;
+            ClearSpeedProfileMsg msg = new ClearSpeedProfileMsg ();
+            messageQueue.AddMessage (msg.ToBytes ());
         }
 
 
@@ -58,10 +59,10 @@ namespace ShaftEncoders
 
         private void PlotProfileButton_Click (object sender, RoutedEventArgs e)
         {
-            List<int>    speed1    = new List<int> (); // speeds and durations read from OMI
+            List<int>    speed1    = new List<int> (); // commanded speeds and durations read from OMI
             List<double> duration1 = new List<double> ();
 
-            List<int>    speed2    = new List<int> (); // speeds and durations read from OMI
+            List<int>    speed2    = new List<int> (); 
             List<double> duration2 = new List<double> ();
 
             ReadProfileGrid (Motor1_Grid.Children, ref speed1, ref duration1);
@@ -126,7 +127,7 @@ namespace ShaftEncoders
                     messageQueue.AddMessage (msg.ToBytes ());
                 }
 
-                //ClearRe
+                ClearRemoteProfileButton.IsEnabled = true;
             }
 
             catch (Exception ex)
@@ -196,8 +197,8 @@ namespace ShaftEncoders
         //
         // Clear Collection
         //
-        private void ClearCollectionButton_Click (object sender, RoutedEventArgs e)
-        {
+        //private void ClearCollectionButton_Click (object sender, RoutedEventArgs e)
+        //{
             //try
             //{
             //    ClearCollectionMsg msg = new ClearCollectionMsg ();
@@ -208,7 +209,7 @@ namespace ShaftEncoders
             //{
             //    Print (string.Format ("Exception: {0}", ex.Message));
             //}
-        }
+        //}
 
         private void DisconnectButton_Click (object sender, RoutedEventArgs e)
         {
