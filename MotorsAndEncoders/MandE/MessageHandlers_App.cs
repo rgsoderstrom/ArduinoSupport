@@ -51,90 +51,90 @@ namespace ShaftEncoders
 
         //*******************************************************************************************************
 
-        private void EncoderCountsMessageHandler (byte [] msgBytes)
-        {
-            EncoderCountsMessage msg = new EncoderCountsMessage (msgBytes);
+        //private void EncoderCountsMessageHandler (byte [] msgBytes)
+        //{
+        //    EncoderCountsMessage msg = new EncoderCountsMessage (msgBytes);
 
-            ExtractEncoderCounts (msg);
+        //    ExtractEncoderCounts (msg);
 
-            if (msg.More)
-            {
-                SendNextCollectionMsg msg2 = new SendNextCollectionMsg ();
-                messageQueue.AddMessage (msg2.ToBytes ());
-            }
+        //    //if (msg.LastBatch)
+        //    //{
+        //    //    SendNextCollectionMsg msg2 = new SendNextCollectionMsg ();
+        //    //    messageQueue.AddMessage (msg2.ToBytes ());
+        //    //}
 
-            else
-            {
-                PlotSpeeds ();
-            }
-        }
+        //    //else
+        //    //{
+        //    //    PlotSpeeds ();
+        //    //}
+        //}
 
         //*******************************************************************************************************
         //*******************************************************************************************************
 
-        List<EncoderCountsMessage.Batch.Sample> history = new List<EncoderCountsMessage.Batch.Sample> ();
+        //List<EncoderCountsMessage.Batch.Sample> history = new List<EncoderCountsMessage.Batch.Sample> ();
 
-        private void ExtractEncoderCounts (EncoderCountsMessage msg)
-        {
-            for (int i = 0; i<msg.data.put; i++)
-            {
-                history.Add (msg.data.counts [i]);
-            }
-        }
+        //private void ExtractEncoderCounts (EncoderCountsMessage msg)
+        //{
+        //    for (int i = 0; i<msg.data.put; i++)
+        //    {
+        //        history.Add (msg.data.counts [i]);
+        //    }
+        //}
 
-        List<double> VelTimes = new List<double> ();
-        List<double> Vel1 = new List<double> ();
-        List<double> Vel2 = new List<double> ();
+        //List<double> VelTimes = new List<double> ();
+        //List<double> Vel1 = new List<double> ();
+        //List<double> Vel2 = new List<double> ();
 
-        private void PlotSpeeds ()
-        {
-            //Print (history.Count.ToString () + " samples");
+        //private void PlotSpeeds ()
+        //{
+        //    //Print (history.Count.ToString () + " samples");
 
-            //PlotArea.Clear ();
-            PlotArea.RectangularGridOn = true;
+        //    //PlotArea.Clear ();
+        //    PlotArea.RectangularGridOn = true;
 
-            if (history.Count < 2) return;
+        //    if (history.Count < 2) return;
 
-            VelTimes.Clear ();
-            Vel1.Clear ();
-            Vel2.Clear ();
+        //    VelTimes.Clear ();
+        //    Vel1.Clear ();
+        //    Vel2.Clear ();
 
-            for (int i = 0; i<history.Count; i++)
-            {
-                VelTimes.Add (i * 0.1);
+        //    for (int i = 0; i<history.Count; i++)
+        //    {
+        //        VelTimes.Add (i * 0.1);
 
                
 
-                Vel1.Add ((sbyte) history [i].enc1 / 6);
-                Vel2.Add ((sbyte) history [i].enc2 / 6);
-            }
+        //        Vel1.Add ((sbyte) history [i].enc1 / 6);
+        //        Vel2.Add ((sbyte) history [i].enc2 / 6);
+        //    }
 
 
 
 
-            List<Point> points1 = new List<Point> ();
-            List<Point> points2 = new List<Point> ();
+        //    List<Point> points1 = new List<Point> ();
+        //    List<Point> points2 = new List<Point> ();
 
-            for (int i = 0; i<VelTimes.Count; i++)
-            {
-                points1.Add (new Point (VelTimes [i], Vel1 [i]));
-                points2.Add (new Point (VelTimes [i], Vel2 [i]));
-            }
+        //    for (int i = 0; i<VelTimes.Count; i++)
+        //    {
+        //        points1.Add (new Point (VelTimes [i], Vel1 [i]));
+        //        points2.Add (new Point (VelTimes [i], Vel2 [i]));
+        //    }
 
-            LineView line1 = new LineView (points1);
-            LineView line2 = new LineView (points2);
-            //line1.Size = 0.1;
-            line1.Color = Brushes.Red;
-            line2.Color = Brushes.Green;
+        //    LineView line1 = new LineView (points1);
+        //    LineView line2 = new LineView (points2);
+        //    //line1.Size = 0.1;
+        //    line1.Color = Brushes.Red;
+        //    line2.Color = Brushes.Green;
 
-            PlotArea.Plot (line1);
-            PlotArea.Plot (line2);
+        //    PlotArea.Plot (line1);
+        //    PlotArea.Plot (line2);
 
-            //foreach (Point pt in points1)
-            // Print (pt.X.ToString () + ", " + pt.Y.ToString ());
+        //    //foreach (Point pt in points1)
+        //    // Print (pt.X.ToString () + ", " + pt.Y.ToString ());
 
-            //PlotArea.GetAxes ()
-        }
+        //    //PlotArea.GetAxes ()
+        //}
 
     }
 }

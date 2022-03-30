@@ -26,8 +26,8 @@ namespace ArduinoInterface
         RunMotors         = 5,  // execute previously sent MotorTimeAndSpeed profile
         SlowStopMotors    = 6,  // slowly stop motors
         FastStopMotors    = 7,  // immediately stop motors
-        SendFirstCollection = 8,
-        SendNextCollection  = 9,
+        //SendFirstCollection = 8,
+        //SendNextCollection  = 9,
         Disconnect          = 99,
     };
 
@@ -57,7 +57,7 @@ namespace ArduinoInterface
         {
             public short index;     // 0 -> (MaxNumberSegments - 1)
             public short motorID;   // 1 or 2, left or right
-            public short speed;     // -15 -> 15
+            public short speed;     // -127 -> 127
             public short duration;  // tenths of second, 0 -> 25.5
         }
 
@@ -118,10 +118,12 @@ namespace ArduinoInterface
     // Arduino -> PC messages *******************************************************************************
     //*******************************************************************************************************
 
-    public enum ArduinoMessageIDs {AcknowledgeMsgId  = 1,
-                                   TextMsgId   = 2,
-                                   StatusMsgId = 3,
-                                   EncoderCountsMsgId = 4,
+    public enum ArduinoMessageIDs 
+    {
+        AcknowledgeMsgId  = 1,
+        TextMsgId   = 2,
+        StatusMsgId = 3,
+        //EncoderCountsMsgId = 4,
     };
 
     //************************************************************************************************
@@ -170,31 +172,32 @@ namespace ArduinoInterface
         public Header     header;
         public StatusData data;
     }
+
     //************************************************************************************************
     
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class EncoderCountsMessage
-    {
-        [StructLayout(LayoutKind.Sequential, Pack=1)]
-        public partial class Batch
-        {
-            [StructLayout(LayoutKind.Sequential, Pack=1)]
-            public struct Sample
-            {
-                public byte enc1; 
-                public byte enc2;
-            }
+    //[StructLayout(LayoutKind.Sequential, Pack=1)]
+    //public partial class EncoderCountsMessage
+    //{
+    //    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    //    public partial class Batch
+    //    {
+    //        [StructLayout(LayoutKind.Sequential, Pack=1)]
+    //        public struct Sample
+    //        {
+    //            public byte enc1; 
+    //            public byte enc2;
+    //        }
 
-            static public readonly int MaxNumberSamples = 16;
+    //        static public readonly int MaxNumberSamples = 16;
 
-            public short put;  // number of samples in this batch
-            public short more; // non-zero means this is not last batch
-            public Sample [] counts = new Sample [MaxNumberSamples];
-        }
+    //        public short put;  // number of samples in this batch
+    //        public short lastBatch; // non-zero means this is last batch
+    //        public Sample [] counts = new Sample [MaxNumberSamples];
+    //    }
 
-        public Header header;
-        public Batch  data;      
-    }
+    //    public Header header;
+    //    public Batch  data;      
+    //}
 
     //************************************************************************************************
     

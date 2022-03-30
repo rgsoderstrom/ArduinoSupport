@@ -88,7 +88,7 @@ namespace ShaftEncoders
             PlotArea.RectangularGridOn = true;
             PlotArea.AxesTight = true;
             PlotArea.GetAxes (out double x1, out double x2, out double y1, out double y2);
-            y1 = -15; y2 = 15; 
+            y1 = -127; y2 = 127; 
             PlotArea.SetAxes (x1, x2, y1, y2);
         }
 
@@ -180,16 +180,16 @@ namespace ShaftEncoders
 
         private void SendMeasurementsButton_Click (object sender, RoutedEventArgs e)
         {
-            try
-            {
-                SendFirstCollectionMsg msg = new SendFirstCollectionMsg ();
-                messageQueue.AddMessage (msg.ToBytes ());
-            }
+            //try
+            //{
+            //    SendFirstCollectionMsg msg = new SendFirstCollectionMsg ();
+            //    messageQueue.AddMessage (msg.ToBytes ());
+            //}
 
-            catch (Exception ex)
-            {
-                Print (string.Format ("Exception: {0}", ex.Message));
-            }
+            //catch (Exception ex)
+            //{
+            //    Print (string.Format ("Exception: {0}", ex.Message));
+            //}
         }
 
 

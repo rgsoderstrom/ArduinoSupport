@@ -78,8 +78,8 @@ namespace ShaftEncoders
 
                                 if (success)
                                 {
-                                    if (sp < -15) { sp = -15; tb.Text = sp.ToString (); }
-                                    if (sp >  15) { sp =  15; tb.Text = sp.ToString (); }
+                                    if (sp < -127) {sp = -127; tb.Text = sp.ToString ();}
+                                    if (sp >  127) {sp =  127; tb.Text = sp.ToString ();}
                                     speed.Add (sp);
                                 }
                             }
@@ -97,8 +97,8 @@ namespace ShaftEncoders
 
                                 if (success)
                                 {
-                                    if (dur < 0) { dur = 0; tb.Text = dur.ToString (); }
-                                    if (dur > 25.5) { dur =  25.5; tb.Text = dur.ToString (); }
+                                    if (dur < 0)    {dur = 0; tb.Text = dur.ToString ();}
+                                    if (dur > 25.5) {dur =  25.5; tb.Text = dur.ToString ();}
                                     duration.Add (dur);
                                 }
                             }
@@ -107,9 +107,6 @@ namespace ShaftEncoders
                         }
                     }
                 }
-
-                speed.Add (0);
-                duration.Add (0);
             }
 
             catch (Exception ex)

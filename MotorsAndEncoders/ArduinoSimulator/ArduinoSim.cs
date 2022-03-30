@@ -14,13 +14,13 @@ namespace ArduinoSimulator
 {
     public class ArduinoSim
     {
-        bool Verbose = true;
+        bool Verbose = false;
         Timer Timer1 = null;
 
         SocketLib.TcpClient thisClientSocket = null;
         DateTime startTime = DateTime.Now;
 
-        DriveWheelEncoders encoders = new DriveWheelEncoders ();
+        //DriveWheelEncoders encoders = new DriveWheelEncoders ();
 
         StatusMessage.StatusData statusData;
 
@@ -101,31 +101,39 @@ namespace ArduinoSimulator
             switch (header.MessageId)
             {
                 case (ushort) CommandMessageIDs.MotorProfileSegment:
-                {
-                    MotorSpeedProfileMsg rcvd = new MotorSpeedProfileMsg (msgBytes);
-                    encoders.AddProfileSegment (rcvd.data);
-                    statusData.readyToRun = 1;
-                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
-                }
-                break;
+                    {
+                        MotorSpeedProfileMsg rcvd = new MotorSpeedProfileMsg (msgBytes);
+                        //encoders.AddProfileSegment (rcvd.data);
+                        Console.Write ("ID = " + rcvd.data.motorID + ", ");
+                        Console.Write ("index = " + rcvd.data.index + ", ");
+                        Console.Write ("speed = " + rcvd.data.speed + ", ");
+                        Console.Write ("dur = " + rcvd.data.duration + "\n");
+                        statusData.readyToRun = 1;
+                        thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
+                    }
+                    break;
 
                 case (ushort)CommandMessageIDs.ClearMotorProfile:
-                    encoders.ClearSpeedProfile ();
+                    Console.WriteLine ("Clear Profile");
+                    //encoders.ClearSpeedProfile ();
                     statusData.readyToRun = 0;
                     thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.RunMotors:
+                    Console.WriteLine ("Run Motors");
                     statusData.motorsRunning = 1;
                     thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.SlowStopMotors:
+                    Console.WriteLine ("Slow Stop Motors");
                     statusData.motorsRunning = 0;
                     thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
                 case (ushort) CommandMessageIDs.FastStopMotors:
+                    Console.WriteLine ("Fast Stop Motors");
                     statusData.motorsRunning = 0;
                     thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
@@ -134,25 +142,19 @@ namespace ArduinoSimulator
                     if (Verbose) Console.WriteLine ("Received KeepAlive msg");
                     break;
 
-                case (ushort) CommandMessageIDs.SendFirstCollection:
-                {
-                    EncoderCountsMessage.Batch batch = encoders.GetFirstSampleBatch ();
-                    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
-                }
-                break;
+                //case (ushort) CommandMessageIDs.SendFirstCollection:
+                //{
+                //    EncoderCountsMessage.Batch batch = encoders.GetFirstSampleBatch ();
+                //    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
+                //}
+                //break;
 
-
-                case (ushort) CommandMessageIDs.SendNextCollection:
-                {
-                    EncoderCountsMessage.Batch batch = encoders.GetNextSampleBatch ();
-                    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
-                }
-                break;
-
-
-
-
-
+                //case (ushort) CommandMessageIDs.SendNextCollection:
+                //{
+                //    EncoderCountsMessage.Batch batch = encoders.GetNextSampleBatch ();
+                //    thisClientSocket.Send (new EncoderCountsMessage (batch).ToBytes ());
+                //}
+                //break;
 
                 case (ushort) CommandMessageIDs.Disconnect:
                 {

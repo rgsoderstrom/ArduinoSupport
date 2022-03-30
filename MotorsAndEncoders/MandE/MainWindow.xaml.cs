@@ -57,17 +57,20 @@ namespace ShaftEncoders
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
         {
-            (Motor1_Grid.Children [0] as TextBox).Text = "5";
+            (Motor1_Grid.Children [0] as TextBox).Text = "80";
             (Motor1_Grid.Children [1] as TextBox).Text = "5";
 
-            (Motor1_Grid.Children [2] as TextBox).Text = "10";
+            (Motor1_Grid.Children [2] as TextBox).Text = "100";
             (Motor1_Grid.Children [3] as TextBox).Text = "15";
 
-            (Motor1_Grid.Children [4] as TextBox).Text = "5";
+            (Motor1_Grid.Children [4] as TextBox).Text = "50";
             (Motor1_Grid.Children [5] as TextBox).Text = "10";
 
-            (Motor2_Grid.Children [0] as TextBox).Text = "-6";
+            (Motor2_Grid.Children [0] as TextBox).Text = "-100";
             (Motor2_Grid.Children [1] as TextBox).Text = "25";
+
+            (Motor2_Grid.Children [2] as TextBox).Text = "-80";
+            (Motor2_Grid.Children [3] as TextBox).Text = "10";
 
             PlotArea.MouseEnabled = false;
             PlotArea2.MouseEnabled = false;
