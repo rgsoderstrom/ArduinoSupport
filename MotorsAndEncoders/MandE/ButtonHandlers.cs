@@ -117,17 +117,33 @@ namespace ShaftEncoders
 
                 for (short i = 0; i<speed1.Count; i++)
                 {
-                    MotorSpeedProfileMsg msg = new MotorSpeedProfileMsg (i, 1, (short)speed1 [i], (short)(duration1 [i] * 10));
+                    SpeedProfileSegmentMsg msg = new SpeedProfileSegmentMsg (i, 1, (short)speed1 [i], (short)(duration1 [i] * 10));
                     messageQueue.AddMessage (msg.ToBytes ());
                 }
 
                 for (short i = 0; i<speed2.Count; i++)
                 {
-                    MotorSpeedProfileMsg msg = new MotorSpeedProfileMsg (i, 2, (short)speed2 [i], (short)(duration2 [i] * 10));
+                    SpeedProfileSegmentMsg msg = new SpeedProfileSegmentMsg (i, 2, (short)speed2 [i], (short)(duration2 [i] * 10));
                     messageQueue.AddMessage (msg.ToBytes ());
                 }
 
                 ClearRemoteProfileButton.IsEnabled = true;
+                TransferProfileButton.IsEnabled = true;
+                RunProfileButton.IsEnabled = true;
+            }
+
+            catch (Exception ex)
+            {
+                Print (string.Format ("Exception: {0}", ex.Message));
+            }
+        }
+
+        private void TransferProfileButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TransferSpeedProfileMsg msg = new TransferSpeedProfileMsg ();
+                messageQueue.AddMessage (msg.ToBytes ());
             }
 
             catch (Exception ex)

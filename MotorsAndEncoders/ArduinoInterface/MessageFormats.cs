@@ -20,14 +20,18 @@ namespace ArduinoInterface
         KeepAlive     = 1,  // no action required, just keeps socket open
         StatusRequest = 2,
 
-        MotorProfileSegment = 3, // one duration and speed for one motor
-        ClearMotorProfile   = 4, // command to clear all speed/durations
+        ClearSpeedProfile    = 3, // command to clear all speed/durations
+                                  //  in Arduino and FPGA
 
-        RunMotors         = 5,  // execute previously sent MotorTimeAndSpeed profile
-        SlowStopMotors    = 6,  // slowly stop motors
-        FastStopMotors    = 7,  // immediately stop motors
-        //SendFirstCollection = 8,
-        //SendNextCollection  = 9,
+        SpeedProfileSegment  = 4, // one duration and speed for one motor
+        TransferSpeedProfile = 5, // transfer to FPGA
+
+        RunMotors            = 6, // execute previously sent speed profile
+        SlowStopMotors       = 7, // slowly stop motors
+        FastStopMotors       = 8, // immediately stop motors
+
+        //SendFirstCollection = 9,
+        //SendNextCollection  = 10,
         Disconnect          = 99,
     };
 
@@ -47,10 +51,17 @@ namespace ArduinoInterface
 
     //**********************************************************************
 
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public partial class ClearSpeedProfileMsg : Header
+    {
+    }
+    
+    //**********************************************************************
+
     // Motor Speed Profile Message
 
     [StructLayout (LayoutKind.Sequential, Pack = 1)]
-    public partial class MotorSpeedProfileMsg
+    public partial class SpeedProfileSegmentMsg
     {
         [StructLayout (LayoutKind.Sequential, Pack = 1)]
         public class Segment
@@ -68,7 +79,7 @@ namespace ArduinoInterface
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class ClearSpeedProfileMsg : Header
+    public partial class TransferSpeedProfileMsg : Header
     {
     }
     
@@ -95,17 +106,17 @@ namespace ArduinoInterface
     
     //**********************************************************************
 
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class SendFirstCollectionMsg : Header
-    {
-    }
+    //[StructLayout(LayoutKind.Sequential, Pack=1)]
+    //public partial class SendFirstCollectionMsg : Header
+    //{
+    //}
     
     //**********************************************************************
 
-    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class SendNextCollectionMsg : Header
-    {
-    }
+    //[StructLayout(LayoutKind.Sequential, Pack=1)]
+    //public partial class SendNextCollectionMsg : Header
+    //{
+    //}
     
     //**********************************************************************
 

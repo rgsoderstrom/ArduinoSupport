@@ -47,17 +47,32 @@ namespace ArduinoInterface
 
  //****************************************************************************************************************************
 
-    public partial class MotorSpeedProfileMsg
+    public partial class ClearSpeedProfileMsg
     {
-        public MotorSpeedProfileMsg (short _index,     // 0 -> (MaxNumberSegments - 1)
-                                     short _motorID,   // 1 or 2, left or right
-                                     short _speed,     // -127 -> 127
-                                     short _duration)  // tenths of second, 0 -> 25.5
+        public ClearSpeedProfileMsg ()
+        {
+            MessageId = (ushort)CommandMessageIDs.ClearSpeedProfile;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
+
+        public ClearSpeedProfileMsg (byte[] fromBytes) : base (fromBytes)
+        {
+        }
+    }
+
+ //****************************************************************************************************************************
+
+    public partial class SpeedProfileSegmentMsg
+    {
+        public SpeedProfileSegmentMsg (short _index,     // 0 -> (MaxNumberSegments - 1)
+                                       short _motorID,   // 1 or 2, left or right
+                                       short _speed,     // -127 -> 127
+                                       short _duration)  // tenths of second, 0 -> 25.5
         {
             header = new Header ();
             data = new Segment ();
 
-            header.MessageId = (ushort)CommandMessageIDs.MotorProfileSegment;
+            header.MessageId = (ushort)CommandMessageIDs.SpeedProfileSegment;
             header.ByteCount = (ushort) (Marshal.SizeOf (header) + Marshal.SizeOf (data));
 
             data.index    = _index;
@@ -66,15 +81,15 @@ namespace ArduinoInterface
             data.duration = _duration;
         }
 
-        public MotorSpeedProfileMsg (byte[] fromBytes) // convert received byte stream to message
+        public SpeedProfileSegmentMsg (byte[] fromBytes) // convert received byte stream to message
         {
             header  = new Header (fromBytes);
             data    = new Segment ();
 
-            data.index    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("index"));
-            data.motorID  = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("motorID"));
-            data.speed    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("speed"));
-            data.duration = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<MotorSpeedProfileMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("duration"));
+            data.index    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<SpeedProfileSegmentMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("index"));
+            data.motorID  = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<SpeedProfileSegmentMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("motorID"));
+            data.speed    = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<SpeedProfileSegmentMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("speed"));
+            data.duration = BitConverter.ToInt16  (fromBytes, (int) Marshal.OffsetOf<SpeedProfileSegmentMsg> ("data") + (int) Marshal.OffsetOf<Segment> ("duration"));
         }
 
         public byte[] ToBytes () // convert to byte stream to be sent out socket
@@ -101,17 +116,17 @@ namespace ArduinoInterface
 
  //****************************************************************************************************************************
 
-    public partial class ClearSpeedProfileMsg
+    public partial class TransferSpeedProfileMsg
     {
-        public ClearSpeedProfileMsg ()
+        public TransferSpeedProfileMsg ()
         {
-            MessageId = (ushort)CommandMessageIDs.ClearMotorProfile;
+            MessageId = (ushort) CommandMessageIDs.TransferSpeedProfile;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public ClearSpeedProfileMsg (byte[] fromBytes) : base (fromBytes)
-        {
-        }
+        //public TransferSpeedProfileMsg (byte[] fromBytes) : base (fromBytes)
+        //{
+        //}
     }
 
  //****************************************************************************************************************************
@@ -124,9 +139,9 @@ namespace ArduinoInterface
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public RunMotorsMsg (byte[] fromBytes) : base (fromBytes)
-        {
-        }
+        //public RunMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        //{
+        //}
     }
 
  //****************************************************************************************************************************
@@ -139,9 +154,9 @@ namespace ArduinoInterface
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public SlowStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
-        {
-        }
+        //public SlowStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        //{
+        //}
     }
 
  //****************************************************************************************************************************
@@ -154,9 +169,9 @@ namespace ArduinoInterface
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
 
-        public FastStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
-        {
-        }
+        //public FastStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
+        //{
+        //}
     }
 
  //****************************************************************************************************************************

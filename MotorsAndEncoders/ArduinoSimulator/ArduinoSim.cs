@@ -100,9 +100,9 @@ namespace ArduinoSimulator
 
             switch (header.MessageId)
             {
-                case (ushort) CommandMessageIDs.MotorProfileSegment:
+                case (ushort) CommandMessageIDs.SpeedProfileSegment:
                     {
-                        MotorSpeedProfileMsg rcvd = new MotorSpeedProfileMsg (msgBytes);
+                        SpeedProfileSegmentMsg rcvd = new SpeedProfileSegmentMsg (msgBytes);
                         //encoders.AddProfileSegment (rcvd.data);
                         Console.Write ("ID = " + rcvd.data.motorID + ", ");
                         Console.Write ("index = " + rcvd.data.index + ", ");
@@ -113,7 +113,7 @@ namespace ArduinoSimulator
                     }
                     break;
 
-                case (ushort)CommandMessageIDs.ClearMotorProfile:
+                case (ushort)CommandMessageIDs.ClearSpeedProfile:
                     Console.WriteLine ("Clear Profile");
                     //encoders.ClearSpeedProfile ();
                     statusData.readyToRun = 0;
