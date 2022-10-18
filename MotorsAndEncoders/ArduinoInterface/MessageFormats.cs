@@ -27,12 +27,15 @@ namespace ArduinoInterface
         TransferSpeedProfile = 5, // transfer to FPGA
 
         RunMotors            = 6, // execute previously sent speed profile
-        SlowStopMotors       = 7, // slowly stop motors
-        FastStopMotors       = 8, // immediately stop motors
+        StopProfile          = 7,
+        SlowStopMotors       = 8, // slowly stop motors
+        FastStopMotors       = 9, // immediately stop motors
 
-        //SendFirstCollection = 9,
-        //SendNextCollection  = 10,
-        Disconnect          = 99,
+        StartCollection      = 20,
+        StopCollection       = 21,
+        SendCounts           = 22,
+
+        Disconnect           = 99,
     };
 
     //**********************************************************************
@@ -93,6 +96,13 @@ namespace ArduinoInterface
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
+    public partial class StopProfileMsg : Header
+    {
+    }
+    
+    //**********************************************************************
+
+    [StructLayout(LayoutKind.Sequential, Pack=1)]
     public partial class SlowStopMotorsMsg : Header
     {
     }
@@ -103,21 +113,24 @@ namespace ArduinoInterface
     public partial class FastStopMotorsMsg : Header
     {
     }
-    
+
     //**********************************************************************
 
-    //[StructLayout(LayoutKind.Sequential, Pack=1)]
-    //public partial class SendFirstCollectionMsg : Header
-    //{
-    //}
-    
-    //**********************************************************************
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class StartCollectionMsg : Header
+    {
+    }
 
-    //[StructLayout(LayoutKind.Sequential, Pack=1)]
-    //public partial class SendNextCollectionMsg : Header
-    //{
-    //}
-    
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class StopCollectionMsg : Header
+    {
+    }
+
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class SendCountsMsg : Header
+    {
+    }
+
     //**********************************************************************
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
@@ -134,7 +147,7 @@ namespace ArduinoInterface
         AcknowledgeMsgId  = 1,
         TextMsgId   = 2,
         StatusMsgId = 3,
-        //EncoderCountsMsgId = 4,
+        EncoderCountsMsgId = 4,
     };
 
     //************************************************************************************************
@@ -185,32 +198,32 @@ namespace ArduinoInterface
     }
 
     //************************************************************************************************
-    
-    //[StructLayout(LayoutKind.Sequential, Pack=1)]
-    //public partial class EncoderCountsMessage
-    //{
-    //    [StructLayout(LayoutKind.Sequential, Pack=1)]
-    //    public partial class Batch
-    //    {
-    //        [StructLayout(LayoutKind.Sequential, Pack=1)]
-    //        public struct Sample
-    //        {
-    //            public byte enc1; 
-    //            public byte enc2;
-    //        }
 
-    //        static public readonly int MaxNumberSamples = 16;
+    [StructLayout (LayoutKind.Sequential, Pack = 1)]
+    public partial class EncoderCountsMessage
+    {
+        [StructLayout (LayoutKind.Sequential, Pack = 1)]
+        public partial class Batch
+        {
+            [StructLayout (LayoutKind.Sequential, Pack = 1)]
+            public struct Sample
+            {
+                public byte enc1;
+                public byte enc2;
+            }
 
-    //        public short put;  // number of samples in this batch
-    //        public short lastBatch; // non-zero means this is last batch
-    //        public Sample [] counts = new Sample [MaxNumberSamples];
-    //    }
+            static public readonly int MaxNumberSamples = 16;
 
-    //    public Header header;
-    //    public Batch  data;      
-    //}
+            public short put;  // number of samples in this batch
+            public short lastBatch; // non-zero means this is last batch
+            public Sample [] counts = new Sample [MaxNumberSamples];
+        }
+
+        public Header header;
+        public Batch  data;
+    }
 
     //************************************************************************************************
-    
+
 }
 

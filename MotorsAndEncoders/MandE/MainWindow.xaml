@@ -6,12 +6,13 @@
         xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
         xmlns:local="clr-namespace:ShaftEncoders"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1010" Width="1100" Left="60" Top="20" Loaded="Window_Loaded">
+        Title="MainWindow" Height="1010" Left="400" Top="20" Loaded="Window_Loaded">
     <DockPanel>
         <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 100 10 10">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Vertical">
-                    <Label HorizontalAlignment="Center" FontSize="16">Motor 1 Speed, Duration</Label>
+            <StackPanel Orientation="Horizontal">
+                
+                <StackPanel Orientation="Vertical" Margin="0,0,15,0">
+                    <Label HorizontalAlignment="Center" FontSize="16">Left Motor Speed, Duration</Label>
                     <Grid Name="Motor1_Grid">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -40,7 +41,7 @@
                 </StackPanel>
 
                 <StackPanel Margin="0,0,0,0" Orientation="Vertical">
-                    <Label HorizontalAlignment="Center" FontSize="16">Motor 2 Speed, Duration</Label>
+                    <Label HorizontalAlignment="Center" FontSize="16">Right Motor Speed, Duration</Label>
 
                     <Grid Name="Motor2_Grid">
                         <Grid.ColumnDefinitions>
@@ -72,28 +73,35 @@
             </StackPanel>
 
             <StackPanel Name="ButtonStack" Orientation="Vertical">
-                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="PC Commands">
-                    <StackPanel Orientation="Vertical">
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Local Profile" Name="ClearProfileButton" Click="ClearProfileButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Plot Profile"        Name="PlotProfileButton"  Click="PlotProfileButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Clear Plots"         Name="ClearPlotsButton"   Click="ClearPlotsButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Profile"        Name="SendProfileButton"  Click="SendProfileButton_Click" IsEnabled="True"/>
-                    </StackPanel>
-                </GroupBox>
 
-                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Commands">
-                    <StackPanel Orientation="Vertical">
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Remote Profile" IsEnabled="False" Name="ClearRemoteProfileButton" Click="ClearRemoteProfileButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Transfer Profile"     IsEnabled="False" Name="TransferProfileButton"    Click="TransferProfileButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Run Profile"          IsEnabled="False" Name="RunProfileButton"         Click="RunProfileButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Slow Stop"            IsEnabled="False" Name="SlowStopButton"           Click="SlowStopButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Fast Stop"            IsEnabled="False" Name="FastStopButton"           Click="FastStopButton_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="PC Commands">
+                        <StackPanel Orientation="Vertical">
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Local Profile" Name="ClearProfileButton" Click="ClearProfileButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Plot Profile"        Name="PlotProfileButton"  Click="PlotProfileButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Clear Plots"         Name="ClearPlotsButton"   Click="ClearPlotsButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Profile"        Name="SendProfileButton"  Click="SendProfileButton_Click" IsEnabled="False"/>
+                        </StackPanel>
+                    </GroupBox>
 
-                        <!--Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Measurements"    IsEnabled="False" Name="SendMeasurementsButton"   Click="SendMeasurementsButton_Click"/-->
-                    </StackPanel>
-                </GroupBox>
+                    <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Commands">
+                        <StackPanel Orientation="Vertical">
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Remote Profile" IsEnabled="False" Name="ClearRemoteProfileButton" Click="ClearRemoteProfileButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Transfer Profile"     IsEnabled="False" Name="TransferProfileButton"    Click="TransferProfileButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Run Profile"          IsEnabled="False" Name="RunProfileButton"         Click="RunProfileButton_Click"/>
+                         <!--Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Stop Profile"         IsEnabled="False" Name="StopProfileButton"        Click="StopProfileButton_Click"/-->
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Slow Stop"            IsEnabled="False" Name="SlowStopButton"           Click="SlowStopButton_Click"/>
+
+                         <!--Button MinWidth="60" MaxWidth="120" Margin="3, 9, 3, 3"  Content="Start Collection"     IsEnabled="True"  Name="StartCollButton"          Click="StartCollButton_Click"/ -->
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Stop Collection"      IsEnabled="True"  Name="StopCollButton"           Click="StopCollButton_Click"/>
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Counts"          IsEnabled="True"  Name="SendCountMsgButton"       Click="SendCountsButton_Click"/>
+
+                            <Button MinWidth="60" MaxWidth="120" Margin="3, 9, 3, 3"  Content="Fast Stop"            IsEnabled="False" Name="FastStopButton"           Click="FastStopButton_Click"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
                 
-                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Status">
+                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Status" HorizontalAlignment="Left">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal" ToolTip="Green means Ready To Communicate">
                             <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ReadyCommunicateEllipse"></Ellipse>
@@ -125,8 +133,8 @@
         </Border>
 
         <StackPanel Orientation="Vertical">
-            <Plot2D_Embedded:Bare2DPlot Name="PlotArea" Height="350"/>
-            <Plot2D_Embedded:Bare2DPlot Name="PlotArea2" Height="350"/>
+            <Plot2D_Embedded:Bare2DPlot Name="PlotAreaLeft" Height="350"/>
+            <Plot2D_Embedded:Bare2DPlot Name="PlotAreaRight" Height="350"/>
         </StackPanel>
     </DockPanel>
 </Window>

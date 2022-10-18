@@ -38,7 +38,7 @@ namespace ShaftEncoders
                     case (ushort) ArduinoMessageIDs.TextMsgId:          TextMessageHandler          (msgBytes); break;
                     case (ushort) ArduinoMessageIDs.StatusMsgId:        StatusMessageHandler        (msgBytes); break;
                     case (ushort) ArduinoMessageIDs.AcknowledgeMsgId:   AcknowledgeMessageHandler   (msgBytes); break;
-                    //case (ushort) ArduinoMessageIDs.EncoderCountsMsgId: EncoderCountsMessageHandler (msgBytes); break;
+                    case (ushort) ArduinoMessageIDs.EncoderCountsMsgId: EncoderCountsMessageHandler (msgBytes); break;
 
                     default: Print ("Unrecognized message ID"); break;
                 }

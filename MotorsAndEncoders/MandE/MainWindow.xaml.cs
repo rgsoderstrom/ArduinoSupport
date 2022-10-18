@@ -1,4 +1,11 @@
-﻿using System;
+﻿
+/*
+    MainWindow for MandE project
+        - specify seed vs. time profile for two motors
+        - run those profiles, request and plot the measured speeds
+*/
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Collections.Generic;
@@ -57,39 +64,40 @@ namespace ShaftEncoders
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
         {
-            (Motor1_Grid.Children [0] as TextBox).Text = "80";
-            (Motor1_Grid.Children [1] as TextBox).Text = "5";
+            (Motor1_Grid.Children [0] as TextBox).Text = "70";
+            (Motor1_Grid.Children [1] as TextBox).Text = "2";
 
-            (Motor1_Grid.Children [2] as TextBox).Text = "100";
-            (Motor1_Grid.Children [3] as TextBox).Text = "15";
+            (Motor1_Grid.Children [2] as TextBox).Text = "102";
+            (Motor1_Grid.Children [3] as TextBox).Text = "4.6";
 
-            (Motor1_Grid.Children [4] as TextBox).Text = "50";
-            (Motor1_Grid.Children [5] as TextBox).Text = "10";
+            (Motor1_Grid.Children [4] as TextBox).Text = "70";
+            (Motor1_Grid.Children [5] as TextBox).Text = "2";
 
-            (Motor1_Grid.Children [6] as TextBox).Text = "50";
-            (Motor1_Grid.Children [7] as TextBox).Text = "10";
+            (Motor1_Grid.Children [6] as TextBox).Text = "0";
+            (Motor1_Grid.Children [7] as TextBox).Text = "1";
 
-            (Motor1_Grid.Children [8] as TextBox).Text = "40";
-            (Motor1_Grid.Children [9] as TextBox).Text = "10";
+            //(Motor1_Grid.Children [8] as TextBox).Text = "50";
+            //(Motor1_Grid.Children [9] as TextBox).Text = "10";
 
+            (Motor2_Grid.Children [0] as TextBox).Text = "70";
+            (Motor2_Grid.Children [1] as TextBox).Text = "2";
 
-            (Motor2_Grid.Children [0] as TextBox).Text = "-100";
-            (Motor2_Grid.Children [1] as TextBox).Text = "25";
+            (Motor2_Grid.Children [2] as TextBox).Text = "38";
+            (Motor2_Grid.Children [3] as TextBox).Text = "4.6";
 
-            (Motor2_Grid.Children [2] as TextBox).Text = "-80";
-            (Motor2_Grid.Children [3] as TextBox).Text = "10";
+            (Motor2_Grid.Children [4] as TextBox).Text = "70";
+            (Motor2_Grid.Children [5] as TextBox).Text = "2";
 
-            (Motor2_Grid.Children [4] as TextBox).Text = "-80";
-            (Motor2_Grid.Children [5] as TextBox).Text = "10";
+            (Motor2_Grid.Children [6] as TextBox).Text = "0";
+            (Motor2_Grid.Children [7] as TextBox).Text = "1";
 
-            (Motor2_Grid.Children [6] as TextBox).Text = "-70";
-            (Motor2_Grid.Children [7] as TextBox).Text = "5";
+            //(Motor2_Grid.Children [8] as TextBox).Text = "-50";
+            //(Motor2_Grid.Children [9] as TextBox).Text = "5";
 
-            (Motor2_Grid.Children [8] as TextBox).Text = "-60";
-            (Motor2_Grid.Children [9] as TextBox).Text = "5";
-
-            PlotArea.MouseEnabled = false;
-            PlotArea2.MouseEnabled = false;
+            PlotAreaLeft.DataAreaTitle = "Left";
+            PlotAreaRight.DataAreaTitle = "Right";
+            PlotAreaLeft.MouseEnabled = false;
+            PlotAreaRight.MouseEnabled = false;
         }
 
         //*******************************************************************************************************

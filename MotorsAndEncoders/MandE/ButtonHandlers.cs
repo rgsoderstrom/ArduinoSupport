@@ -19,13 +19,6 @@ namespace ShaftEncoders
     {
         //*******************************************************************************************************
 
-        private void ClearRemoteProfileButton_Click (object sender, RoutedEventArgs e)
-        {
-            ClearSpeedProfileMsg msg = new ClearSpeedProfileMsg ();
-            messageQueue.AddMessage (msg.ToBytes ());
-        }
-
-
         private void ClearProfileButton_Click (object sender, RoutedEventArgs e)
         {
             foreach (var child in Motor1_Grid.Children)
@@ -72,32 +65,33 @@ namespace ShaftEncoders
             List<Point> expectedMotor2Profile = GenerateExpectedProfile (speed2, duration2);
 
             if (Motor1SpeedProfileView != null)
-                PlotArea.Remove (Motor1SpeedProfileView);
+                PlotAreaLeft.Remove (Motor1SpeedProfileView);
 
             if (Motor2SpeedProfileView != null)
-                PlotArea.Remove (Motor2SpeedProfileView);
+                PlotAreaRight.Remove (Motor2SpeedProfileView);
 
             Motor1SpeedProfileView = new LineView (expectedMotor1Profile);
             Motor1SpeedProfileView.Color = Brushes.Red;
-            PlotArea.Plot (Motor1SpeedProfileView);
+            PlotAreaLeft.Plot (Motor1SpeedProfileView);
 
             Motor2SpeedProfileView = new LineView (expectedMotor2Profile);
             Motor2SpeedProfileView.Color = Brushes.Green;
-            PlotArea.Plot (Motor2SpeedProfileView);
+            PlotAreaRight.Plot (Motor2SpeedProfileView);
 
-            PlotArea.RectangularGridOn = true;
-            PlotArea.AxesTight = true;
-            PlotArea.GetAxes (out double x1, out double x2, out double y1, out double y2);
+            PlotAreaLeft.RectangularGridOn = PlotAreaRight.RectangularGridOn = true;
+            PlotAreaLeft.AxesTight = PlotAreaRight.AxesTight = true;
+            PlotAreaLeft.GetAxes (out double x1, out double x2, out double y1, out double y2);
             y1 = -127; y2 = 127; 
-            PlotArea.SetAxes (x1, x2, y1, y2);
+            PlotAreaLeft.SetAxes (x1, x2, y1, y2);
+            PlotAreaRight.SetAxes (x1, x2, y1, y2);
         }
 
         //*******************************************************************************************************
 
         private void ClearPlotsButton_Click (object sender, RoutedEventArgs e)
         {
-            PlotArea.Clear ();
-            PlotArea2.Clear ();
+            PlotAreaLeft.Clear ();
+            PlotAreaRight.Clear ();
         }
 
         //*******************************************************************************************************
@@ -129,7 +123,21 @@ namespace ShaftEncoders
 
                 ClearRemoteProfileButton.IsEnabled = true;
                 TransferProfileButton.IsEnabled = true;
-                RunProfileButton.IsEnabled = true;
+            }
+
+            catch (Exception ex)
+            {
+                Print (string.Format ("Exception: {0}", ex.Message));
+            }
+        }
+
+        private void ClearRemoteProfileButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ClearSpeedProfileMsg msg = new ClearSpeedProfileMsg ();
+                messageQueue.AddMessage (msg.ToBytes ());
+                TransferProfileButton.IsEnabled = false;
             }
 
             catch (Exception ex)
@@ -144,6 +152,8 @@ namespace ShaftEncoders
             {
                 TransferSpeedProfileMsg msg = new TransferSpeedProfileMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
+
+                //RunProfileButton.IsEnabled = true;
             }
 
             catch (Exception ex)
@@ -158,6 +168,8 @@ namespace ShaftEncoders
             {
                 RunMotorsMsg msg = new RunMotorsMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
+
+                StartCollButton_Click (sender, e);
             }
 
             catch (Exception ex)
@@ -165,6 +177,20 @@ namespace ShaftEncoders
                 Print (string.Format ("Exception: {0}", ex.Message));
             }
         }
+
+        //private void StopProfileButton_Click (object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        StopProfileMsg msg = new StopProfileMsg ();
+        //        messageQueue.AddMessage (msg.ToBytes ());
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        Print (string.Format ("Exception: {0}", ex.Message));
+        //    }
+        //}
 
         private void SlowStopButton_Click (object sender, RoutedEventArgs e)
         {
@@ -194,18 +220,57 @@ namespace ShaftEncoders
             }
         }
 
-        private void SendMeasurementsButton_Click (object sender, RoutedEventArgs e)
-        {
-            //try
-            //{
-            //    SendFirstCollectionMsg msg = new SendFirstCollectionMsg ();
-            //    messageQueue.AddMessage (msg.ToBytes ());
-            //}
+        //*******************************************************************************************************
 
-            //catch (Exception ex)
-            //{
-            //    Print (string.Format ("Exception: {0}", ex.Message));
-            //}
+        
+        
+        
+
+        private void StartCollButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                encoderCounts.Clear ();
+
+                StartCollectionMsg msg = new StartCollectionMsg ();
+                messageQueue.AddMessage (msg.ToBytes ());
+            }
+
+            catch (Exception ex)
+            {
+                Print (string.Format ("Exception: {0}", ex.Message));
+            }
+        }
+
+
+        private void StopCollButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StopCollectionMsg msg = new StopCollectionMsg ();
+                messageQueue.AddMessage (msg.ToBytes ());
+            }
+
+            catch (Exception ex)
+            {
+                Print (string.Format ("Exception: {0}", ex.Message));
+            }
+        }
+
+
+
+        private void SendCountsButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SendCountsMsg msg = new SendCountsMsg ();
+                messageQueue.AddMessage (msg.ToBytes ());
+            }
+
+            catch (Exception ex)
+            {
+                Print (string.Format ("Exception: {0}", ex.Message));
+            }
         }
 
 

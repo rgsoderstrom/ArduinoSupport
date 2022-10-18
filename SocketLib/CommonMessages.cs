@@ -31,7 +31,8 @@ namespace SocketLib
     //*********************************************************************************************
     //
     // Header methods
-    //(int) Marshal.OffsetOf<Header> ("Sync")); // 
+    //(int) Marshal.OffsetOf<Header> ("Sync")); 
+    // 
     public partial class Header
     {
         static ushort NextSequenceNumber = 1;

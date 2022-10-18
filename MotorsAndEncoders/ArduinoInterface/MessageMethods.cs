@@ -123,10 +123,6 @@ namespace ArduinoInterface
             MessageId = (ushort) CommandMessageIDs.TransferSpeedProfile;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
-
-        //public TransferSpeedProfileMsg (byte[] fromBytes) : base (fromBytes)
-        //{
-        //}
     }
 
  //****************************************************************************************************************************
@@ -138,10 +134,17 @@ namespace ArduinoInterface
             MessageId = (ushort) CommandMessageIDs.RunMotors;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
+    }
 
-        //public RunMotorsMsg (byte[] fromBytes) : base (fromBytes)
-        //{
-        //}
+ //****************************************************************************************************************************
+
+    public partial class StopProfileMsg
+    {
+        public StopProfileMsg ()
+        {
+            MessageId = (ushort)CommandMessageIDs.StopProfile;
+            ByteCount = (ushort) Marshal.SizeOf (this);  
+        }
     }
 
  //****************************************************************************************************************************
@@ -168,28 +171,38 @@ namespace ArduinoInterface
             MessageId = (ushort) CommandMessageIDs.FastStopMotors;
             ByteCount = (ushort) Marshal.SizeOf (this);  
         }
-
-        //public FastStopMotorsMsg (byte[] fromBytes) : base (fromBytes)
-        //{
-        //}
     }
 
- //****************************************************************************************************************************
+    //****************************************************************************************************************************
 
-    //public partial class SendFirstCollectionMsg
-    //{
-    //    public SendFirstCollectionMsg ()
-    //    {
-    //        MessageId = (ushort)CommandMessageIDs.SendFirstCollection;
-    //        ByteCount = (ushort) Marshal.SizeOf (this);  
-    //    }
+    public partial class StartCollectionMsg
+    {
+        public StartCollectionMsg ()
+        {
+            MessageId = (ushort)CommandMessageIDs.StartCollection;
+            ByteCount = (ushort)Marshal.SizeOf (this);
+        }
+    }
 
-    //    public SendFirstCollectionMsg (byte[] fromBytes) : base (fromBytes)
-    //    {
-    //    }
-    //}
+    public partial class StopCollectionMsg
+    {
+        public StopCollectionMsg ()
+        {
+            MessageId = (ushort)CommandMessageIDs.StopCollection;
+            ByteCount = (ushort)Marshal.SizeOf (this);
+        }
+    }
 
- //****************************************************************************************************************************
+    public partial class SendCountsMsg
+    {
+        public SendCountsMsg ()
+        {
+            MessageId = (ushort)CommandMessageIDs.SendCounts;
+            ByteCount = (ushort)Marshal.SizeOf (this);
+        }
+    }
+
+    //****************************************************************************************************************************
 
     //public partial class SendNextCollectionMsg
     //{
@@ -389,118 +402,119 @@ namespace ArduinoInterface
 
     //*******************************************************************************************************
 
-    //public partial class EncoderCountsMessage
-    //{
-    //    public EncoderCountsMessage ()
-    //    {
-    //        header = new Header ();
-    //        data   = new Batch ();
+    public partial class EncoderCountsMessage
+    {
+        public EncoderCountsMessage ()
+        {
+            header = new Header ();
+            data   = new Batch ();
 
-    //        header.MessageId = (ushort) ArduinoMessageIDs.EncoderCountsMsgId;
+            header.MessageId = (ushort)ArduinoMessageIDs.EncoderCountsMsgId;
 
-    //        header.ByteCount = (ushort) (Marshal.SizeOf (header) +
-    //                                     Marshal.SizeOf (data.put) + Marshal.SizeOf (data.lastBatch) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
-    //    }
+            header.ByteCount = (ushort)(Marshal.SizeOf (header) +
+                                         Marshal.SizeOf (data.put) + Marshal.SizeOf (data.lastBatch) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
+        }
 
-    //    public EncoderCountsMessage (EncoderCountsMessage.Batch batch)
-    //    {
-    //        header = new Header ();
-    //        data   = batch;
+        public EncoderCountsMessage (EncoderCountsMessage.Batch batch)
+        {
+            header = new Header ();
+            data   = batch;
 
-    //        header.MessageId = (ushort) ArduinoMessageIDs.EncoderCountsMsgId;
+            header.MessageId = (ushort)ArduinoMessageIDs.EncoderCountsMsgId;
 
-    //        header.ByteCount = (ushort) (Marshal.SizeOf (header) +
-    //                                     Marshal.SizeOf (data.put) + Marshal.SizeOf (data.lastBatch) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
-    //    }
+            header.ByteCount = (ushort)(Marshal.SizeOf (header) +
+                                         Marshal.SizeOf (data.put) + Marshal.SizeOf (data.lastBatch) + Batch.MaxNumberSamples * Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ());
+        }
 
         //*****************************************************************************
 
-        //public bool IsLastBatch {get {return data.lastBatch != 0;} set {data.lastBatch = value == true ? (short) 1 : (short) 0;}}
+        public bool IsLastBatch {get {return data.lastBatch != 0;} 
+                                 set {data.lastBatch = value == true ? (short) 1 : (short) 0;}}
 
-        ////*****************************************************************************
+        //*****************************************************************************
 
-        //public bool Add (byte e1, byte e2)
-        //{
-        //    if (data.put < Batch.MaxNumberSamples)
-        //    {
-        //        data.counts [data.put].enc1 = e1;
-        //        data.counts [data.put].enc2 = e2;
-        //        data.put++;
-        //    }
+        public bool Add (byte e1, byte e2)
+        {
+            if (data.put < Batch.MaxNumberSamples)
+            {
+                data.counts [data.put].enc1 = e1;
+                data.counts [data.put].enc2 = e2;
+                data.put++;
+            }
 
-        //    return (data.put < Batch.MaxNumberSamples); // false when no more room
-        //}
+            return (data.put < Batch.MaxNumberSamples); // false when no more room
+        }
 
-        ////*****************************************************************************
+        //*****************************************************************************
 
-        //public void Clear ()
-        //{
-        //    data.put = 0;
-        //}
+        public void Clear ()
+        {
+            data.put = 0;
+        }
 
-        ////*****************************************************************************
+        //*****************************************************************************
 
-        //public EncoderCountsMessage (byte [] fromBytes)
-        //{
-        //    header  = new Header (fromBytes);
+        public EncoderCountsMessage (byte [] fromBytes)
+        {
+            header  = new Header (fromBytes);
 
-        //    int dataOffset = (int)Marshal.OffsetOf<EncoderCountsMessage> ("data");
+            int dataOffset = (int)Marshal.OffsetOf<EncoderCountsMessage> ("data");
 
-        //    data = new Batch ();
-        //    data.put  = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("put"));
-        //    data.lastBatch = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("more"));
+            data = new Batch ();
+            data.put  = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("put"));
+            data.lastBatch = BitConverter.ToInt16 (fromBytes, dataOffset + (int)Marshal.OffsetOf<Batch> ("lastBatch"));
 
-        //    int firstRecordStart = (int)Marshal.OffsetOf<Batch> ("counts");
+            int firstRecordStart = (int)Marshal.OffsetOf<Batch> ("counts");
 
-        //    int recordSize = (int)Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ();
+            int recordSize = (int)Marshal.SizeOf<EncoderCountsMessage.Batch.Sample> ();
 
-        //    for (int i = 0; i<Batch.MaxNumberSamples; i++)
-        //    {
-        //        int thisRecordStart = dataOffset + firstRecordStart + i * recordSize;
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
+            {
+                int thisRecordStart = dataOffset + firstRecordStart + i * recordSize;
 
-        //        data.counts [i].enc1 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc1")];
-        //        data.counts [i].enc2 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc2")];
-        //    }
-        //}
+                data.counts [i].enc1 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc1")];
+                data.counts [i].enc2 = fromBytes [thisRecordStart + (int)Marshal.OffsetOf<EncoderCountsMessage.Batch.Sample> ("enc2")];
+            }
+        }
 
-        //public byte [] ToBytes () // convert to byte stream to be sent out socket
-        //{
-        //    byte [] msgBytes = header.ToBytes ();
+        public byte [] ToBytes () // convert to byte stream to be sent out socket
+        {
+            byte [] msgBytes = header.ToBytes ();
 
-        //    List<byte> dataBytes = new List<byte> ();
-        //    dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.put));
-        //    dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.lastBatch));
+            List<byte> dataBytes = new List<byte> ();
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.put));
+            dataBytes.InsertRange (dataBytes.Count, BitConverter.GetBytes (data.lastBatch));
 
-        //    for (int i = 0; i<Batch.MaxNumberSamples; i++)
-        //    {
-        //        dataBytes.Add (data.counts [i].enc1);
-        //        dataBytes.Add (data.counts [i].enc2);
-        //    }
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
+            {
+                dataBytes.Add (data.counts [i].enc1);
+                dataBytes.Add (data.counts [i].enc2);
+            }
 
-        //    // append data bytes to header bytes
-        //    dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
+            // append data bytes to header bytes
+            dataBytes.CopyTo (msgBytes, Marshal.SizeOf (header));
 
-        //    return msgBytes;
-        //}
+            return msgBytes;
+        }
 
-    //    public override string ToString ()
-    //    {
-    //        string str = header.ToString ();
-    //        str += "put = " + data.put + '\n';
-    //        str += "last = " + data.lastBatch + '\n';
+        public override string ToString ()
+        {
+            string str = header.ToString ();
+            str += "put = " + data.put + '\n';
+            str += "last = " + data.lastBatch + '\n';
 
-    //        for (int i = 0; i<Batch.MaxNumberSamples; i++)
-    //        {
-    //            str += string.Format ("{0},  ", data.counts [i].enc1);
-    //            str += string.Format ("{0},  ", data.counts [i].enc2);
+            for (int i = 0; i<Batch.MaxNumberSamples; i++)
+            {
+                str += string.Format ("{0},  ", data.counts [i].enc1);
+                str += string.Format ("{0},  ", data.counts [i].enc2);
 
-    //            if (i<Batch.MaxNumberSamples - 1)
-    //                str += "\n";
-    //        }
+                if (i<Batch.MaxNumberSamples - 1)
+                    str += "\n";
+            }
 
-    //        return str;
-    //    }
-    //}
+            return str;
+        }
+    }
 
     //*******************************************************************************************************
 

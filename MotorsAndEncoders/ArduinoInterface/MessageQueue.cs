@@ -53,6 +53,8 @@ namespace ArduinoInterface
 
         //**********************************************************************
 
+        // called when an acknowledge message is received from Arduino
+
         public bool MessageAcknowledged (ushort seqNumber)
         {
             bool flag = sentSeqNumbers.Contains (seqNumber);
@@ -68,6 +70,8 @@ namespace ArduinoInterface
 
         //**********************************************************************
 
+        // set status to "not ready"
+
         public void ArduinoNotReady ()
         {
             arduinoReady = false;
@@ -75,8 +79,11 @@ namespace ArduinoInterface
 
         //**********************************************************************
 
+        // called when Arduino ready to accept a message
+
         public void ArduinoReady ()
         {
+            // if a message is waiting to go out, then send it
             if (pendingMessages.Count > 0)
             {
                 Byte [] nextMessage = pendingMessages.Dequeue ();

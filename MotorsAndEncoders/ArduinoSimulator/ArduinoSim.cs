@@ -100,6 +100,10 @@ namespace ArduinoSimulator
 
             switch (header.MessageId)
             {
+                case (ushort)CommandMessageIDs.SendCounts:
+                    SendEncoderCounts ();
+                    break;
+
                 case (ushort) CommandMessageIDs.SpeedProfileSegment:
                     {
                         SpeedProfileSegmentMsg rcvd = new SpeedProfileSegmentMsg (msgBytes);
@@ -117,6 +121,12 @@ namespace ArduinoSimulator
                     Console.WriteLine ("Clear Profile");
                     //encoders.ClearSpeedProfile ();
                     statusData.readyToRun = 0;
+                    thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
+                    break;
+
+                case (ushort)CommandMessageIDs.TransferSpeedProfile:
+                    Console.WriteLine ("Transfer profile");
+                    statusData.readyToRun = 1;
                     thisClientSocket.Send (new StatusMessage (statusData).ToBytes ());
                     break;
 
@@ -173,5 +183,46 @@ namespace ArduinoSimulator
             AcknowledgeMessage msg = new AcknowledgeMessage (hdr.SequenceNumber);
             thisClientSocket.Send (msg.ToBytes ());
         }
+
+        //****************************************************************************************
+
+        List<byte> encoder1 = new List<byte> ();
+        List<byte> encoder2 = new List<byte> ();
+        bool firstTime = true;
+        int get = 0;
+
+        private void SendEncoderCounts ()
+        { 
+            if (firstTime)
+            {
+                firstTime = false;
+
+                for (int i=0; i<100; i++)
+                {
+                    byte e1 = (byte) (120 * Math.Sin (2 * Math.PI * i * 7 / 100.0));
+                    byte e2 = (byte) (100 * Math.Sin (2 * Math.PI * i * 5 / 100.0));
+                    encoder1.Add (e1);
+                    encoder2.Add (e2);
+                }
+            }
+
+            EncoderCountsMessage msg = new EncoderCountsMessage ();
+
+            int count = encoder1.Count - get < EncoderCountsMessage.Batch.MaxNumberSamples
+                      ? encoder1.Count - get : EncoderCountsMessage.Batch.MaxNumberSamples;
+
+            for (int i = 0; i<count; i++)
+            {
+                msg.Add (encoder1 [get], encoder2 [get]);
+                get++;
+            }
+
+            if (get == encoder1.Count)
+                msg.IsLastBatch = true;
+
+            thisClientSocket.Send (msg.ToBytes ());
+        }
     }
 }
+
+

@@ -22,24 +22,23 @@ namespace ShaftEncoders
 
             try
             {
-                const double secondsPerSpeedStep = 0.05; // used to estimate time to transition between speeds
+                const double secondsPerSpeedStep = 1.0 / (2 * 20); // used to estimate time to transition between speeds
 
-                double prevEndTime = 0;
-                int prevSpeed = 0;
+                double prevEndTime = 0; // always start at (0, 0)
+                int    prevSpeed = 0;
 
                 for (int i = 0; i<speed.Count; i++)
                 {
-                    double startTime = prevEndTime + Math.Abs (speed [i] - prevSpeed) * secondsPerSpeedStep;
-                    profile.Add (new Point (startTime, speed [i]));
+                    double rampTime = Math.Abs (speed [i] - prevSpeed) * secondsPerSpeedStep;
+                    double levelTime = duration [i] - rampTime;
 
-                    if (duration [i] != 0)
-                    {
-                        double endTime = startTime + duration [i];
-                        profile.Add (new Point (endTime, speed [i]));
-                        prevEndTime = endTime;
-                    }
+                    if (levelTime < 0) levelTime = 0;
 
-                    prevSpeed = speed [i];
+                    profile.Add (new Point (prevEndTime + rampTime, speed [i]));
+                    profile.Add (new Point (prevEndTime + rampTime + levelTime, speed [i]));
+
+                    prevEndTime += duration [i];
+                    prevSpeed   = speed [i];
                 }
             }
 
