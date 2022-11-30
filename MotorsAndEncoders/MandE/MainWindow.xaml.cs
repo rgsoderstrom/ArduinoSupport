@@ -64,35 +64,35 @@ namespace ShaftEncoders
 
         private void Window_Loaded (object sender, RoutedEventArgs e)
         {
-            (Motor1_Grid.Children [0] as TextBox).Text = "70";
-            (Motor1_Grid.Children [1] as TextBox).Text = "2";
+            (Motor1_Grid.Children [0] as TextBox).Text = "66";
+            (Motor1_Grid.Children [1] as TextBox).Text = "7.11";
 
-            (Motor1_Grid.Children [2] as TextBox).Text = "102";
-            (Motor1_Grid.Children [3] as TextBox).Text = "4.6";
+            (Motor1_Grid.Children [2] as TextBox).Text = "19";
+            (Motor1_Grid.Children [3] as TextBox).Text = "3.28";     // outside dia = 48, t = 4.8 sec
 
-            (Motor1_Grid.Children [4] as TextBox).Text = "70";
-            (Motor1_Grid.Children [5] as TextBox).Text = "2";
+            (Motor1_Grid.Children [4] as TextBox).Text = "66";
+            (Motor1_Grid.Children [5] as TextBox).Text = "1.18";
 
-            (Motor1_Grid.Children [6] as TextBox).Text = "0";
-            (Motor1_Grid.Children [7] as TextBox).Text = "1";
+            (Motor1_Grid.Children [6] as TextBox).Text = "86";
+            (Motor1_Grid.Children [7] as TextBox).Text = "2.46";
 
-            //(Motor1_Grid.Children [8] as TextBox).Text = "50";
-            //(Motor1_Grid.Children [9] as TextBox).Text = "10";
+            (Motor1_Grid.Children [8] as TextBox).Text = "0";
+            (Motor1_Grid.Children [9] as TextBox).Text = "1";
 
-            (Motor2_Grid.Children [0] as TextBox).Text = "70";
-            (Motor2_Grid.Children [1] as TextBox).Text = "2";
+            (Motor2_Grid.Children [0] as TextBox).Text = "66";
+            (Motor2_Grid.Children [1] as TextBox).Text = "7.11";
 
-            (Motor2_Grid.Children [2] as TextBox).Text = "38";
-            (Motor2_Grid.Children [3] as TextBox).Text = "4.6";
+            (Motor2_Grid.Children [2] as TextBox).Text = "112";
+            (Motor2_Grid.Children [3] as TextBox).Text = "3.28";
 
-            (Motor2_Grid.Children [4] as TextBox).Text = "70";
-            (Motor2_Grid.Children [5] as TextBox).Text = "2";
+            (Motor2_Grid.Children [4] as TextBox).Text = "66";
+            (Motor2_Grid.Children [5] as TextBox).Text = "1.18";
 
-            (Motor2_Grid.Children [6] as TextBox).Text = "0";
-            (Motor2_Grid.Children [7] as TextBox).Text = "1";
+            (Motor2_Grid.Children [6] as TextBox).Text = "86";
+            (Motor2_Grid.Children [7] as TextBox).Text = "2.46";
 
-            //(Motor2_Grid.Children [8] as TextBox).Text = "-50";
-            //(Motor2_Grid.Children [9] as TextBox).Text = "5";
+            (Motor2_Grid.Children [8] as TextBox).Text = "0";
+            (Motor2_Grid.Children [9] as TextBox).Text = "1";
 
             PlotAreaLeft.DataAreaTitle = "Left";
             PlotAreaRight.DataAreaTitle = "Right";

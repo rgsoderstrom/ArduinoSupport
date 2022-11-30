@@ -52,6 +52,26 @@ namespace ShaftEncoders
 
         //*********************************************************************************************
 
+        // integrate profile to get the expected total number of steps
+        // profile [i].X = time in seconds
+        // profile [i].Y = speed at that time
+
+        private int IntegrateProfile (List<Point> profile)
+        {
+            int encoderCounts = 0;
+
+            for (int i=0; i<profile.Count - 1; i++)
+            {
+                double avg = 0.5 * (profile [i].Y + profile [i+1].Y);
+                double dur = (profile [i+1].X - profile [i].X) * 20;  // 
+                encoderCounts += (int) (avg * dur);
+            }
+
+            return encoderCounts;
+        }
+
+        //*********************************************************************************************
+
         // helper function to read values from OMI grid
 
         private void ReadProfileGrid (UIElementCollection children, ref List<int> speed, ref List<double> duration)
@@ -66,7 +86,7 @@ namespace ShaftEncoders
                     {
                         switch (tb.Tag)
                         {
-                            case "00":
+                            case "00": // row, col coords of text box in grid
                             case "10":
                             case "20":
                             case "30":

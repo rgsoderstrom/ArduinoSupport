@@ -64,6 +64,12 @@ namespace ShaftEncoders
             List<Point> expectedMotor1Profile = GenerateExpectedProfile (speed1, duration1);
             List<Point> expectedMotor2Profile = GenerateExpectedProfile (speed2, duration2);
 
+            int Motor1Count = IntegrateProfile (expectedMotor1Profile);
+            int Motor2Count = IntegrateProfile (expectedMotor2Profile);
+
+            Print (string.Format ("Left total counts =  {0}", Motor1Count));
+            Print (string.Format ("Right total counts =  {0}", Motor2Count));
+
             if (Motor1SpeedProfileView != null)
                 PlotAreaLeft.Remove (Motor1SpeedProfileView);
 
