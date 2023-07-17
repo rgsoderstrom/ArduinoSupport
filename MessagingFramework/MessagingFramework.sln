@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loopback", "Loopback\Loopback.csproj", "{DD3F555E-D943-4965-B3C2-6882A909B4CC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82} = {1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631} = {76C3C000-45AB-47EE-8FC5-64DAE85F4631}
+		{AF798B0E-305B-4C9D-8A70-22F2AC4AF695} = {AF798B0E-305B-4C9D-8A70-22F2AC4AF695}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoInterface", "ArduinoInterface\ArduinoInterface.csproj", "{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}"
+	ProjectSection(ProjectDependencies) = postProject
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631} = {76C3C000-45AB-47EE-8FC5-64DAE85F4631}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{239AA3CB-52A1-4031-869D-01F14A69D9CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{032A01BB-2165-41F7-92E8-DA0773597FCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoSimulator", "ArduinoSimulator\ArduinoSimulator.csproj", "{AF798B0E-305B-4C9D-8A70-22F2AC4AF695}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82} = {1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631} = {76C3C000-45AB-47EE-8FC5-64DAE85F4631}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocketLibrary", "SocketLibrary\SocketLibrary.csproj", "{76C3C000-45AB-47EE-8FC5-64DAE85F4631}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DD3F555E-D943-4965-B3C2-6882A909B4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD3F555E-D943-4965-B3C2-6882A909B4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD3F555E-D943-4965-B3C2-6882A909B4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD3F555E-D943-4965-B3C2-6882A909B4CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0AF2A8-CE0C-469D-AA54-A10CED0C6A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{032A01BB-2165-41F7-92E8-DA0773597FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032A01BB-2165-41F7-92E8-DA0773597FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032A01BB-2165-41F7-92E8-DA0773597FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032A01BB-2165-41F7-92E8-DA0773597FCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF798B0E-305B-4C9D-8A70-22F2AC4AF695}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF798B0E-305B-4C9D-8A70-22F2AC4AF695}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF798B0E-305B-4C9D-8A70-22F2AC4AF695}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF798B0E-305B-4C9D-8A70-22F2AC4AF695}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76C3C000-45AB-47EE-8FC5-64DAE85F4631}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90CB52FE-02B3-4EA9-88FB-6A879DD5E9A4}
+	EndGlobalSection
+EndGlobal
