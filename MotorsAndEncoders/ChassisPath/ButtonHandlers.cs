@@ -58,7 +58,6 @@ namespace ChassisPath
                 ExpectedPathPlot.AxesEqual = true;
                 ExpectedPathPlot.RectangularGridOn = true;
 
-                ClearEncoderCounts ();
 
                 // read grid of requested course segments
                 List<Chassis.RequestedCourseLeg> RequestedCourse = ReadRequestedCourse ();
@@ -111,9 +110,7 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("SendProfileButton_Click");
 
-                ClearRemoteProfileButton_Click (null, null); 
 
                 List<SpeedProfile.SpeedSegment> speeds = MobileChassis.SpeedProfile.SpeedSegments;
 
@@ -140,7 +137,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("ClearRemoteProfileButton_Click");
 
                 ClearSpeedProfileMsg msg = new ClearSpeedProfileMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -157,7 +153,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("TransferProfileButton_Click");
 
                 TransferSpeedProfileMsg msg = new TransferSpeedProfileMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -175,7 +170,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("RunProfileButton_Click");
 
                 RunMotorsMsg msg = new RunMotorsMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -221,7 +215,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("FastStopButton_Click");
 
                 FastStopMotorsMsg msg = new FastStopMotorsMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -239,9 +232,8 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("StartCollButton_Click");
 
-                ClearEncoderCounts ();
+                encoderCounts.Clear ();
 
                 StartCollectionMsg msg = new StartCollectionMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -258,7 +250,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("StopCollButton_Click");
 
                 StopCollectionMsg msg = new StopCollectionMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
@@ -276,7 +267,6 @@ namespace ChassisPath
         {
             try
             {
-                EventLog.WriteLine ("SendCountsButton_Click");
 
                 SendCountsMsg msg = new SendCountsMsg ();
                 messageQueue.AddMessage (msg.ToBytes ());
