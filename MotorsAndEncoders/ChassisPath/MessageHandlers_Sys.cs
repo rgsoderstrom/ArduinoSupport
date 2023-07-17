@@ -33,7 +33,8 @@ namespace ChassisPath
 
                 ushort MsgId  = BitConverter.ToUInt16 (msgBytes, (int)Marshal.OffsetOf<SocketLib.Header> ("MessageId"));
 
-                Print ("Received msg ID: " + MsgId);
+                ArduinoMessageIDs msgName = (ArduinoMessageIDs) MsgId;
+                EventLog.WriteLine ("Received msg ID: " + msgName.ToString ());
 
                 switch (MsgId)
                 {
@@ -42,7 +43,12 @@ namespace ChassisPath
                     case (ushort) ArduinoMessageIDs.AcknowledgeMsgId:   AcknowledgeMessageHandler   (msgBytes); break;
                     case (ushort) ArduinoMessageIDs.EncoderCountsMsgId: EncoderCountsMessageHandler (msgBytes); break;
 
-                    default: Print ("Unrecognized message ID"); break;
+                    default: Print ("Unrecognized message ID: " + MsgId);
+                             //Print (msgBytes [0].ToString ());
+                             //Print (msgBytes [1].ToString ());
+                             //Print (msgBytes [2].ToString ());
+                             //Print (msgBytes [3].ToString ());
+                             break;
                 }
             }
 

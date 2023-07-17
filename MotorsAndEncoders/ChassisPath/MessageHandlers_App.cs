@@ -25,8 +25,8 @@ namespace ChassisPath
             StatusMessage msg = new StatusMessage (msgBytes);
             StatusMessage.StatusData data = msg.data;
 
-            Print ("Status from " + msg.data.Name);
-            Print (msg.ToString ());
+            //Print ("Status from " + msg.data.Name);
+            //Print (msg.ToString ());
 
             //
             // set message queue status
@@ -74,27 +74,30 @@ namespace ChassisPath
 
         //*******************************************************************************************************
 
-        List<EncoderCountsMessage.Batch.Sample> encoderCounts = new List<EncoderCountsMessage.Batch.Sample> ();
+        //List<EncoderCountsMessage.Batch.Sample> encoderCounts = new List<EncoderCountsMessage.Batch.Sample> ();
+        List<Point> points1 = new List<Point> ();
+        List<Point> points2 = new List<Point> ();
+        LineView line1 = null;
+        LineView line2 = null;
+
+        double encoderCountsTime = 0;
+
+        private void ClearEncoderCounts ()
+        {
+            //encoderCounts.Clear ();
+            points1.Clear ();
+            points2.Clear ();
+            encoderCountsTime = 0;    
+            SpeedProfilePlot.RectangularGridOn = true;
+        }
 
         private void EncoderCountsMessageHandler (byte [] msgBytes)
         {
             EncoderCountsMessage msg = new EncoderCountsMessage (msgBytes);
 
-            //for (int i=0; i<16; i++)
-            //{
-            //    string cbuf = string.Format ("{0}, {1}", (int) msg.data.counts [i].enc1, (int) msg.data.counts [i].enc2);
-            //    Print (cbuf);
-            //}
+            PlotEncoderCounts (msg);
 
-            ExtractEncoderCounts (msg);
-
-            if (msg.data.lastBatch != 0 || encoderCounts.Count > 2000)
-            {
-                PlotSpeeds ();
-                encoderCounts.Clear ();
-            }
-
-            else
+            if (msg.data.lastBatch == 0)
             {
                 SendCountsMsg msg2 = new SendCountsMsg ();
                 messageQueue.AddMessage (msg2.ToBytes ());
@@ -104,52 +107,21 @@ namespace ChassisPath
         //*******************************************************************************************************
         //*******************************************************************************************************
 
-        private void ExtractEncoderCounts (EncoderCountsMessage msg)
+        private void PlotEncoderCounts (EncoderCountsMessage msg)
         {
+            List<double> VelTimes = new List<double> ();
+            List<double> Vel1 = new List<double> ();
+            List<double> Vel2 = new List<double> ();
+
             for (int i = 0; i<msg.data.put; i++)
             {
-                encoderCounts.Add (msg.data.counts [i]);
-            }
-        }
+                VelTimes.Add (encoderCountsTime + i / 20.0); // 20 samples per second
 
-        List<double> VelTimes = new List<double> ();
-        List<double> Vel1 = new List<double> ();
-        List<double> Vel2 = new List<double> ();
-
-        private void PlotSpeeds ()
-        {
-            int enc1Total = 0, enc2Total = 0;
-
-            for (int i = 0; i<encoderCounts.Count; i++)
-            {
-                enc1Total += (sbyte) encoderCounts [i].enc1;
-                enc2Total += (sbyte) encoderCounts [i].enc2;
+                Vel1.Add ((sbyte) msg.data.counts [i].enc1);
+                Vel2.Add ((sbyte) msg.data.counts [i].enc2);
             }
 
-
-            Print (encoderCounts.Count.ToString () + " samples");
-            Print (string.Format ("{0}, {1} total counts each", enc1Total, enc2Total));
-
-
-            //PlotArea.Clear ();
-            SpeedProfilePlot.RectangularGridOn = true;
-
-            if (encoderCounts.Count < 2) return;
-
-            VelTimes.Clear ();
-            Vel1.Clear ();
-            Vel2.Clear ();
-
-            for (int i = 0; i<encoderCounts.Count; i++)
-            {
-                VelTimes.Add (i / 20.0); // 20 samples per second
-
-                Vel1.Add ((sbyte) encoderCounts [i].enc1);
-                Vel2.Add ((sbyte) encoderCounts [i].enc2);
-            }
-
-            List<Point> points1 = new List<Point> ();
-            List<Point> points2 = new List<Point> ();
+            encoderCountsTime += msg.data.put / 20.0;
 
             for (int i = 0; i<VelTimes.Count; i++)
             {
@@ -157,21 +129,18 @@ namespace ChassisPath
                 points2.Add (new Point (VelTimes [i], -1 * Vel2 [i]));
             }
 
-            LineView line1 = new LineView (points2);
-            LineView line2 = new LineView (points1);
-            //line1.Size = 0.1;
-            line1.Color = Brushes.Green;
-            line2.Color = Brushes.Red;
+            if (line1 != null) SpeedProfilePlot.Remove (line1);
+            if (line2 != null) SpeedProfilePlot.Remove (line2);
+
+            line1 = new LineView (points2);
+            line2 = new LineView (points1);
+
+            line1.Color = Brushes.Red;
+            line2.Color = Brushes.Green;
 
             SpeedProfilePlot.Plot (line1);
             SpeedProfilePlot.Plot (line2);
-
-            //foreach (Point pt in points1)
-            // Print (pt.X.ToString () + ", " + pt.Y.ToString ());
-
-            //PlotArea.GetAxes ()
         }
-
     }
 }
 
