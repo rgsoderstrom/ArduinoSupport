@@ -48,17 +48,17 @@ namespace MessageGenerator
 
         static internal void CharToBytes (string name, List<string> results)
         {
-            results.Add ("    byteArray [put++] = data." + name + ";");
             results.Add ("");
+            results.Add ("    byteArray [put++] = data." + name + ";");
         }
 
         static internal void CharArrayToBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + max + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = data." + name + " [i];");
             results.Add ("    }");
-            results.Add ("");
         }
 
         //**********************************************************************
@@ -68,34 +68,35 @@ namespace MessageGenerator
 
         static internal void IntToBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("    byteArray [put++] = data." + name + ";");
             results.Add ("    byteArray [put++] = data." + name + " >> 8;");
-            results.Add ("");
         }
 
         static internal void IntArrayToBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + max + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = data." + name + " [i];");
             results.Add ("        byteArray [put++] = data." + name + " [i] >> 8;");
             results.Add ("    }");           
-            results.Add ("");
         }
 
         //**********************************************************************
 
         static internal void FloatToBytes (string memberVariable, List<string> results)
         {
+            results.Add ("");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + ") >>  0)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + ") >>  8)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + ") >> 16)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + ") >> 24)  & 0xff;");
-            results.Add ("");
         }
 
         static internal void FloatArrayToBytes (string memberVariable, string Count, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + Count + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + " [i]) >>  0)  & 0xff;");
@@ -103,7 +104,6 @@ namespace MessageGenerator
             results.Add ("        byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + " [i]) >> 16)  & 0xff;");
             results.Add ("        byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + " [i]) >> 24)  & 0xff;");
             results.Add ("    }");
-            results.Add ("");
         }
 
         //static internal void FloatToBytes (string structureVariable, string memberVariable, List<string> results)
@@ -142,6 +142,7 @@ namespace MessageGenerator
         //
         static internal void SampleToBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc1) >>  0)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc1) >>  8)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc1) >> 16)  & 0xff;");
@@ -151,11 +152,11 @@ namespace MessageGenerator
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc2) >>  8)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc2) >> 16)  & 0xff;");
             results.Add ("    byteArray [put++] = (*((unsigned long *) &data." + name + ".enc2) >> 24)  & 0xff;");
-            results.Add ("");
         }
 
         static internal void SampleArrayToBytes (string name, string Count, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + Count + "; i++)");
             results.Add ("    {");
 
@@ -170,7 +171,6 @@ namespace MessageGenerator
             results.Add ("        byteArray [put++] = (*((unsigned long *) &data." + name + " [i].enc2) >> 24)  & 0xff;");
 
             results.Add ("    }");
-            results.Add ("");
         }
     }
 }

@@ -46,28 +46,28 @@ namespace MessageGenerator
 
         static internal void CharToBytes (string name, List<string> results)
         {
-            results.Add ("            byteList.Insert (byteList.Count, (byte) data." + name + ");");
             results.Add ("");
+            results.Add ("            byteList.Insert (byteList.Count, (byte) data." + name + ");");
         }
 
         static internal void CharArrayToBytes (string name, string max, List<string> results)
         {
-            results.Add ("            byteList.InsertRange (byteList.Count, Encoding.ASCII.GetBytes (data." + name + "));");
             results.Add ("");
+            results.Add ("            byteList.InsertRange (byteList.Count, Encoding.ASCII.GetBytes (data." + name + "));");
         }
 
         //**********************************************************************
 
         static internal void ByteToBytes (string name, List<string> results)
         {
-            results.Add ("            byteList.Insert (byteList.Count, data." + name + ");");
             results.Add ("");
+            results.Add ("            byteList.Insert (byteList.Count, data." + name + ");");
         }
 
         static internal void ByteArrayToBytes (string name, string max, List<string> results)
         {
-            results.Add ("            byteList.InsertRange (byteList.Count, data." + name + ");");
             results.Add ("");
+            results.Add ("            byteList.InsertRange (byteList.Count, data." + name + ");");
         }
 
         //**********************************************************************
@@ -77,53 +77,53 @@ namespace MessageGenerator
 
         static internal void IntToBytes (string name, List<string> results)
         {
-            results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + "));");
             results.Add ("");
+            results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + "));");
         }
 
         static internal void IntArrayToBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("            for (int i=0; i<" + max + "; i++)");
             results.Add ("            {");
             results.Add ("                byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + " [i]));");
             results.Add ("            }");           
-            results.Add ("");
         }
 
         //**********************************************************************
 
         static internal void FloatToBytes (string name, List<string> results)
         {
-            results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + "));");
             results.Add ("");
+            results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + "));");
         }
 
         static internal void FloatArrayToBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("            for (int i=0; i<" + max + "; i++)");
             results.Add ("            {");
             results.Add ("                byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + " [i]));");
             results.Add ("            }");           
-            results.Add ("");
         }
 
         //**********************************************************************
 
         static internal void SampleToBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + ".enc1));");
             results.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + ".enc2));");
-            results.Add ("");
         }
 
         static internal void SampleArrayToBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("            for (int i=0; i<" + max + "; i++)");
             results.Add ("            {");
             results.Add ("                byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + " [i].enc1));");
             results.Add ("                byteList.InsertRange (byteList.Count, BitConverter.GetBytes (data." + name + " [i].enc2));");
             results.Add ("            }");           
-            results.Add ("");
         }
     }
 }

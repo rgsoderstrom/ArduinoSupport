@@ -44,17 +44,17 @@ namespace MessageGenerator
 
         static internal void CharFromBytes (string name, List<string> results)
         {
-            results.Add ("    data." + name + " = msgBytes [get]; get += 1;");
             results.Add ("");
+            results.Add ("    data." + name + " = msgBytes [get]; get += 1;");
         }
 
         static internal void CharArrayFromBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + max + "; i++)");
             results.Add ("    {");
             results.Add ("         data." + name + " [i] = msgBytes [get]; get += 1;");
             results.Add ("    }");
-            results.Add ("");
         }
 
         //**********************************************************************
@@ -64,37 +64,38 @@ namespace MessageGenerator
 
         static internal void IntFromBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("    *(((byte *) &data." + name + ") + 0) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ") + 1) = msgBytes [get]; get += 1;");
-            results.Add ("");
         }
 
         static internal void IntArrayFromBytes (string name, string max, List<string> results)
         {
-            results.Add ("     for (int i=0; i<data." + max + "; i++)");
-            results.Add ("     {");
-            results.Add ("         *(((byte *) &data." + name + " [i]) + 0) = msgBytes [get]; get += 1;");
-            results.Add ("         *(((byte *) &data." + name + " [i]) + 1) = msgBytes [get]; get += 1;");
-            results.Add ("     }");           
             results.Add ("");
+            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    {");
+            results.Add ("        *(((byte *) &data." + name + " [i]) + 0) = msgBytes [get]; get += 1;");
+            results.Add ("        *(((byte *) &data." + name + " [i]) + 1) = msgBytes [get]; get += 1;");
+            results.Add ("    }");           
         }
 
         //**********************************************************************
 
-        // int index      
-        // int index [8]
+        // float name;      
+        // float name [8];
 
         static internal void FloatFromBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("    *(((byte *) &data." + name + ") + 0) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ") + 1) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ") + 2) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ") + 3) = msgBytes [get]; get += 1;");            
-            results.Add ("");
         }
 
         static internal void FloatArrayFromBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + max + "; i++)");
             results.Add ("    {");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 0) = msgBytes [get]; get += 1;");
@@ -102,10 +103,11 @@ namespace MessageGenerator
             results.Add ("        *(((byte *) &data." + name + " [i]) + 2) = msgBytes [get]; get += 1;");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 3) = msgBytes [get]; get += 1;");
             results.Add ("    }");
-            results.Add ("");
         }
 
         //**********************************************************************
+
+        // Custom code for this structure
 
         // struct Sample
         // {
@@ -120,6 +122,7 @@ namespace MessageGenerator
         
         static internal void SampleFromBytes (string name, List<string> results)
         {
+            results.Add ("");
             results.Add ("    *(((byte *) &data." + name + ".enc1) + 0) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ".enc1) + 1) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ".enc1) + 2) = msgBytes [get]; get += 1;");
@@ -128,11 +131,11 @@ namespace MessageGenerator
             results.Add ("    *(((byte *) &data." + name + ".enc2) + 1) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ".enc2) + 2) = msgBytes [get]; get += 1;");
             results.Add ("    *(((byte *) &data." + name + ".enc2) + 3) = msgBytes [get]; get += 1;");            
-            results.Add ("");
         }
 
         static internal void SampleArrayFromBytes (string name, string max, List<string> results)
         {
+            results.Add ("");
             results.Add ("    for (int i=0; i<data." + max + "; i++)");
             results.Add ("    {");
             results.Add ("        *(((byte *) &data." + name + " [i].enc1) + 0) = msgBytes [get]; get += 1;");
@@ -144,7 +147,6 @@ namespace MessageGenerator
             results.Add ("        *(((byte *) &data." + name + " [i].enc2) + 2) = msgBytes [get]; get += 1;");
             results.Add ("        *(((byte *) &data." + name + " [i].enc2) + 3) = msgBytes [get]; get += 1;");
             results.Add ("    }");
-            results.Add ("");
         }
 
     }
