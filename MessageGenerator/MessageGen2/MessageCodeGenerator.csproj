@@ -37,11 +37,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CppCpp_FromBytes.cs" />
+    <Compile Include="CppCpp_Include.cs" />
     <Compile Include="CppCpp_ToBytes.cs" />
+    <Compile Include="CppCpp_ToConsole.cs" />
     <Compile Include="CppCs_FromBytes.cs" />
     <Compile Include="CppCs_ToBytes.cs" />
     <Compile Include="MessageCodeGenerator.cs" />
+    <Compile Include="MessCodeGen2.cs" />
     <Compile Include="MsgGenBase.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Common">

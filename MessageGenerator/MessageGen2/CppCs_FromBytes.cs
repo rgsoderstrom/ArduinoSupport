@@ -1,15 +1,16 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace MessageGenerator
 {
-    internal class CppCs_FromBytes : MsgGenBase
+    partial class MessageCodeGenerator //: MsgGenBase
     {
         //
         // Dictionary of custom methods to handle built-in types
         //
-        static Dictionary<string, BuiltInTypeToFromBytes> CToByteRules = new Dictionary<string, BuiltInTypeToFromBytes> ()
+        static Dictionary<string,VariableTypeToFromBytes> CsFromByteRules = new Dictionary<string, VariableTypeToFromBytes> ()
         {
             {"char",  CharFromBytes},
             {"byte",  ByteFromBytes},
@@ -20,7 +21,7 @@ namespace MessageGenerator
             {"Sample", SampleFromBytes},
         };
 
-        static Dictionary<string, BuiltInTypeArrayToFromBytes> CArrayToByteRules = new Dictionary<string, BuiltInTypeArrayToFromBytes> ()
+        static Dictionary<string, VariableTypeArrayToFromBytes> CsArrayFromByteRules = new Dictionary<string, VariableTypeArrayToFromBytes> ()
         {
             {"char",  CharArrayFromBytes},
             {"byte",  ByteArrayFromBytes},
@@ -30,9 +31,13 @@ namespace MessageGenerator
             {"float", FloatArrayFromBytes},
             {"Sample", SampleArrayFromBytes},
         };
-        
-        internal CppCs_FromBytes (List<string> members) : base (members, CToByteRules, CArrayToByteRules)
+
+        static void CppCs_FromBytes (StreamWriter sw, string msgName, List<string []> memberTokens) //: base (members, CToByteRules, CArrayToByteRules)
         {
+            List<string> code = CodeGenerator_Variables (memberTokens, CsFromByteRules, CsArrayFromByteRules);
+
+            foreach (string str in code)
+                sw.WriteLine (str);
         }
 
         //**********************************************************************
@@ -85,7 +90,7 @@ namespace MessageGenerator
         static internal void IntFromBytes (string name, List<string> results)
         {
             results.Add ("");
-            results.Add ("            data." + name + " = BitConverter.ToInt16 (fromBytes, byteIndex); byteIndex += 2;");           
+            results.Add ("            data." + name + " = BitConverter.ToInt16 (fromBytes, byteIndex); byteIndex += 2;");
         }
 
         static internal void IntArrayFromBytes (string name, string max, List<string> results)
@@ -102,7 +107,7 @@ namespace MessageGenerator
         static internal void UIntFromBytes (string name, List<string> results)
         {
             results.Add ("");
-            results.Add ("            data." + name + " = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");           
+            results.Add ("            data." + name + " = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
         }
 
         static internal void UIntArrayFromBytes (string name, string max, List<string> results)
@@ -119,7 +124,7 @@ namespace MessageGenerator
         static internal void FloatFromBytes (string name, List<string> results)
         {
             results.Add ("");
-            results.Add ("            data." + name + " = BitConverter.ToSingle (fromBytes, byteIndex); byteIndex += 4;");            
+            results.Add ("            data." + name + " = BitConverter.ToSingle (fromBytes, byteIndex); byteIndex += 4;");
         }
 
         static internal void FloatArrayFromBytes (string name, string max, List<string> results)
