@@ -1,6 +1,6 @@
 ﻿
 //
-// CppCpp_ToConsole - C++ code in and C++ code out
+// Cpp_ToConsole - C++ code in and C++ code out
 //
 
 using System.Collections.Generic;
@@ -8,12 +8,14 @@ using System.IO;
 
 namespace MessageGenerator
 {
-    partial class MessageCodeGenerator
+    public class Cpp_ToConsole
     {
+        public List<string> MethodText { get; protected set; } = new List<string> ();
+
         //
         // Dictionary of methods to handle the different types
         //
-        static Dictionary<string, VariableTypeToFromBytes> CppToConsoleRules = new Dictionary<string, VariableTypeToFromBytes> ()
+        private Dictionary<string, VariableTypeToCode> CppToConsoleRules = new Dictionary<string, VariableTypeToCode> ()
         {
             {"char",           VarToConsole},
             {"unsigned char",  VarToConsole},
@@ -26,7 +28,7 @@ namespace MessageGenerator
             //{"Sample", SampleToConsole},
         };
 
-        static Dictionary<string, VariableTypeArrayToFromBytes> CppArrayToConsoleRules = new Dictionary<string, VariableTypeArrayToFromBytes> ()
+        Dictionary<string, VariableTypeArrayToCode> CppArrayToConsoleRules = new Dictionary<string, VariableTypeArrayToCode> ()
         {
             {"char",           VarArrayToConsole},
             {"unsigned char",  VarArrayToConsole},
@@ -42,19 +44,27 @@ namespace MessageGenerator
 
         // ctor
 
-        static internal void CppCpp_ToConsole (StreamWriter sw, string msgName, List<string []> memberTokens) // : base (members, CToByteRules, CArrayToByteRules)
+        public Cpp_ToConsole (string msgName, List<string []> memberTokens)
         {
-            sw.WriteLine ("");
-            sw.WriteLine ("// member function ToConsole () - write message content to serial port");
-            sw.WriteLine ("void " + msgName + "::ToConsole ()");
-            sw.Write ("{");
+            MethodText.Add ("");
+            MethodText.Add ("//");
+            MethodText.Add ("// member function ToConsole () - write message content to serial port");
+            MethodText.Add ("//");
+            MethodText.Add ("void " + msgName + "::ToConsole ()");
+            MethodText.Add ("{");
 
-            List<string> code = CodeGenerator_Variables (memberTokens, CppToConsoleRules, CppArrayToConsoleRules);
+            List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, CppToConsoleRules, CppArrayToConsoleRules);
 
             foreach (string str in code)
-                sw.WriteLine (str);
+                MethodText.Add (str);
 
-            sw.WriteLine ("}");
+            MethodText.Add ("}");
+        }
+
+        public Cpp_ToConsole (StreamWriter sw, string msgName, List<string []> memberTokens) : this (msgName, memberTokens)
+        {
+            foreach (string str in MethodText)
+                sw.WriteLine (str);
         }
 
         //**********************************************************************
@@ -62,17 +72,19 @@ namespace MessageGenerator
         // char qwerty;       
         // char qwe [8]       
 
-        static private void VarToConsole (string name, List<string> results)
+        static void VarToConsole (string name, List<string> results)
         {
             results.Add ("");
             results.Add ("    Serial.print   (\"" + name + " = \"" + ");");
             results.Add ("    Serial.println (data." + name + ");");
         }
 
-        static private void VarArrayToConsole (string name, string max, List<string> results)
+        static void VarArrayToConsole (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        Serial.print   (\"" + name + " [\"" + ");");
             results.Add ("        Serial.print   (i);");

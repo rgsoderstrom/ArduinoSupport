@@ -1,6 +1,6 @@
 ﻿
 //
-// CppCpp_FromBytes
+// Cpp_FromBytes.cs
 //
 
 using System.Collections.Generic;
@@ -8,12 +8,14 @@ using System.IO;
 
 namespace MessageGenerator
 {
-    internal partial class MessageCodeGenerator
+    public class Cpp_FromBytes
     {
+        public List<string> MethodText { get; protected set; } = new List<string> ();
+
         //
         // Dictionary of methods to handle various types
         //
-        static Dictionary<string, VariableTypeToFromBytes> CFromByteRules = new Dictionary<string, VariableTypeToFromBytes> ()
+        static Dictionary<string, VariableTypeToCode> FromByteRules = new Dictionary<string, VariableTypeToCode> ()
         {
             {"char",           OneByteType_FromBytes},
             {"byte",           OneByteType_FromBytes},
@@ -27,7 +29,7 @@ namespace MessageGenerator
          //   {"Sample", SampleFromBytes},
         };
 
-        static Dictionary<string, VariableTypeArrayToFromBytes> CArrayFromByteRules = new Dictionary<string, VariableTypeArrayToFromBytes> ()
+        static Dictionary<string, VariableTypeArrayToCode> ArrayFromByteRules = new Dictionary<string, VariableTypeArrayToCode> ()
         {
             {"char",           OneByteTypeArray_FromBytes},
             {"unsigned char",  OneByteTypeArray_FromBytes},
@@ -40,29 +42,37 @@ namespace MessageGenerator
 
         //**********************************************************************
 
-        // was ctor
+        // ctor
 
-        static void CppCpp_FromBytes (StreamWriter sw, string msgName, List<string []> memberTokens)
+        public Cpp_FromBytes (string msgName, List<string []> memberTokens)
         {
-            sw.WriteLine ("");
-            sw.WriteLine ("// from-bytes constructor");
-            sw.WriteLine (msgName + "::" + msgName + " (byte *msgBytes)");
-            sw.WriteLine ("{");
-            sw.WriteLine ("    memset (this, 0, sizeof (" + msgName + "));");
-            sw.WriteLine ("");
-            sw.WriteLine ("    header.Sync           = (msgBytes [1] << 8) | msgBytes [0];");
-            sw.WriteLine ("    header.ByteCount      = (msgBytes [3] << 8) | msgBytes [2];");
-            sw.WriteLine ("    header.MsgId          = (msgBytes [5] << 8) | msgBytes [4];");
-            sw.WriteLine ("    header.SequenceNumber = (msgBytes [7] << 8) | msgBytes [6];");
-            sw.WriteLine ("");
-            sw.WriteLine ("    int get = 8;");
+            MethodText.Add ("");
+            MethodText.Add ("//");
+            MethodText.Add ("// from-bytes constructor");
+            MethodText.Add ("//");
+            MethodText.Add (msgName + "::" + msgName + " (byte *msgBytes)");
+            MethodText.Add ("{");
+            MethodText.Add ("    memset (this, 0, sizeof (" + msgName + "));");
+            MethodText.Add ("");
+            MethodText.Add ("    header.Sync           = (msgBytes [1] << 8) | msgBytes [0];");
+            MethodText.Add ("    header.ByteCount      = (msgBytes [3] << 8) | msgBytes [2];");
+            MethodText.Add ("    header.MsgId          = (msgBytes [5] << 8) | msgBytes [4];");
+            MethodText.Add ("    header.SequenceNumber = (msgBytes [7] << 8) | msgBytes [6];");
+            MethodText.Add ("");
+            MethodText.Add ("    int get = 8;");
 
-            List<string> code = CodeGenerator_Variables (memberTokens, CFromByteRules, CArrayFromByteRules);
+            List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, FromByteRules, ArrayFromByteRules);
 
             foreach (string str in code)
-                sw.WriteLine (str);
+                MethodText.Add (str);
 
-            sw.WriteLine ("}");
+            MethodText.Add ("}");
+        }
+
+        public Cpp_FromBytes (StreamWriter sw, string msgName, List<string []> memberTokens) : this (msgName, memberTokens)
+        {
+            foreach (string str in MethodText)
+                sw.WriteLine (str);
         }
 
         //**********************************************************************
@@ -76,10 +86,12 @@ namespace MessageGenerator
             results.Add ("    data." + name + " = msgBytes [get]; get += 1;");
         }
 
-        static private void OneByteTypeArray_FromBytes (string name, string max, List<string> results)
+        static private void OneByteTypeArray_FromBytes (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("         data." + name + " [i] = msgBytes [get]; get += 1;");
             results.Add ("    }");
@@ -97,10 +109,12 @@ namespace MessageGenerator
             results.Add ("    *(((byte *) &data." + name + ") + 1) = msgBytes [get]; get += 1;");
         }
 
-        static private void TwoByteTypeArray_FromBytes (string name, string max, List<string> results)
+        static private void TwoByteTypeArray_FromBytes (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 0) = msgBytes [get]; get += 1;");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 1) = msgBytes [get]; get += 1;");
@@ -121,10 +135,12 @@ namespace MessageGenerator
             results.Add ("    *(((byte *) &data." + name + ") + 3) = msgBytes [get]; get += 1;");
         }
 
-        static private void FourByteTypeArray_FromBytes (string name, string max, List<string> results)
+        static private void FourByteTypeArray_FromBytes (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 0) = msgBytes [get]; get += 1;");
             results.Add ("        *(((byte *) &data." + name + " [i]) + 1) = msgBytes [get]; get += 1;");

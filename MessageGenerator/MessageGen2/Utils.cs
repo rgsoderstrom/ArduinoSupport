@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MessageGenerator
 {
-    internal partial class MessageCodeGenerator
+    public partial class MessageCodeGenerator
     {
         //
         // ParseDataMembers () - passed a list of "Data" members in C++ syntax
@@ -28,6 +28,8 @@ namespace MessageGenerator
             char [] separators = new char [] {' ', '\t', '[', ']', '=', ';'};
             return ParseCommon (memberConstants, separators);
         }
+
+        //*********************************************************************************************
 
         static List<string []> ParseCommon (List<string> members, char [] separators)
         {
@@ -62,8 +64,8 @@ namespace MessageGenerator
         //************************************************************************************************
 
         static public List<string> CodeGenerator_Variables (List<string []> memberVariableTokens, 
-                                                            Dictionary<string, VariableTypeToFromBytes> typeHandlers, 
-                                                            Dictionary<string, VariableTypeArrayToFromBytes> typeArrayHandlers)
+                                                            Dictionary<string, VariableTypeToCode> typeHandlers, 
+                                                            Dictionary<string, VariableTypeArrayToCode> typeArrayHandlers)
         {
             // store generated code here
             List<string> codeFragments = new List<string> ();
@@ -74,7 +76,7 @@ namespace MessageGenerator
                 {
                     if (typeHandlers.ContainsKey (tokens [0]))
                     {
-                        VariableTypeToFromBytes typeHandler = typeHandlers [tokens [0]];
+                        VariableTypeToCode typeHandler = typeHandlers [tokens [0]];
                         typeHandler (tokens [1], codeFragments);
                     }
 
@@ -86,12 +88,22 @@ namespace MessageGenerator
                 {
                     if (typeArrayHandlers.ContainsKey (tokens [0]))
                     {
-                        VariableTypeArrayToFromBytes typeHandler = typeArrayHandlers [tokens [0]];
+                        VariableTypeArrayToCode typeHandler = typeArrayHandlers [tokens [0]];
                         typeHandler (tokens [1], tokens [2], codeFragments);
                     }
 
                     else
                         throw new Exception ("Array type " + tokens [0] + " not found");
+                }
+
+                else
+                {
+                    string str = "";
+
+                    foreach (string s in tokens)
+                        str += s + " ";
+
+                    throw new Exception ("Unsupported: " + str);
                 }
             }
 

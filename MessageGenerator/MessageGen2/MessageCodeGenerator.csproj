@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{0E3082B4-E1E3-4F21-B3F0-D13F9BFD0B06}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MessageGen2</RootNamespace>
+    <RootNamespace>MessageGenerator</RootNamespace>
     <AssemblyName>MessageGen2</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -36,15 +36,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CppCpp_FromBytes.cs" />
-    <Compile Include="CppCpp_Include.cs" />
-    <Compile Include="CppCpp_ToBytes.cs" />
-    <Compile Include="CppCpp_ToConsole.cs" />
-    <Compile Include="CppCs_FromBytes.cs" />
-    <Compile Include="CppCs_ToBytes.cs" />
+    <Compile Include="CommonDefines.cs" />
+    <Compile Include="Cpp_Code.cs" />
+    <Compile Include="Cpp_FromBytes.cs" />
+    <Compile Include="Cpp_Include.cs" />
+    <Compile Include="Cpp_ToBytes.cs" />
+    <Compile Include="Cpp_ToConsole.cs" />
+    <Compile Include="Cs_Code.cs" />
+    <Compile Include="Cs_DefaultCtor.cs" />
+    <Compile Include="Cs_FormatFile.cs" />
+    <Compile Include="Cs_FromBytes.cs" />
+    <Compile Include="Cs_MethodsFile.cs" />
+    <Compile Include="Cs_ToBytes.cs" />
+    <Compile Include="Cs_ToString.cs" />
     <Compile Include="MessageCodeGenerator.cs" />
     <Compile Include="MessCodeGen2.cs" />
-    <Compile Include="MsgGenBase.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

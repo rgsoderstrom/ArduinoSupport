@@ -1,6 +1,7 @@
 ﻿
 //
-// CppCpp_ToBytes - C++ code in and C++ code out
+// Cpp_ToBytes - Convert list of variables to a C++ method 
+//               that writes those variables to a byte stream
 //
 
 using System.Collections.Generic;
@@ -8,12 +9,14 @@ using System.IO;
 
 namespace MessageGenerator
 {
-    partial class MessageCodeGenerator
+    public class Cpp_ToBytes
     {
+        public List<string> MethodText { get; protected set; } = new List<string> ();
+
         //
         // Dictionary of methods to handle the different types
         //
-        static Dictionary<string, VariableTypeToFromBytes> CppToByteRules = new Dictionary<string, VariableTypeToFromBytes> ()
+        static Dictionary<string, VariableTypeToCode> ToByteRules = new Dictionary<string, VariableTypeToCode> ()
         {
             {"char",           OneByteType_ToBytes},
             {"unsigned char",  OneByteType_ToBytes},
@@ -26,7 +29,7 @@ namespace MessageGenerator
         //  {"Sample", SampleToBytes},
         };
 
-        static Dictionary<string, VariableTypeArrayToFromBytes> CppArrayToByteRules = new Dictionary<string, VariableTypeArrayToFromBytes> ()
+        static Dictionary<string, VariableTypeArrayToCode> ArrayToByteRules = new Dictionary<string, VariableTypeArrayToCode> ()
         {
             {"char",           OneByteTypeArray_ToBytes},
             {"unsigned char",  OneByteTypeArray_ToBytes},
@@ -43,28 +46,36 @@ namespace MessageGenerator
 
         // ctor
 
-        static void CppCpp_ToBytes (StreamWriter sw, string msgName, List<string []> memberTokens)// : base (members, CToByteRules, CArrayToByteRules)
+        public Cpp_ToBytes (string msgName, List<string []> memberTokens)
         {
-            sw.WriteLine ("");
-            sw.WriteLine ("// member function ToBytes ()");
-            sw.WriteLine ("void " + msgName + "::ToBytes (byte *byteArray)");
-            sw.WriteLine ("{");
-            sw.WriteLine ("    int put = 0;");
-            sw.WriteLine ("    byteArray [put++] = header.Sync;");
-            sw.WriteLine ("    byteArray [put++] = header.Sync >> 8;");
-            sw.WriteLine ("    byteArray [put++] = header.ByteCount;");
-            sw.WriteLine ("    byteArray [put++] = header.ByteCount >> 8;");
-            sw.WriteLine ("    byteArray [put++] = header.MsgId;");
-            sw.WriteLine ("    byteArray [put++] = header.MsgId >> 8;");
-            sw.WriteLine ("    byteArray [put++] = header.SequenceNumber;");
-            sw.WriteLine ("    byteArray [put++] = header.SequenceNumber >> 8;");
+            MethodText.Add ("");
+            MethodText.Add ("//");
+            MethodText.Add ("// member function ToBytes ()");
+            MethodText.Add ("//");
+            MethodText.Add ("void " + msgName + "::ToBytes (byte *byteArray)");
+            MethodText.Add ("{");
+            MethodText.Add ("    int put = 0;");
+            MethodText.Add ("    byteArray [put++] = header.Sync;");
+            MethodText.Add ("    byteArray [put++] = header.Sync >> 8;");
+            MethodText.Add ("    byteArray [put++] = header.ByteCount;");
+            MethodText.Add ("    byteArray [put++] = header.ByteCount >> 8;");
+            MethodText.Add ("    byteArray [put++] = header.MsgId;");
+            MethodText.Add ("    byteArray [put++] = header.MsgId >> 8;");
+            MethodText.Add ("    byteArray [put++] = header.SequenceNumber;");
+            MethodText.Add ("    byteArray [put++] = header.SequenceNumber >> 8;");
 
-            List<string> code = CodeGenerator_Variables (memberTokens, CppToByteRules, CppArrayToByteRules);
+            List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, ToByteRules, ArrayToByteRules);
 
             foreach (string str in code)
-                sw.WriteLine (str);
+                MethodText.Add (str);
 
-            sw.WriteLine ("}");
+            MethodText.Add ("}");
+        }
+
+        public Cpp_ToBytes (StreamWriter sw, string msgName, List<string []> memberTokens) : this (msgName, memberTokens)
+        {
+            foreach (string str in MethodText)
+                sw.WriteLine (str);
         }
 
         //**********************************************************************
@@ -78,10 +89,12 @@ namespace MessageGenerator
             results.Add ("    byteArray [put++] = data." + name + ";");
         }
 
-        static private void OneByteTypeArray_ToBytes (string name, string max, List<string> results)
+        static private void OneByteTypeArray_ToBytes (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = data." + name + " [i];");
             results.Add ("    }");
@@ -99,10 +112,12 @@ namespace MessageGenerator
             results.Add ("    byteArray [put++] = data." + name + " >> 8;");
         }
 
-        static private void TwoByteTypeArray_ToBytes (string name, string max, List<string> results)
+        static private void TwoByteTypeArray_ToBytes (string name, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + max + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = data." + name + " [i];");
             results.Add ("        byteArray [put++] = data." + name + " [i] >> 8;");
@@ -120,10 +135,12 @@ namespace MessageGenerator
             results.Add ("    byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + ") >> 24)  & 0xff;");
         }
 
-        static private void FourByteTypeArray_ToBytes (string memberVariable, string Count, List<string> results)
+        static private void FourByteTypeArray_ToBytes (string memberVariable, string count, List<string> results)
         {
+            string ccount = count.Replace ("Data.", "Data::");
+
             results.Add ("");
-            results.Add ("    for (int i=0; i<data." + Count + "; i++)");
+            results.Add ("    for (int i=0; i<" + ccount + "; i++)");
             results.Add ("    {");
             results.Add ("        byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + " [i]) >>  0)  & 0xff;");
             results.Add ("        byteArray [put++] = (*((unsigned long *) &" + "data" + "." + memberVariable + " [i]) >>  8)  & 0xff;");
