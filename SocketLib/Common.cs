@@ -44,7 +44,7 @@ namespace SocketLib
                     state.pendingMsgBytes.Add (state.buffer [i]);
 
                 // if there are enough bytes for a message
-                while (state.pendingMsgBytes.Count >= Marshal.SizeOf (typeof (Header)))
+                while (state.pendingMsgBytes.Count >= Marshal.SizeOf (typeof (MessageHeader)))
                 {
                     // first 2 bytes should be sync word
                     ushort first2Bytes = (ushort)(state.pendingMsgBytes [1] << 8 | state.pendingMsgBytes [0]);
@@ -58,7 +58,7 @@ namespace SocketLib
 
                         first2Bytes = (ushort)(state.pendingMsgBytes [1] << 8 | state.pendingMsgBytes [0]);
 
-                    } while (state.pendingMsgBytes.Count >= Marshal.SizeOf (typeof (Header)));
+                    } while (state.pendingMsgBytes.Count >= Marshal.SizeOf (typeof (MessageHeader)));
 
                     // see if we have a complete message pass to handler
                     if (first2Bytes == Message.Sync && state.pendingMsgBytes.Count >= 8)
