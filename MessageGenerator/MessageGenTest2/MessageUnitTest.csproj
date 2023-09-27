@@ -36,10 +36,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LoopbackDataMsg_Auto_Format.cs" />
+    <Compile Include="LoopbackDataMsg_Auto_Methods.cs" />
     <Compile Include="MessageIDs.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="StatusMessage.cs" />
-    <Compile Include="StatusMessage_Auto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SocketLib">
