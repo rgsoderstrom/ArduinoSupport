@@ -57,8 +57,8 @@
     <Reference Include="Common">
       <HintPath>..\..\MessagingFramework\ArduinoInterface\bin\Debug\Common.dll</HintPath>
     </Reference>
-    <Reference Include="SocketLib">
-      <HintPath>..\..\SocketLib\bin\Debug\SocketLib.dll</HintPath>
+    <Reference Include="SocketLibrary">
+      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

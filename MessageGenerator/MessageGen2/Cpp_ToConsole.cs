@@ -52,6 +52,7 @@ namespace MessageGenerator
             MethodText.Add ("//");
             MethodText.Add ("void " + msgName + "::ToConsole ()");
             MethodText.Add ("{");
+            MethodText.Add ("    header.ToConsole ();");
 
             List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, CppToConsoleRules, CppArrayToConsoleRules);
 

@@ -18,10 +18,11 @@ namespace MessageGenTest1
             {
                 LoopbackDataMsg_Auto msg1 = new LoopbackDataMsg_Auto ();
 
-                msg1.data.aaa = 'A';
-                msg1.data.bbbb [2] = 7;
-                msg1.data.LBData [4] = 9876;
-                msg1.data.dddd [2] = 4.321f;
+             //  msg1.data.source = 0x32;
+              //  msg1.data.dataWordCount = 12;
+
+                for (int i = 0; i<LoopbackDataMsg_Auto.Data.MaxCount; i++)
+                    msg1.data.dataWords [i] = (byte) (0x76 + i);
 
                 Console.WriteLine ("Initial:");
                 Console.WriteLine (msg1.ToString ());

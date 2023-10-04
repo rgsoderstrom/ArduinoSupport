@@ -22,7 +22,7 @@ namespace MessageGenerator
             code.Add ("using System.Text;");
             code.Add ("using System.Collections.Generic;");
             code.Add ("using System.Runtime.InteropServices;");
-            code.Add ("using SocketLib;");
+            code.Add ("using SocketLibrary;");
             code.Add ("");
             code.Add ("namespace " + namespaceName);
             code.Add ("{");

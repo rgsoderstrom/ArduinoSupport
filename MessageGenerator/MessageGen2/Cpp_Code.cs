@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SocketLib;
+using SocketLibrary;
 
 namespace MessageGenerator
 {
@@ -52,6 +52,8 @@ namespace MessageGenerator
 
         static void CppDefaultConstructor (StreamWriter sw, string msgName)
         {
+            string msgIdText = msgName.Replace ("_Auto", string.Empty) + "Id";
+
             sw.WriteLine ("");
             sw.WriteLine ("//");
             sw.WriteLine ("// Default constructor");
@@ -60,9 +62,9 @@ namespace MessageGenerator
             sw.WriteLine ("{");
             sw.WriteLine ("    memset (this, 0, sizeof (" + msgName + "));");
             sw.WriteLine ("");
-            sw.WriteLine ("    header.Sync           = " + SocketLib.Message.Sync + ";");
+            sw.WriteLine ("    header.Sync           = " + SocketLibrary.Message.Sync + ";");
             sw.WriteLine ("    header.ByteCount      = sizeof (header) + sizeof (data);");
-            sw.WriteLine ("    header.MsgId          = " + msgName + "ID;");
+            sw.WriteLine ("    header.MsgId          = " + msgIdText + ";");
             sw.WriteLine ("    header.SequenceNumber = NextSequenceNumber++;");
             sw.WriteLine ("}");
         }

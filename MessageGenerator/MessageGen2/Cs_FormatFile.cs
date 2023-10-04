@@ -57,7 +57,7 @@ namespace MessageGenerator
             FormatText.Add ("// auto generated message format code");
             FormatText.Add ("//");
             FormatText.Add ("");
-            FormatText.Add ("using SocketLib;");
+            FormatText.Add ("using SocketLibrary;");
 
             FormatText.Add ("namespace " + messageNameSpace);
             FormatText.Add ("{");

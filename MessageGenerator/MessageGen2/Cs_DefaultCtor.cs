@@ -45,6 +45,8 @@ namespace MessageGenerator
 
         internal Cs_DefaultCtor (string messageName, List<string []> dataMemberTokens)
         {
+            string msgName = messageName.Replace ("_Auto", string.Empty) + "Id";
+
             MethodText.Add ("        //");
             MethodText.Add ("        // Default ctor");
             MethodText.Add ("        //");
@@ -53,7 +55,7 @@ namespace MessageGenerator
             MethodText.Add ("             header = new MessageHeader ();");
             MethodText.Add ("             data = new Data ();");
             MethodText.Add ("");
-            MethodText.Add ("             header.MessageId = (ushort) ArduinoMessageIDs." + messageName + ";");
+            MethodText.Add ("             header.MessageId = (ushort) ArduinoMessageIDs." + msgName + ";");
 
             //
             // byte count

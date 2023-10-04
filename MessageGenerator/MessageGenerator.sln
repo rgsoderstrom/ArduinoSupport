@@ -11,6 +11,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageCodeGenerator", "MessageGen2\MessageCodeGenerator.csproj", "{0E3082B4-E1E3-4F21-B3F0-D13F9BFD0B06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageUnitTest", "MessageGenTest2\MessageUnitTest.csproj", "{08C274B6-40D0-44CB-9E6F-B134AC8DDC1A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0E3082B4-E1E3-4F21-B3F0-D13F9BFD0B06} = {0E3082B4-E1E3-4F21-B3F0-D13F9BFD0B06}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
