@@ -52,5 +52,8 @@
     <Compile Include="TcpClient.cs" />
     <Compile Include="TcpServer.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="aReadMe.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

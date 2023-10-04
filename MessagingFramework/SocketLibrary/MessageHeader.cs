@@ -20,7 +20,7 @@ namespace SocketLibrary
     //
 
     [StructLayout(LayoutKind.Sequential, Pack=1)]
-    public partial class Header
+    public partial class MessageHeader
     {
         public ushort Sync;              // offset = 0
         public ushort ByteCount;         //        = 2
@@ -33,22 +33,22 @@ namespace SocketLibrary
     // Header methods
     //(int) Marshal.OffsetOf<Header> ("Sync")); 
     // 
-    public partial class Header
+    public partial class MessageHeader
     {
         static ushort NextSequenceNumber = 1;
 
-        public Header ()
+        public MessageHeader ()
         {
             Sync           = Message.Sync;
             SequenceNumber = NextSequenceNumber++;
         }
         
-        public Header (byte[] fromBytes)
+        public MessageHeader (byte[] fromBytes)
         {
-            Sync           = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<Header> ("Sync"));
-            ByteCount      = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<Header> ("ByteCount"));
-            MessageId      = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<Header> ("MessageId"));
-            SequenceNumber = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<Header> ("SequenceNumber"));
+            Sync           = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<MessageHeader> ("Sync"));
+            ByteCount      = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<MessageHeader> ("ByteCount"));
+            MessageId      = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<MessageHeader> ("MessageId"));
+            SequenceNumber = BitConverter.ToUInt16 (fromBytes, (int) Marshal.OffsetOf<MessageHeader> ("SequenceNumber"));
         }
 
         public byte[] ToBytes () // convert to byte stream to be sent out socket
