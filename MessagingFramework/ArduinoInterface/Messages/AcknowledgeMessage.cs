@@ -20,7 +20,7 @@ namespace ArduinoInterface
             public ushort MsgSequenceNumber;
         }
 
-        public Header  header;
+        public MessageHeader  header;
         public Data    data;
 
         //***************************************************************
@@ -29,7 +29,7 @@ namespace ArduinoInterface
 
         public AcknowledgeMessage (ushort seqNumber)
         {
-            header = new Header ();
+            header = new MessageHeader ();
             data = new Data ();
 
             header.MessageId = (ushort) ArduinoMessageIDs.AcknowledgeMsgId;

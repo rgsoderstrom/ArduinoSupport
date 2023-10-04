@@ -151,7 +151,7 @@ namespace Loopback
                     return;
                 }
 
-                ushort MsgId = BitConverter.ToUInt16 (msgBytes, (int)Marshal.OffsetOf<Header> ("MessageId"));
+                ushort MsgId = BitConverter.ToUInt16 (msgBytes, (int)Marshal.OffsetOf<MessageHeader> ("MessageId"));
 
                 switch (MsgId)
                 {
@@ -159,6 +159,9 @@ namespace Loopback
                     case (ushort)ArduinoMessageIDs.StatusMsgId: StatusMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.LoopbackDataMsgId: LoopbackMessageHandler (msgBytes); break;
+
+                    case 103: LoopbackMessageHandler (msgBytes); break;
+                    case 104: Print ("Ready message"); break;
 
                     default: Print ("Unrecognized message ID: " + MsgId.ToString ()); break;
                 }
@@ -224,7 +227,7 @@ namespace Loopback
 
         private void LoopbackMessageHandler (byte [] msgBytes)
         {
-            LoopbackDataMessage msg = new LoopbackDataMessage (msgBytes);
+            LoopbackDataMsg msg = new LoopbackDataMsg (msgBytes);
             Print ("Loopback data: " + msg.ToString ());
         }
 
@@ -269,12 +272,12 @@ namespace Loopback
             {
                 EventLog.WriteLine ("send button");
 
-                LoopbackDataMessage msg = new LoopbackDataMessage ();
+                LoopbackDataMsg msg = new LoopbackDataMsg ();
 
-                for (int i = 0; i<32; i++)
-                    msg.Put ((byte)(i & 0xf));
+                for (int i = 0; i<12; i++)
+                    msg.data.dataWords [i] = (short) i;
 
-                msg.Source = 100;
+                //msg.Source = 100;
 
                 messageQueue.AddMessage (msg.ToBytes ());
             }

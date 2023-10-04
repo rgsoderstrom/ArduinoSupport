@@ -42,8 +42,10 @@
     <Compile Include="Messages\AcknowledgeMessage.cs" />
     <Compile Include="Messages\AcknowledgeMessage_Auto.cs" />
     <Compile Include="Messages\HeaderMessages.cs" />
-    <Compile Include="Messages\LoopbackDataMessage.cs" />
-    <Compile Include="Messages\LoopbackDataMessage_Auto.cs" />
+    <Compile Include="Messages\LoopbackDataMsg_Auto_Format.cs" />
+    <Compile Include="Messages\LoopbackDataMsg_Auto_Methods.cs" />
+    <Compile Include="Messages\LoopbackDataMsg_Format.cs" />
+    <Compile Include="Messages\LoopbackDataMsg_Methods.cs" />
     <Compile Include="Messages\MessageIDs.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Messages\StatusMessage.cs" />

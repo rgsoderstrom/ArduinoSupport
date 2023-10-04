@@ -46,7 +46,7 @@ namespace ArduinoInterface
 
             else
             {
-                Header header = new Header (msgBytes);
+                MessageHeader header = new MessageHeader (msgBytes);
                 sentSeqNumbers.Add (header.SequenceNumber);
 
                 if (socket.Connected) socket.Send (msgBytes);
@@ -90,7 +90,7 @@ namespace ArduinoInterface
             if (pendingMessages.Count > 0)
             {
                 Byte [] nextMessage = pendingMessages.Dequeue ();
-                Header header = new Header (nextMessage);
+                MessageHeader header = new MessageHeader (nextMessage);
                 sentSeqNumbers.Add (header.SequenceNumber);
 
                 if (socket.Connected) socket.Send (nextMessage);

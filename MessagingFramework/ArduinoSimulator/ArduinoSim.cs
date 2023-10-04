@@ -90,14 +90,14 @@ namespace ArduinoSimulator
 
         //************************************************************************************
 
-        LoopbackDataMessage testInput = null;
-        LoopbackDataMessage testOutput = null;
+        LoopbackDataMsg testInput = null;
+        LoopbackDataMsg testOutput = null;
 
         private void MessageHandler (Socket src, byte [] msgBytes)
         {
             try
             {
-                Header header = new Header (msgBytes);
+                MessageHeader header = new MessageHeader (msgBytes);
 
                 if (Verbose)
                 {
@@ -112,7 +112,7 @@ namespace ArduinoSimulator
                 switch (header.MessageId)
                 {
                     case (ushort)PCMessageIDs.LoopbackDataMsgId:
-                        testInput = new LoopbackDataMessage (msgBytes);
+                        testInput = new LoopbackDataMsg (msgBytes);
                         statusMsg.DataReceived = true;
                         Console.WriteLine ("Loopback data");
                         break;
@@ -121,10 +121,11 @@ namespace ArduinoSimulator
                         statusMsg.DataReady = true;
                         Console.WriteLine ("Run Test command");
 
-                        testOutput = new LoopbackDataMessage ();
-                        testOutput.Source = 111;
+                        testOutput = new LoopbackDataMsg ();
+                        //testOutput.Source = 111;
                         for (int i = 0; i<testInput.Count; i++)
-                            testOutput.Put ((byte)(127 - testInput.Get (i)));
+                            testOutput.data.dataWords [i] = ((byte)(127 - testInput.Get (i)));
+                          //testOutput.Put ((byte)(127 - testInput.Get (i)));
 
                         break;
 
@@ -153,7 +154,7 @@ namespace ArduinoSimulator
                         break;
                 }
 
-                Header hdr = new Header (msgBytes);
+                MessageHeader hdr = new MessageHeader (msgBytes);
                 AcknowledgeMessage msg = new AcknowledgeMessage (hdr.SequenceNumber);
                 thisClientSocket.Send (msg.ToBytes ());
                 thisClientSocket.Send (statusMsg.ToBytes ());
