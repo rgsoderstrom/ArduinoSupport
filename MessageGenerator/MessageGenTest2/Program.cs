@@ -6,8 +6,6 @@
 using System;
 using ArduinoInterface;
 
-// using ArduinoInterface;
-
 namespace MessageGenTest1
 {
     internal class Program
@@ -16,13 +14,10 @@ namespace MessageGenTest1
         {
             try
             {
-                LoopbackDataMsg_Auto msg1 = new LoopbackDataMsg_Auto ();
+                AcknowledgeMessage msg1 = new AcknowledgeMessage (0x4321);
 
-             //  msg1.data.source = 0x32;
-              //  msg1.data.dataWordCount = 12;
-
-                for (int i = 0; i<LoopbackDataMsg_Auto.Data.MaxCount; i++)
-                    msg1.data.dataWords [i] = (byte) (0x76 + i);
+                //for (int i = 0; i<LoopbackDataMsg_Auto.Data.MaxCount; i++)
+                  //  msg1.data.dataWords [i] = (byte) (0x76 + i);
 
                 Console.WriteLine ("Initial:");
                 Console.WriteLine (msg1.ToString ());
@@ -39,7 +34,7 @@ namespace MessageGenTest1
                 Console.WriteLine ("-------------------------------------");
 
                 Console.WriteLine ("Copied:");
-                LoopbackDataMsg_Auto msg2 = new LoopbackDataMsg_Auto (msgBytes);
+                AcknowledgeMessage msg2 = new AcknowledgeMessage (msgBytes);
                 Console.WriteLine (msg2.ToString ());
             }
 

@@ -86,13 +86,13 @@ namespace MessageGenerator
 
         static string spaces = "\t\t\t\t\t\t\t  ";
 
-        static void sizeOfChar   (string name, List<string> results) {results.Add (spaces + "+ sizeof (char)");}
+        static void sizeOfChar   (string name, List<string> results) {results.Add (spaces + "+ sizeof (byte)");}
         static void sizeOfUChar  (string name, List<string> results) {results.Add (spaces + "+ sizeof (byte)");}
         static void sizeOfShort  (string name, List<string> results) {results.Add (spaces + "+ sizeof (Int16)");}
         static void sizeOfUShort (string name, List<string> results) {results.Add (spaces + "+ sizeof (UInt16)");}
         static void sizeOfFloat  (string name, List<string> results) {results.Add (spaces + "+ sizeof (float)");}
 
-        static void sizeOfCharArray   (string name, string count, List<string> results) {results.Add (spaces + "+ sizeof (char) * " + count);}
+        static void sizeOfCharArray   (string name, string count, List<string> results) {results.Add (spaces + "+ sizeof (byte) * " + count);}
         static void sizeOfUCharArray  (string name, string count, List<string> results) {results.Add (spaces + "+ sizeof (byte) * " + count);}
         static void sizeOfShortArray  (string name, string count, List<string> results) {results.Add (spaces + "+ sizeof (Int16) * " + count);}
         static void sizeOfUShortArray (string name, string count, List<string> results) {results.Add (spaces + "+ sizeof (Int16) * " + count);}

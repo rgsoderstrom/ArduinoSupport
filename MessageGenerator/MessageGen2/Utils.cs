@@ -19,13 +19,13 @@ namespace MessageGenerator
 
         static List<string []> ParseVariables (List<string> memberVariables)
         {
-            char [] separators = new char [] {' ', '\t', '[', ']', ';'};
+            char [] separators = new char [] {' ', '\t', '[', ']', '"', ';'};
             return ParseCommon (memberVariables, separators);
         }
 
         static List<string []> ParseConstants (List<string> memberConstants)
         {
-            char [] separators = new char [] {' ', '\t', '[', ']', '=', ';'};
+            char [] separators = new char [] {' ', '\t', '[', ']', '=', '"', ';'};
             return ParseCommon (memberConstants, separators);
         }
 
@@ -38,6 +38,9 @@ namespace MessageGenerator
             foreach (string str in members)
             {
                 string [] tokens = str.Split (separators, StringSplitOptions.RemoveEmptyEntries);
+
+                if (tokens.Length == 0)
+                    continue;
 
                 //
                 // if first token is "unsigned", combine it with second

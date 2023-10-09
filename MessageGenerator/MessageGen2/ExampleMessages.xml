@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+    ExampleMessages.xml
+      - Example of .xml file describing mesages to generate code for
+-->
+
+<Messages>
+
+    <!-- Option Namespace="SomethingElse"/ -->
+    <Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\MessageGenerator\MessageGenTest2\Messages"/>
+  
+    <!--
+    <Message Name="LoopbackDataMsg_Auto">
+        <Constants>
+            unsigned int MaxCount = 12
+       </Constants>
+
+        <Variables>
+            int dataWords [Data.MaxCount]
+        </Variables>
+    </Message>
+    -->
+    
+    <!-- ***************************************** -->
+
+    <!-- -->
+    <Message Name="AcknowledgeMsg_Auto">
+        <Variables>
+              unsigned short MsgSequenceNumber;
+        </Variables>
+    </Message>
+    <!-- -->
+    
+    <!-- ***************************************** -->
+
+    <!--
+    <Message Name="StatusMsg_Auto">
+  		  <Constants>
+            "int MaxNameLength = 18;"
+		    </Constants>
+
+		    <Variables>
+            "char name [Data.MaxNameLength];"
+            "byte DataReceived;"
+            "byte DataReady;"
+		    </Variables>
+      </Message>
+    -->
+    
+    <!-- ***************************************** -->
+
+    <!--
+    <Message Name="TextMsg_Auto">
+  		  <Constants>      
+            int TextBufferSize = 40;
+  		  </Constants>
+
+		    <Variables>
+            char text [Data.TextBufferSize];  
+		    </Variables>      
+    </Message>
+    -->
+</Messages>
+
+

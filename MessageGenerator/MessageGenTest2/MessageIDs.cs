@@ -13,7 +13,8 @@ namespace ArduinoInterface
         StatusRequest = 2,
         StatusMsgId     = 4,
 
+        TextMsgId = 8,
         LoopbackDataMsgId = 9,
-        Acknowledge = 10,
+        AcknowledgeMsgId = 10,
     };
 }

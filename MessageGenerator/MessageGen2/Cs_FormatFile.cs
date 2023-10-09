@@ -46,12 +46,7 @@ namespace MessageGenerator
         public Cs_FormatFile (string messageNameSpace, string messageName, List<string []> constMemberTokens, List<string []> dataMemberTokens)
         {
             FormatText.Add ("using System;");
-  //          FormatText.Add ("using System.Collections.Generic;");
-//            FormatText.Add ("using System.Linq;");
             FormatText.Add ("using System.Runtime.InteropServices;");
-    //        FormatText.Add ("using System.Runtime.Remoting.Messaging;");
-     //       FormatText.Add ("using System.Text;");
-  //          FormatText.Add ("using System.Threading.Tasks;");
             FormatText.Add ("");
             FormatText.Add ("//");
             FormatText.Add ("// auto generated message format code");
@@ -69,8 +64,11 @@ namespace MessageGenerator
 
             try
             {
-                DefineConstants (constMemberTokens);
-                FormatText.Add ("");
+                if (constMemberTokens.Count > 0)
+                {
+                    DefineConstants (constMemberTokens);
+                    FormatText.Add ("");
+                }
 
                 List<string> code = MessageCodeGenerator.CodeGenerator_Variables (dataMemberTokens, DefineVariables, DefineVariableArrays);
                 FormatText.AddRange (code);
@@ -109,7 +107,6 @@ namespace MessageGenerator
                 // char aaa = 7; => char aaa = (char) 7;
                 if (token [0] == "char" && char.IsDigit (token [2] [0]))
                     token [2] = "(char) " + token [2];
-
 
                 FormatText.Add ("            static public " + token [0] + " " + token [1] + " = " + token [2] + ";");
             }
