@@ -26,6 +26,10 @@ namespace ArduinoInterface
 
         public string Text {get {return new string (data.text);}}
 
+        //
+        // ToString () - override auto-generated version to print 
+        //               something for null characters
+        //
         public override string ToString ()
         {
             string str = "";
