@@ -8,9 +8,9 @@ namespace ArduinoInterface
         StatusRequest = 2,
         Disconnect    = 3,
 
-        LoopbackDataMsgId = 9,
-        RunLoopbackTestMsgId = 10,
-        SendLoopbackDataMsgId = 11,
+        LoopbackDataMsgId = 100,
+        RunLoopbackTestMsgId = 101,
+        SendLoopbackDataMsgId = 102,
     };
 
     public enum ArduinoMessageIDs : ushort
@@ -18,6 +18,6 @@ namespace ArduinoInterface
         AcknowledgeMsgId  = 1,
         TextMsgId   = 2,
         StatusMsgId = 3,
-        LoopbackDataMsgId = 9,
+        LoopbackDataMsgId = 100,
     };
 }

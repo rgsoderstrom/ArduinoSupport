@@ -40,18 +40,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Messages\AcknowledgeMessage.cs" />
-    <Compile Include="Messages\AcknowledgeMessage_Auto.cs" />
+    <Compile Include="Messages\AcknowledgeMsg_Auto_Format.cs" />
+    <Compile Include="Messages\AcknowledgeMsg_Auto_Methods.cs" />
     <Compile Include="Messages\HeaderMessages.cs" />
     <Compile Include="Messages\LoopbackDataMsg_Auto_Format.cs" />
     <Compile Include="Messages\LoopbackDataMsg_Auto_Methods.cs" />
-    <Compile Include="Messages\LoopbackDataMsg_Format.cs" />
-    <Compile Include="Messages\LoopbackDataMsg_Methods.cs" />
+    <Compile Include="Messages\LoopbackDataMsg.cs" />
     <Compile Include="Messages\MessageIDs.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="Messages\StatusMessage.cs" />
-    <Compile Include="Messages\StatusMessage_Auto.cs" />
+    <Compile Include="Messages\StatusMsg_Auto_Format.cs" />
+    <Compile Include="Messages\StatusMsg_Auto_Methods.cs" />
     <Compile Include="Messages\TextMessage.cs" />
-    <Compile Include="Messages\TextMessage_Auto.cs" />
+    <Compile Include="Messages\TextMsg_Auto_Format.cs" />
+    <Compile Include="Messages\TextMsg_Auto_Methods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SocketLibrary">

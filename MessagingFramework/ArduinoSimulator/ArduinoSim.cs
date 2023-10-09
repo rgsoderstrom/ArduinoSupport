@@ -11,7 +11,7 @@ namespace ArduinoSimulator
 {
     public class ArduinoSim
     {
-        bool Verbose = false;
+        bool Verbose = true;
 
         Timer Timer1 = null;
 
@@ -54,6 +54,17 @@ namespace ArduinoSimulator
 
                 thisClientSocket.MessageHandler += MessageHandler;
                 thisClientSocket.PrintHandler   += PrintToLog; // PrintToConsole;
+
+
+                Console.WriteLine (statusMsg.ToString ());
+
+                byte [] aaa = statusMsg.ToBytes ();
+
+                for (int i=0; i<aaa.Length; i++)
+                    Console.WriteLine (i + ": " + (int) aaa [i]);
+
+
+
 
                 thisClientSocket.Send (statusMsg.ToBytes ());
 

@@ -7,9 +7,9 @@ log.txt
 *.mov
 *.png
 *.editorconfig
-*_Auto_*.cs
-*_Auto.h
-*_Auto.cpp
+# *_Auto_*.cs
+# *_Auto.h
+# *_Auto.cpp
 
 
 
