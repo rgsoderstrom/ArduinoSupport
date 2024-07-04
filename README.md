@@ -8,4 +8,5 @@ CrystalGrowing - beginnings of project to measure and control temperature of a w
 
 MotorsAndEncoders - control drive motors and read shaft encoders on mobile robot platform
 
-SocketLib - set up server sockets that the Arduino can connect to
+SocketLib_WAS - set up server sockets that the Arduino can connect to.
+              - this version depricated. New version under MessagingFramework
