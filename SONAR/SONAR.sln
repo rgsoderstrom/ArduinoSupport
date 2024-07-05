@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawPlots", "RawPlots\RawPlots.csproj", "{A3A82819-4E99-4C11-B53D-F13A0C10B65B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A2D_Tests", "A2D_Tests\A2D_Tests.csproj", "{4DC75C59-7093-4DEA-9F86-79A2D626334B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A3A82819-4E99-4C11-B53D-F13A0C10B65B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3A82819-4E99-4C11-B53D-F13A0C10B65B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3A82819-4E99-4C11-B53D-F13A0C10B65B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DC75C59-7093-4DEA-9F86-79A2D626334B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DC75C59-7093-4DEA-9F86-79A2D626334B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DC75C59-7093-4DEA-9F86-79A2D626334B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DC75C59-7093-4DEA-9F86-79A2D626334B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
