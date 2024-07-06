@@ -43,8 +43,10 @@ namespace MessageGenerator
 
         //***************************************************************************************************
 
-        public Cs_FormatFile (string messageNameSpace, string messageName, List<string []> constMemberTokens, List<string []> dataMemberTokens)
+        protected Cs_FormatFile (string messageNameSpace, string messageName, List<string []> constMemberTokens, List<string []> dataMemberTokens)
         {
+            bool headerOnly = (constMemberTokens.Count == 0) && (dataMemberTokens.Count == 0);
+
             FormatText.Add ("using System;");
             FormatText.Add ("using System.Runtime.InteropServices;");
             FormatText.Add ("");
@@ -58,9 +60,13 @@ namespace MessageGenerator
             FormatText.Add ("{");
             FormatText.Add ("    public partial class " + messageName);
             FormatText.Add ("    {");
+
+            if (headerOnly == false)
+            { 
             FormatText.Add ("        [StructLayout (LayoutKind.Sequential, Pack = 1)]");
-            FormatText.Add ("        public class Data");
-            FormatText.Add ("        {");
+                FormatText.Add ("        public class Data");
+                FormatText.Add ("        {");
+            }
 
             try
             {
@@ -79,11 +85,17 @@ namespace MessageGenerator
                 Console.WriteLine ("Exception generating Cs format file: " + ex.Message);
             }
 
+            if (headerOnly == false)
+            { 
+                FormatText.Add ("        };");
+                FormatText.Add ("");
+            }
 
-            FormatText.Add ("        };");
-            FormatText.Add ("");
             FormatText.Add ("        public MessageHeader header;");
-            FormatText.Add ("        public Data data;");
+    
+            if (headerOnly == false)
+                FormatText.Add ("        public Data data;");
+            
             FormatText.Add ("    }");
             FormatText.Add ("}");
         }

@@ -69,6 +69,24 @@ namespace MessageGenerator
             MethodText.Add ("        }");
         }
 
+        public Cs_FromBytes (string msgName)
+        {
+            MethodText.Add ("        //********************************************************");
+            MethodText.Add ("        //");
+            MethodText.Add ("        // from-bytes constructor");
+            MethodText.Add ("        //");
+            MethodText.Add ("        public " + msgName + " (byte [] fromBytes)");
+            MethodText.Add ("        {");
+            MethodText.Add ("            header = new MessageHeader ();");
+            MethodText.Add ("            int byteIndex = 0;");
+            MethodText.Add ("");
+            MethodText.Add ("            header.Sync           = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            MethodText.Add ("            header.ByteCount      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            MethodText.Add ("            header.MessageId      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            MethodText.Add ("            header.SequenceNumber = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            MethodText.Add ("        }");
+        }
+
         public Cs_FromBytes (StreamWriter sw, string msgName, List<string []> memberTokens) : this (msgName, memberTokens)
         {
             foreach (string str in MethodText)

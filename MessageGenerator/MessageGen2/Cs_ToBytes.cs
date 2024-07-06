@@ -68,6 +68,29 @@ namespace MessageGenerator
             MethodText.Add ("");
         }
 
+        public Cs_ToBytes (string msgName)
+        {
+            MethodText.Add ("");
+            MethodText.Add ("        //********************************************************");
+            MethodText.Add ("        //");
+            MethodText.Add ("        // member function ToBytes ()");
+            MethodText.Add ("        //");
+            MethodText.Add ("        public byte[] ToBytes ()");
+            MethodText.Add ("        {");
+            MethodText.Add ("            List<byte> byteList = new List<byte> ();");
+            MethodText.Add ("");
+            MethodText.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (header.Sync));");
+            MethodText.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (header.ByteCount));");
+            MethodText.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (header.MessageId));");
+            MethodText.Add ("            byteList.InsertRange (byteList.Count, BitConverter.GetBytes (header.SequenceNumber));");
+            MethodText.Add ("");
+            MethodText.Add ("            byte[] msgBytes = new byte [byteList.Count];");
+            MethodText.Add ("            byteList.CopyTo (msgBytes, 0);");
+            MethodText.Add ("            return msgBytes;");
+            MethodText.Add ("        }");
+            MethodText.Add ("");
+        }
+
         public Cs_ToBytes (StreamWriter sw, string msgName, List<string []> memberTokens)
             : this (msgName, memberTokens)
         {

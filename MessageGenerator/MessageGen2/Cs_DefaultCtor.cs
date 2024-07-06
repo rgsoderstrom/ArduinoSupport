@@ -75,6 +75,23 @@ namespace MessageGenerator
             MethodText.Add ("");
         }
 
+        internal Cs_DefaultCtor (string messageName)
+        {
+            string msgName = messageName.Replace ("_Auto", string.Empty) + "Id";
+
+            MethodText.Add ("        //");
+            MethodText.Add ("        // Default ctor");
+            MethodText.Add ("        //");
+            MethodText.Add ("        public " + messageName + " ()");
+            MethodText.Add ("        {");
+            MethodText.Add ("             header = new MessageHeader ();");
+            MethodText.Add ("");
+            MethodText.Add ("             header.MessageId = (ushort) ArduinoMessageIDs." + msgName + ";");
+            MethodText.Add ("             header.ByteCount = (ushort)(Marshal.SizeOf (header));");
+            MethodText.Add ("        }");
+            MethodText.Add ("");
+        }
+
         public Cs_DefaultCtor (StreamWriter sw, string msgName, List<string []> memberTokens)
             : this (msgName, memberTokens)
         {

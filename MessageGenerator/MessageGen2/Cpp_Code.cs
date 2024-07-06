@@ -13,13 +13,15 @@ namespace MessageGenerator
     {
         internal Cpp_Code (StreamWriter sw, string messageName, List<string []> dataMemberTokens)
         {
+            bool headerOnly = dataMemberTokens.Count == 0;
+
             try
             {
                 // file header comment and standard includes
                 CppBeginCodeFile (sw, messageName);
 
                 // default constructor 
-                CppDefaultConstructor (sw, messageName);
+                CppDefaultConstructor (sw, messageName, headerOnly);
 
                 // from-bytes ctor
                 Cpp_FromBytes fromBytesCode = new Cpp_FromBytes (sw, messageName, dataMemberTokens);
@@ -50,7 +52,7 @@ namespace MessageGenerator
             sw.WriteLine ("#include \"" + msgName + ".h\"");
         }
 
-        static void CppDefaultConstructor (StreamWriter sw, string msgName)
+        static void CppDefaultConstructor (StreamWriter sw, string msgName, bool headerOnly)
         {
             string msgIdText = msgName.Replace ("_Auto", string.Empty) + "Id";
 
@@ -63,7 +65,10 @@ namespace MessageGenerator
             sw.WriteLine ("    memset (this, 0, sizeof (" + msgName + "));");
             sw.WriteLine ("");
             sw.WriteLine ("    header.Sync           = " + SocketLibrary.Message.Sync + ";");
-            sw.WriteLine ("    header.ByteCount      = sizeof (header) + sizeof (data);");
+
+            if (headerOnly == false) sw.WriteLine ("    header.ByteCount      = sizeof (header) + sizeof (data);");
+            else                     sw.WriteLine ("    header.ByteCount      = sizeof (header);");
+
             sw.WriteLine ("    header.MsgId          = " + msgIdText + ";");
             sw.WriteLine ("    header.SequenceNumber = NextSequenceNumber++;");
             sw.WriteLine ("}");

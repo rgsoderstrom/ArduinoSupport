@@ -15,11 +15,12 @@ namespace MessageGenTest1
         {
             try
             {
-                //SampleDataMsg_Auto msg1 = new SampleDataMsg_Auto ();
-                HeaderOnlyMsg_Auto msg1 = new HeaderOnlyMsg_Auto ();
+                SampleDataMsg_Auto msg1 = new SampleDataMsg_Auto ();
 
-                //for (int i = 0; i<LoopbackDataMsg_Auto.Data.MaxCount; i++)
-                  //  msg1.data.dataWords [i] = (byte) (0x76 + i);
+                for (int i = 0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
+                    msg1.data.Sample [i] = (short)(3400 + i);
+
+
 
                 Console.WriteLine ("Initial:");
                 Console.WriteLine (msg1.ToString ());
@@ -28,17 +29,20 @@ namespace MessageGenTest1
 
                 byte [] msgBytes = msg1.ToBytes ();
 
+                Console.WriteLine ("ToBytes:");
                 Console.WriteLine (msgBytes.Length + " bytes");
 
                 for (int i = 0; i<msgBytes.Length; i++)
                     Console.WriteLine (string.Format ("{0}: {1}, 0x{2:x}", i, msgBytes [i], msgBytes [i]));
 
-                Console.WriteLine ("-------------------------------------");
-                Console.WriteLine (msg1.data.ToString ());
+              //  return;
 
-                //Console.WriteLine ("Copied:");
-                //AcknowledgeMessage msg2 = new AcknowledgeMessage (msgBytes);
-                //Console.WriteLine (msg2.ToString ());
+                Console.WriteLine ("-------------------------------------");
+                //Console.WriteLine (msg1.data.ToString ());
+
+                Console.WriteLine ("FromBytes:");
+                SampleDataMsg_Auto msg2 = new SampleDataMsg_Auto (msgBytes);
+                Console.WriteLine (msg2.ToString ());
             }
 
             catch (Exception ex)

@@ -58,13 +58,17 @@ namespace MessageGenerator
             MethodText.Add ("    header.ByteCount      = (msgBytes [3] << 8) | msgBytes [2];");
             MethodText.Add ("    header.MsgId          = (msgBytes [5] << 8) | msgBytes [4];");
             MethodText.Add ("    header.SequenceNumber = (msgBytes [7] << 8) | msgBytes [6];");
-            MethodText.Add ("");
-            MethodText.Add ("    int get = 8;");
 
-            List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, FromByteRules, ArrayFromByteRules);
+            if (memberTokens.Count != 0)
+            { 
+                MethodText.Add ("");
+                MethodText.Add ("    int get = 8;");
 
-            foreach (string str in code)
-                MethodText.Add (str);
+                List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, FromByteRules, ArrayFromByteRules);
+
+                foreach (string str in code)
+                    MethodText.Add (str);
+            }
 
             MethodText.Add ("}");
         }

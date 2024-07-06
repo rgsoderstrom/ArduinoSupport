@@ -37,6 +37,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MessageIDs.cs" />
+    <Compile Include="Messages\HeaderOnlyMsg_Auto_Format.cs" />
+    <Compile Include="Messages\HeaderOnlyMsg_Auto_Methods.cs" />
+    <Compile Include="Messages\SampleDataMsg_Auto_Format.cs" />
+    <Compile Include="Messages\SampleDataMsg_Auto_Methods.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -45,8 +49,6 @@
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Messages\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

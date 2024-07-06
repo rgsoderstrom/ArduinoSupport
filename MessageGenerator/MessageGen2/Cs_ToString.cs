@@ -50,8 +50,6 @@ namespace MessageGenerator
 
         public Cs_ToString (string msgName, List<string []> memberTokens)
         {
-
-
             MethodText.Add ("        //********************************************************");
             MethodText.Add ("        //");
             MethodText.Add ("        // member function ToString ()");
@@ -68,6 +66,24 @@ namespace MessageGenerator
             List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, CsToStringRules, CsArrayToStringRules);
             MethodText.AddRange (code);
 
+            MethodText.Add ("");
+            MethodText.Add ("            return str;");
+            MethodText.Add ("        }");
+        }
+
+        public Cs_ToString (string msgName)
+        {
+            MethodText.Add ("        //********************************************************");
+            MethodText.Add ("        //");
+            MethodText.Add ("        // member function ToString ()");
+            MethodText.Add ("        //");
+            MethodText.Add ("        public override string ToString ()");
+            MethodText.Add ("        {");
+            MethodText.Add ("            string str = \"\";");
+            MethodText.Add ("            str += \"Sync      = \"" + " + header.Sync"           + " + " + "\"\\n\";");
+            MethodText.Add ("            str += \"ByteCount = \"" + " + header.ByteCount"      + " + " + "\"\\n\";");
+            MethodText.Add ("            str += \"ID        = \"" + " + header.MessageId"      + " + " + "\"\\n\";");
+            MethodText.Add ("            str += \"SeqNumb   = \"" + " + header.SequenceNumber" + " + " + "\"\\n\";");
             MethodText.Add ("");
             MethodText.Add ("            return str;");
             MethodText.Add ("        }");

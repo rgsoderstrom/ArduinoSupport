@@ -11,19 +11,26 @@ namespace MessageGenerator
 {
     public class Cpp_Include
     {
+        // build-up file contents here
         public List<string> FileText { get; protected set; } = new List<string> ();
 
         //**********************************************************************
 
         // ctor
 
-        public Cpp_Include (string msgName, List<string []> consAsTokens, List<string []> varsAsTokens)
+        protected Cpp_Include (string msgName, List<string []> consAsTokens, List<string []> varsAsTokens)
         {
-            BeginFile                           (msgName, FileText);
-            CodeGenerator_IncludeConstants (consAsTokens, FileText);
-            FileText.Add ("");
-            CodeGenerator_IncludeVariables (varsAsTokens, FileText);
-            EndFile                             (msgName, FileText);
+            bool headerOnly = (consAsTokens.Count == 0) && (varsAsTokens.Count == 0);
+            BeginFile (msgName, headerOnly, FileText);
+
+            if (headerOnly == false)
+            {
+                CodeGenerator_IncludeConstants (consAsTokens, FileText);
+                //FileText.Add ("");
+                CodeGenerator_IncludeVariables (varsAsTokens, FileText);
+            }
+
+            EndFile (msgName, headerOnly, FileText);
         }
 
         public Cpp_Include (StreamWriter sw, string msgName, List<string []> consAsTokens, List<string []> varsAsTokens) : this (msgName, consAsTokens, varsAsTokens)
@@ -34,7 +41,7 @@ namespace MessageGenerator
 
         //************************************************************************************************
 
-        void BeginFile (string msgName, List<string> fileText)
+        void BeginFile (string msgName, bool headerOnly, List<string> fileText)
         {
             fileText.Add ("//");
             fileText.Add ("// " + msgName + ".h");
@@ -53,8 +60,12 @@ namespace MessageGenerator
             fileText.Add ("class " + msgName);
             fileText.Add ("{");
             fileText.Add ("    public:");
-            fileText.Add ("        struct Data");
-            fileText.Add ("        {");
+
+            if (headerOnly == false)
+            {
+                fileText.Add ("        struct Data");
+                fileText.Add ("        {");
+            }
         }
 
         //************************************************************************************************
@@ -74,6 +85,7 @@ namespace MessageGenerator
             }
         }        
 
+        //************************************************************************************************
 
         void CodeGenerator_IncludeVariables (List<string []> memberVariableTokens, List<string> fileText) 
         {
@@ -103,21 +115,24 @@ namespace MessageGenerator
                     throw new Exception ("Error generating include file variables");
             }
 
-            FileText.Add ("        };");
+            FileText.Add ("        };\n");
         }
 
         //************************************************************************************************
 
-        void EndFile (string msgName, List<string> fileText)
+        void EndFile (string msgName, bool headerOnly, List<string> fileText)
         {
-            fileText.Add ("");
+           // fileText.Add ("");
             fileText.Add ("\t\t" + msgName + " ();");
             fileText.Add ("\t\t" + msgName + " (byte *msgBytes);");
-            fileText.Add ("\t\tvoid ToBytes    (byte *byteArray);");
+            fileText.Add ("\t\tvoid ToBytes   (byte *byteArray);");
             fileText.Add ("\t\tvoid ToConsole ();");
             fileText.Add ("");
             fileText.Add ("\t\tMessageHeader header;");
-            fileText.Add ("\t\tData          data;");
+
+            if (headerOnly == false)
+                fileText.Add ("\t\tData          data;");
+
             FileText.Add ("};");
             FileText.Add ("#endif");
         }

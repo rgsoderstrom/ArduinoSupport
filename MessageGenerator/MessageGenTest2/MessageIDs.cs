@@ -16,5 +16,9 @@ namespace ArduinoInterface
         TextMsgId = 8,
         LoopbackDataMsgId = 9,
         AcknowledgeMsgId = 10,
+
+        HeaderOnlyMsgId = 0,  // always overwritten
+        SampleDataMsgId = 99,
+        AllSentMsgId    = 100
     };
 }

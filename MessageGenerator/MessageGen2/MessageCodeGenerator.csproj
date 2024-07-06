@@ -50,7 +50,6 @@
     <Compile Include="Cs_ToBytes.cs" />
     <Compile Include="Cs_ToString.cs" />
     <Compile Include="MessageCodeGenerator.cs" />
-    <Compile Include="MessCodeGen2.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
