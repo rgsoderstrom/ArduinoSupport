@@ -35,6 +35,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Plot2D_Embedded">
+      <HintPath>..\..\..\Plotting\Plot2D_Embedded\bin\Debug\Plot2D_Embedded.dll</HintPath>
+    </Reference>
+    <Reference Include="SocketLibrary">
+      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -69,7 +75,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Messages\AcknowledgeMsg_Auto_Format.cs" />
+    <Compile Include="Messages\AcknowledgeMsg_Auto_Methods.cs" />
+    <Compile Include="Messages\HeaderOnlyMsg_Auto_Format.cs" />
+    <Compile Include="Messages\HeaderOnlyMsg_Auto_Methods.cs" />
     <Compile Include="Messages\MessageIDs.cs" />
+    <Compile Include="Messages\SampleDataMsg_Auto_Format.cs" />
+    <Compile Include="Messages\SampleDataMsg_Auto_Methods.cs" />
+    <Compile Include="Messages\TextMsg_Auto_Format.cs" />
+    <Compile Include="Messages\TextMsg_Auto_Methods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

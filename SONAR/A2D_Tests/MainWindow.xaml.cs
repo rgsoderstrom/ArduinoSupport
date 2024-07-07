@@ -24,5 +24,20 @@ namespace A2D_Tests
         {
             InitializeComponent ();
         }
+
+        private void ClearButton_Click (object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CollectButton_Click (object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SendButton_Click (object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
