@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+    Messages.xml
+      - Messages for A2D tests
+-->
+
+<Messages>
+
+	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface"/>
+  
+	<!-- -->
+    <Message Name="SampleDataMsg_Auto">
+        <Constants>
+            unsigned int MaxCount = 16
+       </Constants>
+
+        <Variables>
+            int Sample [Data.MaxCount]
+        </Variables>
+    </Message>
+	<!-- -->
+	
+    <!-- ***************************************** -->
+	
+	<!-- Header-only messages --> 
+	
+    <Message Name="KeepAliveMsg_Auto">
+    </Message>
+    
+    <Message Name="ReadyMsg_Auto">
+    </Message>
+    
+    <Message Name="AllSentMsg_Auto">
+    </Message>
+    
+    <Message Name="ClearMsg_Auto">
+    </Message>
+    
+    <Message Name="CollectMsg_Auto">
+    </Message>
+    
+    <Message Name="SendMsg_Auto">
+    </Message>
+    
+    <!-- ***************************************** -->
+
+    <Message Name="AcknowledgeMsg_Auto">
+        <Variables>
+              unsigned short MsgSequenceNumber;
+        </Variables>
+    </Message>
+    
+    <!-- ***************************************** -->
+
+    <Message Name="TextMsg_Auto">
+  		<Constants>      
+           int TextBufferSize = 40;
+  		</Constants>
+
+		<Variables>
+          char text [Data.TextBufferSize];  
+		</Variables>      
+    </Message>
+
+</Messages>
+
+

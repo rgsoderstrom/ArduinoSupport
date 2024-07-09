@@ -15,7 +15,7 @@ namespace MessageGenerator
     public partial class MessageCodeGenerator
     {
         // message description file
-        static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\A2D_Tests\Messages\";
+        static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface\";
         static string inputFileName = @"Messages.xml";
         //static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\MessageGenerator\MessageGen2\";
         //static string inputFileName = @"ExampleMessages.xml";

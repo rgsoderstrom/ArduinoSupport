@@ -5,20 +5,16 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 using SocketLibrary;
+using ArduinoInterface;
 
 namespace ArduinoSimulator
 {
     public class ArduinoSim
     {
-        bool Verbose = true;
-
-        Timer Timer1 = null;
+        bool Verbose = false;
 
         SocketLibrary.TcpClient thisClientSocket = null;
 
-        DateTime startTime = DateTime.Now;
-
-        StatusMessage statusMsg;
         string Name;
 
         //****************************************************************************
@@ -37,9 +33,6 @@ namespace ArduinoSimulator
         {
             try
             {
-                statusMsg = new StatusMessage ();
-                statusMsg.Name = Name;
-
                 Console.WriteLine ("Connecting to server");
                 thisClientSocket = new SocketLibrary.TcpClient (PrintToConsole); 
 
@@ -55,29 +48,28 @@ namespace ArduinoSimulator
                 thisClientSocket.PrintHandler   += PrintToLog; // PrintToConsole;
 
 
-                Console.WriteLine (statusMsg.ToString ());
-
-                byte [] aaa = statusMsg.ToBytes ();
-
-                for (int i=0; i<aaa.Length; i++)
-                    Console.WriteLine (i + ": " + (int) aaa [i]);
+                ReadyMsg_Auto readyMsg = new ReadyMsg_Auto ();
+                thisClientSocket.Send (readyMsg.ToBytes ());
 
 
 
+                //TextMsg_Auto tm = new TextMsg_Auto ();
+                //tm.data.text = "Arduino Ready".ToCharArray ();
+                //thisClientSocket.Send (tm.ToBytes ());
 
-                thisClientSocket.Send (statusMsg.ToBytes ());
 
-                ////Timer1 = new Timer (Timer1Interrupt, this, 5000, 1000);
-
-                for (int i=0; i<seconds; i++)
-                    Thread.Sleep (1000);
-
-                PrintToConsole (Name + " closing socket");
-
-                thisClientSocket.Close ();
 
                 while (true)
-                    Thread.Sleep (1000);               
+                { 
+                    Thread.Sleep (1000);
+                }
+
+                //PrintToConsole (Name + " closing socket");
+
+                //thisClientSocket.Close ();
+
+                //while (true)
+                //    Thread.Sleep (1000);               
             }
 
             catch (Exception ex)
@@ -100,9 +92,6 @@ namespace ArduinoSimulator
 
         //************************************************************************************
 
-        LoopbackDataMsg testInput = null;
-        LoopbackDataMsg testOutput = null;
-
         private void MessageHandler (Socket src, byte [] msgBytes)
         {
             try
@@ -121,53 +110,38 @@ namespace ArduinoSimulator
 
                 switch (header.MessageId)
                 {
-                    case (ushort)PCMessageIDs.LoopbackDataMsgId:
-                        testInput = new LoopbackDataMsg (msgBytes);
-                        statusMsg.DataReceived = true;
-                        Console.WriteLine ("Loopback data");
-                        break;
+                    case (ushort) ArduinoMessageIDs.ClearMsgId:
+                        Console.WriteLine ("Clear message received");
 
-                    case (ushort)PCMessageIDs.RunLoopbackTestMsgId:
-                        statusMsg.DataReady = true;
-                        Console.WriteLine ("Run Test command");
-
-                        testOutput = new LoopbackDataMsg ();
-                        //testOutput.Source = 111;
-                        for (int i = 0; i<testInput.Count; i++)
-                            testOutput.data.dataWords [i] = ((byte)(127 - testInput.Get (i)));
-                          //testOutput.Put ((byte)(127 - testInput.Get (i)));
+                        TextMessage tm = new TextMessage ("Arduino received Clear message");
+                        thisClientSocket.Send (tm.ToBytes ());
 
                         break;
-
-                    case (ushort)PCMessageIDs.SendLoopbackDataMsgId:
-                        statusMsg.DataReceived = false;
-                        statusMsg.DataReady = false;
-                        thisClientSocket.Send (testOutput.ToBytes ());
-                        Console.WriteLine ("Send Results command");
+                        
+                    case (ushort) ArduinoMessageIDs.CollectMsgId:
+                        Console.WriteLine ("Collect message received");
                         break;
-
-
-                    case (ushort)PCMessageIDs.Disconnect:
-                    {
-                        Console.WriteLine ("Received Disconnect cmnd");
-                        thisClientSocket.client.Disconnect (false);
-                        Timer1.Change (Timeout.Infinite, Timeout.Infinite);
-                    }
-                    break;
-
-                    case (ushort)PCMessageIDs.KeepAlive:
-                        //Console.WriteLine ("KeepAlive message");
+                        
+                    case (ushort) ArduinoMessageIDs.SendMsgId:
+                        Console.WriteLine ("Send message received");
                         break;
-
+                        
+                    case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
+                        break;
+                        
                     default:
-                        Console.WriteLine ("Received unrecognized message");
+                        Console.WriteLine ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
                 }
 
                 MessageHeader hdr = new MessageHeader (msgBytes);
-                AcknowledgeMessage msg = new AcknowledgeMessage (hdr.SequenceNumber);
-                thisClientSocket.Send (msg.ToBytes ());
-                thisClientSocket.Send (statusMsg.ToBytes ());
+
+                AcknowledgeMsg_Auto ackMsg = new AcknowledgeMsg_Auto ();
+                ackMsg.data.MsgSequenceNumber = hdr.SequenceNumber;
+                thisClientSocket.Send (ackMsg.ToBytes ());
+
+                //ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
+                //thisClientSocket.Send (rdyMsg.ToBytes ());
             }
 
             catch (Exception ex)

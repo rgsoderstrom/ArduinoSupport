@@ -6,8 +6,17 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RawPlots", "RawPlots\RawPlots.csproj", "{A3A82819-4E99-4C11-B53D-F13A0C10B65B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "A2D_Tests", "A2D_Tests\A2D_Tests.csproj", "{4DC75C59-7093-4DEA-9F86-79A2D626334B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1822E012-21E9-4874-AEE7-D3E089C5668A} = {1822E012-21E9-4874-AEE7-D3E089C5668A}
+		{DBA95659-12B7-432A-8C3E-19372AB7F88D} = {DBA95659-12B7-432A-8C3E-19372AB7F88D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoSimulator", "ArduinoSimulator\ArduinoSimulator.csproj", "{DBA95659-12B7-432A-8C3E-19372AB7F88D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1822E012-21E9-4874-AEE7-D3E089C5668A} = {1822E012-21E9-4874-AEE7-D3E089C5668A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoInterface", "ArduinoInterface\ArduinoInterface.csproj", "{1822E012-21E9-4874-AEE7-D3E089C5668A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +36,10 @@ Global
 		{DBA95659-12B7-432A-8C3E-19372AB7F88D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBA95659-12B7-432A-8C3E-19372AB7F88D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBA95659-12B7-432A-8C3E-19372AB7F88D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1822E012-21E9-4874-AEE7-D3E089C5668A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1822E012-21E9-4874-AEE7-D3E089C5668A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1822E012-21E9-4874-AEE7-D3E089C5668A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1822E012-21E9-4874-AEE7-D3E089C5668A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

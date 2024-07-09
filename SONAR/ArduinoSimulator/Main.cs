@@ -22,12 +22,12 @@ namespace ArduinoSimulator
             try
             {
                 ArduinoSim arduino1 = new ArduinoSim ("ard1", 9999);
-                ArduinoSim arduino2 = new ArduinoSim ("ard2", 9999);
+                //ArduinoSim arduino2 = new ArduinoSim ("ard2", 9999);
 
                 Task [] allTasks =
                 {
                         new Task (arduino1.Run),
-                        new Task (arduino2.Run)
+                        //new Task (arduino2.Run)
                 };
 
                 foreach (Task t in allTasks)

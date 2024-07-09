@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DBA95659-12B7-432A-8C3E-19372AB7F88D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>ArduinoSimulator</RootNamespace>
-    <AssemblyName>ArduinoSimulator</AssemblyName>
+    <ProjectGuid>{1822E012-21E9-4874-AEE7-D3E089C5668A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ArduinoInterface</RootNamespace>
+    <AssemblyName>ArduinoInterface</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,28 +32,44 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArduinoSim.cs" />
-    <Compile Include="Main.cs" />
+    <Content Include="Messages.xml" />
+    <Content Include="_ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ArduinoInterface">
-      <HintPath>..\ArduinoInterface\bin\Debug\ArduinoInterface.dll</HintPath>
-    </Reference>
-    <Reference Include="Common">
-      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\Common.dll</HintPath>
-    </Reference>
+    <Compile Include="AcknowledgeMsg_Auto_Format.cs" />
+    <Compile Include="AcknowledgeMsg_Auto_Methods.cs" />
+    <Compile Include="AllSentMsg_Auto_Format.cs" />
+    <Compile Include="AllSentMsg_Auto_Methods.cs" />
+    <Compile Include="ClearMsg_Auto_Format.cs" />
+    <Compile Include="ClearMsg_Auto_Methods.cs" />
+    <Compile Include="CollectMsg_Auto_Format.cs" />
+    <Compile Include="CollectMsg_Auto_Methods.cs" />
+    <Compile Include="KeepAliveMsg_Auto_Format.cs" />
+    <Compile Include="KeepAliveMsg_Auto_Methods.cs" />
+    <Compile Include="MessageIDs.cs" />
+    <Compile Include="MessageQueue.cs" />
+    <Compile Include="ReadyMsg_Auto_Format.cs" />
+    <Compile Include="ReadyMsg_Auto_Methods.cs" />
+    <Compile Include="SampleDataMsg_Auto_Format.cs" />
+    <Compile Include="SampleDataMsg_Auto_Methods.cs" />
+    <Compile Include="SendMsg_Auto_Format.cs" />
+    <Compile Include="SendMsg_Auto_Methods.cs" />
+    <Compile Include="TextMessage.cs" />
+    <Compile Include="TextMsg_Auto_Format.cs" />
+    <Compile Include="TextMsg_Auto_Methods.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="SocketLibrary">
       <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Net" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Log.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

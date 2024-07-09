@@ -1,43 +1,115 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+
+using System.Threading;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Interop;
+using System.Net.NetworkInformation;
+
+using Common;
+using SocketLibrary;
+using ArduinoInterface;
 
 namespace A2D_Tests
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        SocketLibrary.TcpServer ServerSocket = null;
+        MessageQueue messageQueue; // messages to Arduino pass through here
+
+        //System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (20000); // milliseconds
+
+        // only the thread that created WPF objects can access them. others must use Invoke () to
+        // run a task on that thread. Its ID stored here
+        readonly int WpfThread;
+
         public MainWindow ()
         {
-            InitializeComponent ();
+            EventLog.Open (@"..\..\Log.txt", true);
+
+            try
+            { 
+                InitializeComponent ();
+
+                // only this thread can access WPF objects
+                WpfThread = Thread.CurrentThread.ManagedThreadId;
+
+                ServerSocket = new SocketLibrary.TcpServer (Print);
+                ServerSocket.NewConnectionHandler += SocketServer_newConnectionHandler;
+                ServerSocket.PrintHandler         += Print;
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in MainWindow ctor: {0}", ex.Message));
+            }
         }
 
-        private void ClearButton_Click (object sender, RoutedEventArgs e)
+        private void SocketServer_newConnectionHandler (Socket sock)
         {
-
+            Dispatcher.BeginInvoke ((SocketLibrary.Callback2) GainedClient, sock);
         }
 
-        private void CollectButton_Click (object sender, RoutedEventArgs e)
+        private void GainedClient (Socket sock)
         {
-
+            ArduinoWindow ard = new ArduinoWindow (sock);
+            ard.Owner = this;
+            ard.Show ();
+            Print ("Gained Client");
         }
 
-        private void SendButton_Click (object sender, RoutedEventArgs e)
-        {
+        //*******************************************************************************************************
+        //*******************************************************************************************************
+        //*******************************************************************************************************
 
+        static int localLineNumber = 1;
+        object LocalTextBoxLock = new object ();
+
+        void AddTextToLocalTextBox (string str)
+        {
+            EventLog.WriteLine (str);
+
+            lock (LocalTextBoxLock)
+            {
+                TextDisplay.Text += string.Format ("{0}: ", localLineNumber++);
+                TextDisplay.Text += str;
+                TextDisplay.Text += "\n";
+            }
+
+            TextDisplay.ScrollToEnd ();
+        }
+
+        public void Print (string str)
+        {
+            int callingThread = Thread.CurrentThread.ManagedThreadId;
+
+            if (callingThread == WpfThread)
+            {
+                AddTextToLocalTextBox (str);
+            }
+            else
+            {
+                Dispatcher.BeginInvoke ((SocketLibrary.PrintCallback) AddTextToLocalTextBox, str);
+            }
+        }
+
+        private void MainWindow_Loaded (object sender, RoutedEventArgs e)
+        {
+            Common.EventLog.WriteLine ("MainWindow loaded");
+        }
+
+        private void MainWindow_Closed (object sender, EventArgs e)
+        {
+            EventLog.Close ();
+        }
+
+        private void LaunchSimButton_Click (object sender, RoutedEventArgs e)
+        {
+            var p = new System.Diagnostics.Process();
+            p.StartInfo.FileName   = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";  // just for example, you can use yours.
+            p.Start();
         }
     }
 }

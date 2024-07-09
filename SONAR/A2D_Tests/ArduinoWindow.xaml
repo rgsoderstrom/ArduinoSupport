@@ -1,0 +1,47 @@
+﻿<Window x:Class="A2D_Tests.ArduinoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
+        xmlns:local="clr-namespace:A2D_Tests"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="750" Width="1200" Loaded="ArduinoWindow_Loaded">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 1 10 10">
+
+            <StackPanel Name="ButtonStack" Orientation="Vertical" VerticalAlignment="Top">
+                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Commands" FontSize="16">
+                    <StackPanel Orientation="Vertical">
+                        <Button MinWidth="60" MaxWidth="120" Margin="3, 10, 3, 3" Content="Clear Buffer"    Name="ClearButton"   Click="ClearButton_Click"/>
+                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Collect Samples" Name="CollectButton" Click="CollectButton_Click"/>
+                        <Button MinWidth="60" MaxWidth="120" Margin="3, 1, 3, 3"  Content="Send Samples"    Name="SendButton"    Click="SendButton_Click"/>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
+
+            <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" ToolTip="Socket connected">
+                        <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ConnectedEllipse"></Ellipse>
+                        <Label HorizontalAlignment="Center" >Connected</Label>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" ToolTip="Ready to accept messages">
+                        <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ReadyEllipse"></Ellipse>
+                        <Label HorizontalAlignment="Center">Ready</Label>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Bottom" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" Height="130">
+            <TextBox Name="TextDisplay"  VerticalScrollBarVisibility="Visible"/>
+        </Border>
+
+        <Plot2D_Embedded:Bare2DPlot Name="PlotArea"/>
+
+
+    </DockPanel>
+</Window>

@@ -35,6 +35,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ArduinoInterface">
+      <HintPath>..\ArduinoInterface\bin\Debug\ArduinoInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Common\bin\Debug\Common.dll</HintPath>
+    </Reference>
     <Reference Include="Plot2D_Embedded">
       <HintPath>..\..\..\Plotting\Plot2D_Embedded\bin\Debug\Plot2D_Embedded.dll</HintPath>
     </Reference>
@@ -61,6 +68,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="ArduinoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -69,21 +80,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ArduinoWindow.xaml.cs">
+      <DependentUpon>ArduinoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messages\AcknowledgeMsg_Auto_Format.cs" />
-    <Compile Include="Messages\AcknowledgeMsg_Auto_Methods.cs" />
-    <Compile Include="Messages\HeaderOnlyMsg_Auto_Format.cs" />
-    <Compile Include="Messages\HeaderOnlyMsg_Auto_Methods.cs" />
-    <Compile Include="Messages\MessageIDs.cs" />
-    <Compile Include="Messages\SampleDataMsg_Auto_Format.cs" />
-    <Compile Include="Messages\SampleDataMsg_Auto_Methods.cs" />
-    <Compile Include="Messages\TextMsg_Auto_Format.cs" />
-    <Compile Include="Messages\TextMsg_Auto_Methods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -109,9 +114,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Messages\Messages.xml" />
+    <Resource Include="Log.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
