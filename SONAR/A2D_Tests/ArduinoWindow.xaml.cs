@@ -5,12 +5,13 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 
-using System.Windows.Controls;
+using System.Collections.Generic;
 using System.Windows.Interop;
 
 using Common;
 using ArduinoInterface;
 using SocketLibrary;
+using Plot2D_Embedded;
 
 namespace A2D_Tests
 {
@@ -156,9 +157,12 @@ namespace A2D_Tests
 
                 switch (MsgId)
                 {
-                    case (ushort)ArduinoMessageIDs.ReadyMsgId:       ReadyMessageHandler (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.ReadyMsgId:      ReadyMessageHandler      (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.SampleDataMsgId: SampleDataMessageHandler (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.AllSentMsgId:    AllSentMessageHandler    (msgBytes); break;
+
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
-                    case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
 
                     default: Print ("Unrecognized message ID: " + MsgId.ToString ()); break;
                 }
@@ -177,58 +181,8 @@ namespace A2D_Tests
 
         private void KeepAliveTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
-            Print ("KeepALive");
-
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
-        }
-
-        //*******************************************************************************************************
-
-        private void TextMessageHandler (byte [] msgBytes)
-        {
-            TextMessage msg = new TextMessage (msgBytes);
-            Print ("Text received: " + msg.Text);
-        }
-
-        //*******************************************************************************************************
-
-        private void ReadyMessageHandler (byte [] msgBytes)
-        {
-            //StatusMessage msg = new StatusMessage (msgBytes);
-            //ArduinoNameTextBox.Text = msg.Name;
-            //clientName = msg.Name;
-
-            //SendButton.IsEnabled = true;
-            //RunButton.IsEnabled = msg.DataReceived;
-            //GetButton.IsEnabled = msg.DataReady;
-
-            //ReadyCommunicateEllipse.Fill = Brushes.Green;
-            //InputRcvdEllipse.Fill        = msg.DataReceived ? Brushes.Green : Brushes.White;
-            //ResultsReadyEllipse.Fill     = msg.DataReady ? Brushes.Green : Brushes.White;
-
-            Print ("ReadyMsg");
-            messageQueue.ArduinoReady ();
-        }
-
-        //*******************************************************************************************************
-
-        private void AcknowledgeMessageHandler (byte [] msgBytes)
-        {
-            AcknowledgeMsg_Auto msg = new AcknowledgeMsg_Auto (msgBytes);
-
-            bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
-
-            if (found == false)
-                Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
-        }
-
-        //*******************************************************************************************************
-
-        private void LoopbackMessageHandler (byte [] msgBytes)
-        {
-            //LoopbackDataMsg msg = new LoopbackDataMsg (msgBytes);
-            //Print ("Loopback data: " + msg.ToString ());
         }
 
         //*******************************************************************************************************
@@ -266,23 +220,31 @@ namespace A2D_Tests
             }
         }
 
-        //*******************************************************************************************************
-        //*******************************************************************************************************
-        //*******************************************************************************************************
-
         private void ArduinoWindow_Loaded (object sender, RoutedEventArgs e)
         {
             EventLog.WriteLine ("Arduino Window Loaded");
         }
 
+        //*******************************************************************************************************
+        //*******************************************************************************************************
+        //*******************************************************************************************************
+
+        //
+        // Button-press handlers, cause message to be sent
+        //
+
         private void ClearButton_Click (object sender, RoutedEventArgs e)
         { 
+            Samples.Clear ();
+
             ClearMsg_Auto msg = new ClearMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
         }
 
         private void CollectButton_Click (object sender, RoutedEventArgs e)
         {
+            Samples.Clear ();
+
             CollectMsg_Auto msg = new CollectMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
         }
@@ -291,6 +253,67 @@ namespace A2D_Tests
         {
             SendMsg_Auto msg = new SendMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
+        }
+
+        //*******************************************************************************************************
+        
+        //
+        // Received-message handlers for application-specific messages
+        //
+
+        List<Point> Samples = new List<Point> ();
+
+        private void SampleDataMessageHandler (byte [] msgBytes)
+        {
+            int x = Samples.Count;
+
+            SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
+
+            for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
+            {
+                Samples.Add (new Point (x + i, msg.data.Sample [i]));
+            }
+
+            Print (Samples.Count.ToString () + " total samples received");
+        }
+
+        private void AllSentMessageHandler (byte [] msgBytes)
+        {
+            PlotArea.Clear ();
+            PlotArea.Plot (new LineView (Samples));
+            PlotArea.RectangularGridOn = true;
+        }
+
+        private void ReadyMessageHandler (byte [] msgBytes)
+        {
+            ClearButton.IsEnabled = true;
+            CollectButton.IsEnabled = true;
+            SendButton.IsEnabled = true;
+
+            ReadyEllipse.Fill = Brushes.Green;
+            messageQueue.ArduinoReady ();
+        }
+
+        //*******************************************************************************************************
+
+        //
+        // Messages common to most Arduino apps
+        //
+
+        private void TextMessageHandler (byte [] msgBytes)
+        {
+            TextMessage msg = new TextMessage (msgBytes);
+            Print ("Text received from Arduino: " + msg.Text);
+        }
+
+        private void AcknowledgeMessageHandler (byte [] msgBytes)
+        {
+            AcknowledgeMsg_Auto msg = new AcknowledgeMsg_Auto (msgBytes);
+
+            bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
+
+            if (found == false)
+                Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
         }
     }
 }

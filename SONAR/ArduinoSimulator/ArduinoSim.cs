@@ -29,6 +29,8 @@ namespace ArduinoSimulator
 
         //****************************************************************************
 
+        bool Running = true;
+
         public void Run ()
         {
             try
@@ -45,31 +47,22 @@ namespace ArduinoSimulator
                 }
 
                 thisClientSocket.MessageHandler += MessageHandler;
-                thisClientSocket.PrintHandler   += PrintToLog; // PrintToConsole;
-
+              //thisClientSocket.PrintHandler   += PrintToLog;
 
                 ReadyMsg_Auto readyMsg = new ReadyMsg_Auto ();
                 thisClientSocket.Send (readyMsg.ToBytes ());
 
-
-
-                //TextMsg_Auto tm = new TextMsg_Auto ();
-                //tm.data.text = "Arduino Ready".ToCharArray ();
-                //thisClientSocket.Send (tm.ToBytes ());
-
-
-
-                while (true)
+                while (Running)
                 { 
                     Thread.Sleep (1000);
                 }
 
-                //PrintToConsole (Name + " closing socket");
+                PrintToConsole (Name + " closing socket");
 
-                //thisClientSocket.Close ();
+                thisClientSocket.Close ();
 
-                //while (true)
-                //    Thread.Sleep (1000);               
+                while (true)
+                    Thread.Sleep (1000);
             }
 
             catch (Exception ex)
@@ -112,18 +105,17 @@ namespace ArduinoSimulator
                 {
                     case (ushort) ArduinoMessageIDs.ClearMsgId:
                         Console.WriteLine ("Clear message received");
-
-                        TextMessage tm = new TextMessage ("Arduino received Clear message");
-                        thisClientSocket.Send (tm.ToBytes ());
-
+                        ClearMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.CollectMsgId:
                         Console.WriteLine ("Collect message received");
+                        CollectMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.SendMsgId:
                         Console.WriteLine ("Send message received");
+                        SendMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
@@ -139,16 +131,86 @@ namespace ArduinoSimulator
                 AcknowledgeMsg_Auto ackMsg = new AcknowledgeMsg_Auto ();
                 ackMsg.data.MsgSequenceNumber = hdr.SequenceNumber;
                 thisClientSocket.Send (ackMsg.ToBytes ());
-
-                //ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
-                //thisClientSocket.Send (rdyMsg.ToBytes ());
             }
 
             catch (Exception ex)
             {
                 Console.WriteLine ("Exception: " + Name + ", " + ex.Message);
             }
-        }    
+        } 
+        
+        //***************************************************************************************************************
+        //***************************************************************************************************************
+        //***************************************************************************************************************
+
+        private int Count = 128;
+        private List<double> Samples = new List<double> ();
+        private int get = 0;
+
+        private void ClearMessageHandler (byte [] msgBytes)
+        {
+            Samples.Clear ();
+            get = 0;
+
+            for (int i=0; i<Count; i++)
+                Samples.Add (i);
+
+            ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
+            thisClientSocket.Send (rdyMsg.ToBytes ());
+        }
+
+        //***************************************************************************************************************
+
+        double f = 5;
+
+        private void CollectMessageHandler (byte [] msgBytes)
+        {
+            Samples.Clear ();
+            get = 0;
+
+            for (int i=0; i<Count; i++)
+            { 
+                Samples.Add (1000 * Math.Sin (2 * Math.PI * f * i / Count));
+            }
+
+            ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
+            thisClientSocket.Send (rdyMsg.ToBytes ());
+
+            f += 1;
+        }
+
+        //***************************************************************************************************************
+
+        private void SendMessageHandler (byte [] msgBytes)
+        {
+            Console.WriteLine ("Sending, get = " + get.ToString ());
+
+            SampleDataMsg_Auto msg = new SampleDataMsg_Auto ();
+
+            try
+            { 
+                for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
+                {
+                    msg.data.Sample [i] = (short) Samples [get++];
+                }
+
+                thisClientSocket.Send (msg.ToBytes ());
+
+                if (get >= Count)
+                {
+                    Console.WriteLine ("All Sent");
+
+                    AllSentMsg_Auto msg2 = new AllSentMsg_Auto ();
+                    thisClientSocket.Send (msg2.ToBytes ());
+                    get = 0;
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine ("Exception: " + ex.Message);
+            }
+        }
     }
 }
 

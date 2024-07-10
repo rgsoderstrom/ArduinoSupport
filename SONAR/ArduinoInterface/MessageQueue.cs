@@ -35,6 +35,12 @@ namespace ArduinoInterface
             socket = _socket;
         }
 
+        public void Close ()
+        {
+            socket.Close ();
+            arduinoReady = false;
+        }
+
         //**********************************************************************
 
         public void AddMessage (byte [] msgBytes)
