@@ -46,6 +46,9 @@ namespace A2D_Tests
 
                 KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
                 KeepAliveTimer.Enabled = true;
+
+
+                messageQueue.ArduinoReady (); //************************************
             }
 
             catch (Exception ex)
@@ -164,7 +167,7 @@ namespace A2D_Tests
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
 
-                    default: Print ("Unrecognized message ID: " + MsgId.ToString ()); break;
+                    default: Print ("Unrecognized message ID: " + MsgId.ToString ());  break;
                 }
             }
 
@@ -256,12 +259,14 @@ namespace A2D_Tests
         }
 
         //*******************************************************************************************************
-        
+        //*******************************************************************************************************
+        //*******************************************************************************************************        
         //
         // Received-message handlers for application-specific messages
         //
 
         List<Point> Samples = new List<Point> ();
+        int ExpectedBatchSize = 1024;
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
@@ -274,15 +279,31 @@ namespace A2D_Tests
                 Samples.Add (new Point (x + i, msg.data.Sample [i]));
             }
 
-            Print (Samples.Count.ToString () + " total samples received");
+            //Print ("Sample [0]: " + msg.data.Sample [0].ToString ());
+            //Print (Samples.Count.ToString () + " total samples received");
+
+            if (Samples.Count < ExpectedBatchSize)
+            {
+                SendButton_Click (null, null);
+            }
+            else
+            {
+                PlotArea.Clear ();
+                PlotArea.Plot (new LineView (Samples));
+                PlotArea.RectangularGridOn = true;
+            }
         }
+
+        //*******************************************************************************************************
 
         private void AllSentMessageHandler (byte [] msgBytes)
         {
-            PlotArea.Clear ();
-            PlotArea.Plot (new LineView (Samples));
-            PlotArea.RectangularGridOn = true;
+            //PlotArea.Clear ();
+            //PlotArea.Plot (new LineView (Samples));
+            //PlotArea.RectangularGridOn = true;
         }
+
+        //*******************************************************************************************************
 
         private void ReadyMessageHandler (byte [] msgBytes)
         {
@@ -292,10 +313,13 @@ namespace A2D_Tests
 
             ReadyEllipse.Fill = Brushes.Green;
             messageQueue.ArduinoReady ();
+
+            Print ("FPGA Ready");
         }
 
         //*******************************************************************************************************
-
+        //*******************************************************************************************************
+        //*******************************************************************************************************
         //
         // Messages common to most Arduino apps
         //

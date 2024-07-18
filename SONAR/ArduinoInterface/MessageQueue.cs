@@ -45,7 +45,7 @@ namespace ArduinoInterface
 
         public void AddMessage (byte [] msgBytes)
         {
-            if (arduinoReady == false)
+            if (false) // arduinoReady == false)
             {
                 pendingMessages.Enqueue (msgBytes);
             }
