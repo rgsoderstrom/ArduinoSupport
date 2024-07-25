@@ -170,7 +170,7 @@ namespace ArduinoSimulator
 
             for (int i=0; i<Count; i++)
             { 
-                Samples.Add (1000 * Math.Sin (2 * Math.PI * f * i / Count));
+                Samples.Add (512 + 500 * Math.Sin (2 * Math.PI * f * i / Count));
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
