@@ -43,7 +43,8 @@ namespace SocketLibrary
             {
                 try
                 {
-                    string machineName = "RandysLaptop";
+                  //string machineName = "RandysLaptop";
+                    string machineName = "RandysLG";
                     IPHostEntry ipHostInfo = Dns.GetHostEntry (machineName);
 
                     // find and use the IPv4 address

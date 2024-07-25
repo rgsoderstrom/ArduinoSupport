@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 using SocketLibrary;
 using ArduinoInterface;
+using Common;
 
 namespace ArduinoSimulator
 {
@@ -35,19 +36,22 @@ namespace ArduinoSimulator
         {
             try
             {
-                Console.WriteLine ("Connecting to server");
+                string str = Environment.CurrentDirectory;
+                Console.WriteLine ("cwd " + str);
+
+                PrintToLog ("Connecting to server");
                 thisClientSocket = new SocketLibrary.TcpClient (PrintToConsole); 
 
                 if (thisClientSocket.Connected == false)
                 {
-                    Console.WriteLine ("\n\nFailed to connect to server");
+                    PrintToLog ("\n\nFailed to connect to server");
 
                     while (true)
                         Thread.Sleep (1000);
                 }
 
                 thisClientSocket.MessageHandler += MessageHandler;
-              //thisClientSocket.PrintHandler   += PrintToLog;
+                thisClientSocket.PrintHandler   += PrintToLog;
 
                 ReadyMsg_Auto readyMsg = new ReadyMsg_Auto ();
                 thisClientSocket.Send (readyMsg.ToBytes ());
@@ -57,7 +61,7 @@ namespace ArduinoSimulator
                     Thread.Sleep (1000);
                 }
 
-                PrintToConsole (Name + " closing socket");
+                PrintToLog (Name + " closing socket");
 
                 thisClientSocket.Close ();
 
@@ -67,7 +71,7 @@ namespace ArduinoSimulator
 
             catch (Exception ex)
             {
-                Console.WriteLine ("Exception in Main.Run: " + ex.Message);
+                PrintToLog ("Exception in Main.Run: " + ex.Message);
             }
         }
 
@@ -80,6 +84,7 @@ namespace ArduinoSimulator
 
         private void PrintToLog (string str)
         {
+            EventLog.WriteLine (str);
             Console.WriteLine (str);
         }
 
@@ -104,17 +109,17 @@ namespace ArduinoSimulator
                 switch (header.MessageId)
                 {
                     case (ushort) ArduinoMessageIDs.ClearMsgId:
-                        Console.WriteLine ("Clear message received");
+                        PrintToLog ("Clear message received");
                         ClearMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.CollectMsgId:
-                        Console.WriteLine ("Collect message received");
+                        PrintToLog ("Collect message received");
                         CollectMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.SendMsgId:
-                        Console.WriteLine ("Send message received");
+                        PrintToLog ("Send message received");
                         SendMessageHandler (msgBytes);
                         break;
                         
@@ -122,7 +127,7 @@ namespace ArduinoSimulator
                         break;
                         
                     default:
-                        Console.WriteLine ("Received unrecognized message, Id: " + header.MessageId.ToString ());
+                        PrintToLog ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
                 }
 
@@ -135,7 +140,7 @@ namespace ArduinoSimulator
 
             catch (Exception ex)
             {
-                Console.WriteLine ("Exception: " + Name + ", " + ex.Message);
+                PrintToLog ("Exception: " + Name + ", " + ex.Message);
             }
         } 
         
@@ -183,7 +188,7 @@ namespace ArduinoSimulator
 
         private void SendMessageHandler (byte [] msgBytes)
         {
-            Console.WriteLine ("Sending, get = " + get.ToString ());
+            PrintToLog ("Sending, get = " + get.ToString ());
 
             SampleDataMsg_Auto msg = new SampleDataMsg_Auto ();
 
@@ -198,7 +203,7 @@ namespace ArduinoSimulator
 
                 if (get >= Count)
                 {
-                    Console.WriteLine ("All Sent");
+                    PrintToLog ("All Sent");
 
                     AllSentMsg_Auto msg2 = new AllSentMsg_Auto ();
                     thisClientSocket.Send (msg2.ToBytes ());
@@ -208,7 +213,7 @@ namespace ArduinoSimulator
 
             catch (Exception ex)
             {
-                Console.WriteLine ("Exception: " + ex.Message);
+                PrintToLog ("Exception: " + ex.Message);
             }
         }
     }

@@ -16,7 +16,7 @@ namespace ArduinoSimulator
     {
         public static int Main (string [] args)
         {
-            EventLog.Open (@"..\..\Log.txt", true);
+            EventLog.Open (@"..\..\SimulatorLog.txt", true);
             EventLog.WriteLine ("Arduino Simulator");
 
             try
@@ -51,6 +51,5 @@ namespace ArduinoSimulator
            // var c = Console.ReadKey ();                
             return 0;
         }
-
     }
 }
