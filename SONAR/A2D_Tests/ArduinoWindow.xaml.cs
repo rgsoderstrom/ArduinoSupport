@@ -12,6 +12,8 @@ using Common;
 using ArduinoInterface;
 using SocketLibrary;
 using Plot2D_Embedded;
+using System.Net;
+using System.Windows.Controls;
 
 namespace A2D_Tests
 {
@@ -47,8 +49,17 @@ namespace A2D_Tests
                 KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
                 KeepAliveTimer.Enabled = true;
 
-
                 messageQueue.ArduinoReady (); //************************************
+
+                try
+                {                
+                    var hostEntry = Dns.GetHostEntry (((IPEndPoint) socket.RemoteEndPoint).Address);
+                    clientName = hostEntry.HostName;
+                }
+                catch (Exception )
+                {
+                    Print ("Failed to find client's name");
+                }            
             }
 
             catch (Exception ex)
@@ -242,6 +253,8 @@ namespace A2D_Tests
 
             ClearMsg_Auto msg = new ClearMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
+
+            Print ("Sending Clear msg");
         }
 
         private void CollectButton_Click (object sender, RoutedEventArgs e)
@@ -250,12 +263,16 @@ namespace A2D_Tests
 
             CollectMsg_Auto msg = new CollectMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
+
+            Print ("Sending Collect msg");
         }
 
         private void SendButton_Click (object sender, RoutedEventArgs e)
         {
             SendMsg_Auto msg = new SendMsg_Auto ();
             messageQueue.AddMessage (msg.ToBytes ());
+
+            Print ("Sending Send msg");
         }
 
         //*******************************************************************************************************
@@ -279,8 +296,7 @@ namespace A2D_Tests
                 Samples.Add (new Point (x + i, msg.data.Sample [i]));
             }
 
-            //Print ("Sample [0]: " + msg.data.Sample [0].ToString ());
-            //Print (Samples.Count.ToString () + " total samples received");
+            Print (Samples.Count.ToString () + " total samples received, seq = " + msg.header.SequenceNumber);
 
             if (Samples.Count < ExpectedBatchSize)
             {
@@ -301,6 +317,9 @@ namespace A2D_Tests
             //PlotArea.Clear ();
             //PlotArea.Plot (new LineView (Samples));
             //PlotArea.RectangularGridOn = true;
+
+            SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+            Print ("All Sent message received " + hdr.SequenceNumber);
         }
 
         //*******************************************************************************************************
@@ -314,7 +333,8 @@ namespace A2D_Tests
             ReadyEllipse.Fill = Brushes.Green;
             messageQueue.ArduinoReady ();
 
-            Print ("FPGA Ready");
+            SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+            Print ("FPGA Ready message received " + hdr.SequenceNumber);
         }
 
         //*******************************************************************************************************
@@ -328,6 +348,8 @@ namespace A2D_Tests
         {
             TextMessage msg = new TextMessage (msgBytes);
             Print ("Text received from Arduino: " + msg.Text);
+
+            Print ("Text " + msg.header.SequenceNumber);
         }
 
         private void AcknowledgeMessageHandler (byte [] msgBytes)
@@ -338,6 +360,8 @@ namespace A2D_Tests
 
             if (found == false)
                 Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
+
+            Print ("AckMsg " + msg.header.SequenceNumber);
         }
     }
 }
