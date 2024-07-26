@@ -37,15 +37,15 @@ namespace SocketLibrary
 
         static readonly object messageBytesLock = new object ();
 
-        public TcpClient (PrintCallback print)
+        public TcpClient (string serverMachineName, PrintCallback print)
         {
             for (int count = 0; count<RetryCount; count++)
             {
                 try
                 {
                   //string machineName = "RandysLaptop";
-                    string machineName = "RandysLG";
-                    IPHostEntry ipHostInfo = Dns.GetHostEntry (machineName);
+                  //string machineName = "RandysLG";
+                    IPHostEntry ipHostInfo = Dns.GetHostEntry (serverMachineName);
 
                     // find and use the IPv4 address
                     int select = 0;
@@ -59,7 +59,7 @@ namespace SocketLibrary
 
                     IPAddress ipAddress = ipHostInfo.AddressList [select]; // IPv4
 
-                    print (string.Format ("Looking for {0} at {1}", machineName, ipAddress));
+                    print (string.Format ("Looking for {0} at {1}", serverMachineName, ipAddress));
 
                     IPEndPoint remoteEP = new IPEndPoint (ipAddress, port);
 

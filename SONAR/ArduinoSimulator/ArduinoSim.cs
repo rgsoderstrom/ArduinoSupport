@@ -32,6 +32,9 @@ namespace ArduinoSimulator
 
         bool Running = true;
 
+        //string machineName = "RandysLaptop";
+        string machineName = "RandysLG";
+
         public void Run ()
         {
             try
@@ -40,7 +43,7 @@ namespace ArduinoSimulator
                 Console.WriteLine ("cwd " + str);
 
                 PrintToLog ("Connecting to server");
-                thisClientSocket = new SocketLibrary.TcpClient (PrintToConsole); 
+                thisClientSocket = new SocketLibrary.TcpClient (machineName, PrintToConsole); 
 
                 if (thisClientSocket.Connected == false)
                 {
