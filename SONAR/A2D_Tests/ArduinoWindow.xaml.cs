@@ -306,7 +306,7 @@ namespace A2D_Tests
                 }
             }
 
-            Print (Samples.Count.ToString () + " total samples received, seq = " + msg.header.SequenceNumber);
+            Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
 
             if (Samples.Count < ExpectedBatchSize)
             {
@@ -328,8 +328,8 @@ namespace A2D_Tests
             //PlotArea.Plot (new LineView (Samples));
             //PlotArea.RectangularGridOn = true;
 
-            SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-            Print ("All Sent message received " + hdr.SequenceNumber);
+            //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+            Print ("All Sent message received "); // + hdr.SequenceNumber);
 
             if (samplesFile != null)
             {
@@ -349,8 +349,8 @@ namespace A2D_Tests
             ReadyEllipse.Fill = Brushes.Green;
             messageQueue.ArduinoReady ();
 
-            SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-            Print ("FPGA Ready message received " + hdr.SequenceNumber);
+            //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+            Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
         }
 
         //*******************************************************************************************************
@@ -363,9 +363,9 @@ namespace A2D_Tests
         private void TextMessageHandler (byte [] msgBytes)
         {
             TextMessage msg = new TextMessage (msgBytes);
-            Print ("Text received from Arduino: " + msg.Text);
+            Print ("Text from Arduino: " + msg.Text.TrimEnd (new char [] {'\0'}));
 
-            Print ("Text " + msg.header.SequenceNumber);
+            //Print ("Text " + msg.header.SequenceNumber);
         }
 
         private void AcknowledgeMessageHandler (byte [] msgBytes)
@@ -377,7 +377,7 @@ namespace A2D_Tests
             if (found == false)
                 Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-            Print ("AckMsg " + msg.header.SequenceNumber);
+            //Print ("AckMsg " + msg.header.SequenceNumber);
         }
     }
 }
