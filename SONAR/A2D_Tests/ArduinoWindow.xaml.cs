@@ -302,7 +302,7 @@ namespace A2D_Tests
 
                 if (samplesFile != null)
                 {
-                    samplesFile.WriteLine ((x + i).ToString () + ": " + msg.data.Sample [i].ToString ());
+                    samplesFile.WriteLine ((x + i).ToString () + ", " + msg.data.Sample [i].ToString () + " ; ...");
                 }
             }
 
