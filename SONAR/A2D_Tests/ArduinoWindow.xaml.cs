@@ -14,6 +14,7 @@ using SocketLibrary;
 using Plot2D_Embedded;
 using System.Net;
 using System.Windows.Controls;
+using System.IO;
 
 namespace A2D_Tests
 {
@@ -247,8 +248,12 @@ namespace A2D_Tests
         // Button-press handlers, cause message to be sent
         //
 
+        StreamWriter samplesFile = null;
+
         private void ClearButton_Click (object sender, RoutedEventArgs e)
         { 
+            samplesFile = new StreamWriter ("samples.txt");
+
             Samples.Clear ();
 
             ClearMsg_Auto msg = new ClearMsg_Auto ();
@@ -294,6 +299,11 @@ namespace A2D_Tests
             for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
             {
                 Samples.Add (new Point (x + i, msg.data.Sample [i]));
+
+                if (samplesFile != null)
+                {
+                    samplesFile.WriteLine ((x + i).ToString () + ": " + msg.data.Sample [i].ToString ());
+                }
             }
 
             Print (Samples.Count.ToString () + " total samples received, seq = " + msg.header.SequenceNumber);
@@ -320,6 +330,12 @@ namespace A2D_Tests
 
             SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
             Print ("All Sent message received " + hdr.SequenceNumber);
+
+            if (samplesFile != null)
+            {
+                samplesFile.Close ();
+                samplesFile = null;
+            }
         }
 
         //*******************************************************************************************************
