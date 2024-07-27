@@ -59,6 +59,9 @@ namespace ArduinoSimulator
                 ReadyMsg_Auto readyMsg = new ReadyMsg_Auto ();
                 thisClientSocket.Send (readyMsg.ToBytes ());
 
+                TextMessage msg2 = new TextMessage ("Arduino sim ready");
+                thisClientSocket.Send (msg2.ToBytes ());
+
                 while (Running)
                 { 
                     Thread.Sleep (1000);
