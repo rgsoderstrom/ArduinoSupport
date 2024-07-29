@@ -252,32 +252,56 @@ namespace A2D_Tests
 
         private void ClearButton_Click (object sender, RoutedEventArgs e)
         { 
-            samplesFile = new StreamWriter ("samples.txt");
+            try
+            { 
+                samplesFile = new StreamWriter ("samples.txt");
 
-            Samples.Clear ();
+                Samples.Clear ();
 
-            ClearMsg_Auto msg = new ClearMsg_Auto ();
-            messageQueue.AddMessage (msg.ToBytes ());
+                ClearMsg_Auto msg = new ClearMsg_Auto ();
+                messageQueue.AddMessage (msg.ToBytes ());
 
-            Print ("Sending Clear msg");
+                Print ("Sending Clear msg");
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in ClearButton click: {0}", ex.Message));
+            }
         }
 
         private void CollectButton_Click (object sender, RoutedEventArgs e)
         {
-            Samples.Clear ();
+            try
+            { 
+                Samples.Clear ();
 
-            CollectMsg_Auto msg = new CollectMsg_Auto ();
-            messageQueue.AddMessage (msg.ToBytes ());
+                CollectMsg_Auto msg = new CollectMsg_Auto ();
+                messageQueue.AddMessage (msg.ToBytes ());
 
-            Print ("Sending Collect msg");
+                Print ("Sending Collect msg");
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in CollectButton click: {0}", ex.Message));
+            }
         }
 
         private void SendButton_Click (object sender, RoutedEventArgs e)
         {
-            SendMsg_Auto msg = new SendMsg_Auto ();
-            messageQueue.AddMessage (msg.ToBytes ());
+            try
+            { 
+                SendMsg_Auto msg = new SendMsg_Auto ();
+                messageQueue.AddMessage (msg.ToBytes ());
 
-            Print ("Sending Send msg");
+                Print ("Sending Send msg");
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in SendButton click: {0}", ex.Message));
+            }
         }
 
         //*******************************************************************************************************
@@ -292,31 +316,39 @@ namespace A2D_Tests
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
-            int x = Samples.Count;
+            try
+            { 
+                int x = Samples.Count;
 
-            SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
+                SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
 
-            for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
-            {
-                Samples.Add (new Point (x + i, msg.data.Sample [i]));
-
-                if (samplesFile != null)
+                for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
                 {
-                    samplesFile.WriteLine ((x + i).ToString () + ", " + msg.data.Sample [i].ToString () + " ; ...");
+                    Samples.Add (new Point (x + i, msg.data.Sample [i]));
+
+                    if (samplesFile != null)
+                    {
+                        samplesFile.WriteLine ((x + i).ToString () + ", " + msg.data.Sample [i].ToString () + " ; ...");
+                    }
+                }
+
+                Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
+
+                if (Samples.Count < ExpectedBatchSize)
+                {
+                    SendButton_Click (null, null);
+                }
+                else
+                {
+                    PlotArea.Clear ();
+                    PlotArea.Plot (new LineView (Samples));
+                    PlotArea.RectangularGridOn = true;
                 }
             }
 
-            Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
-
-            if (Samples.Count < ExpectedBatchSize)
+            catch (Exception ex)
             {
-                SendButton_Click (null, null);
-            }
-            else
-            {
-                PlotArea.Clear ();
-                PlotArea.Plot (new LineView (Samples));
-                PlotArea.RectangularGridOn = true;
+                EventLog.WriteLine (string.Format ("Exception in SampleDataMsg handler: {0}", ex.Message));
             }
         }
 
@@ -324,17 +356,20 @@ namespace A2D_Tests
 
         private void AllSentMessageHandler (byte [] msgBytes)
         {
-            //PlotArea.Clear ();
-            //PlotArea.Plot (new LineView (Samples));
-            //PlotArea.RectangularGridOn = true;
+            try
+            { 
+                Print ("All Sent message received "); // + hdr.SequenceNumber);
 
-            //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-            Print ("All Sent message received "); // + hdr.SequenceNumber);
+                if (samplesFile != null)
+                {
+                    samplesFile.Close ();
+                    samplesFile = null;
+                }
+            }
 
-            if (samplesFile != null)
+            catch (Exception ex)
             {
-                samplesFile.Close ();
-                samplesFile = null;
+                EventLog.WriteLine (string.Format ("Exception in SampleDataMsg handler: {0}", ex.Message));
             }
         }
 
@@ -342,15 +377,23 @@ namespace A2D_Tests
 
         private void ReadyMessageHandler (byte [] msgBytes)
         {
-            ClearButton.IsEnabled = true;
-            CollectButton.IsEnabled = true;
-            SendButton.IsEnabled = true;
+            try
+            { 
+                ClearButton.IsEnabled = true;
+                CollectButton.IsEnabled = true;
+                SendButton.IsEnabled = true;
 
-            ReadyEllipse.Fill = Brushes.Green;
-            messageQueue.ArduinoReady ();
+                ReadyEllipse.Fill = Brushes.Green;
+                messageQueue.ArduinoReady ();
 
-            //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-            Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
+                //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+                Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
+            }
         }
 
         //*******************************************************************************************************
@@ -362,22 +405,38 @@ namespace A2D_Tests
 
         private void TextMessageHandler (byte [] msgBytes)
         {
-            TextMessage msg = new TextMessage (msgBytes);
-            Print ("Text from Arduino: " + msg.Text.TrimEnd (new char [] {'\0'}));
+            try
+            { 
+                TextMessage msg = new TextMessage (msgBytes);
+                Print ("Text from Arduino: " + msg.Text.TrimEnd (new char [] {'\0'}));
 
-            //Print ("Text " + msg.header.SequenceNumber);
+                //Print ("Text " + msg.header.SequenceNumber);
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in TextMsg handler: {0}", ex.Message));
+            }
         }
 
         private void AcknowledgeMessageHandler (byte [] msgBytes)
         {
-            AcknowledgeMsg_Auto msg = new AcknowledgeMsg_Auto (msgBytes);
+            try
+            { 
+                AcknowledgeMsg_Auto msg = new AcknowledgeMsg_Auto (msgBytes);
 
-            bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
+                bool found = messageQueue.MessageAcknowledged (msg.data.MsgSequenceNumber);
 
-            if (found == false)
-                Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
+                if (found == false)
+                    Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-            //Print ("AckMsg " + msg.header.SequenceNumber);
+                //Print ("AckMsg " + msg.header.SequenceNumber);
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in AckMsg handler: {0}", ex.Message));
+            }
         }
     }
 }

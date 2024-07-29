@@ -70,16 +70,24 @@ namespace SocketLibrary
         //
         void AcceptConnections ()
         {        
-            while (true)  // loop here accepting connections
+            try
+            { 
+                while (true)  // loop here accepting connections
+                {
+                    // Set the event to nonsignaled state.
+                    allDone.Reset ();
+
+                    PrintHandler?.Invoke ("Ready for connections");
+                    listeningSocket.BeginAccept  (new AsyncCallback (AcceptCallback), listeningSocket);
+
+                    // Wait until a connection is made before continuing.
+                    allDone.WaitOne ();
+                }
+            }
+
+            catch (Exception ex)
             {
-                // Set the event to nonsignaled state.
-                allDone.Reset ();
-
-                PrintHandler?.Invoke ("Ready for connections");
-                listeningSocket.BeginAccept  (new AsyncCallback (AcceptCallback), listeningSocket);
-
-                // Wait until a connection is made before continuing.
-                allDone.WaitOne ();
+                PrintHandler?.Invoke (string.Format ("AcceptConnection exception: {0}", ex.Message));
             }
         }
 

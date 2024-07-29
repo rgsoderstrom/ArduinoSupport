@@ -18,6 +18,9 @@ namespace ArduinoInterface
 
             data.text = new char [Data.TextBufferSize];
             txt.CopyTo (0, data.text, 0, txt.Length);
+
+            for (int i = txt.Length; i<Data.TextBufferSize; i++)
+                data.text [i] = '\0';
         }
 
         public TextMessage (byte [] fromBytes) : base (fromBytes)

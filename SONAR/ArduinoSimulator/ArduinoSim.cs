@@ -32,8 +32,8 @@ namespace ArduinoSimulator
 
         bool Running = true;
 
-        //string machineName = "RandysLaptop";
-        string machineName = "RandysLG";
+        string machineName = "RandysLaptop";
+        //string machineName = "RandysLG";
 
         public void Run ()
         {
