@@ -338,12 +338,12 @@ namespace A2D_Tests
                 {
                     SendButton_Click (null, null);
                 }
-                else
-                {
-                    PlotArea.Clear ();
-                    PlotArea.Plot (new LineView (Samples));
-                    PlotArea.RectangularGridOn = true;
-                }
+                //else
+                //{
+                //    PlotArea.Clear ();
+                //    PlotArea.Plot (new LineView (Samples));
+                //    PlotArea.RectangularGridOn = true;
+                //}
             }
 
             catch (Exception ex)
@@ -359,6 +359,10 @@ namespace A2D_Tests
             try
             { 
                 Print ("All Sent message received "); // + hdr.SequenceNumber);
+
+                PlotArea.Clear ();
+                PlotArea.Plot (new LineView (Samples));
+                PlotArea.RectangularGridOn = true;
 
                 if (samplesFile != null)
                 {
