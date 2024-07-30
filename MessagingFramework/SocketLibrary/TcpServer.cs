@@ -19,7 +19,8 @@ namespace SocketLibrary
 
         private int CommandPort = 11000;   // commands to Arduino, response back
 
-        Socket listeningSocket = null; // listens for connections from clients
+        Socket listeningSocket0 = null; // listens for connections from clients
+        Socket listeningSocket1 = null; // listens for connections from clients
 
         //****************************************************************************************
 
@@ -38,22 +39,65 @@ namespace SocketLibrary
 
               // open server sockets at all IPv4 address
 
-                foreach (IPAddress ipAddress in ipHostInfo.AddressList)
-                {
+                //foreach (IPAddress ipAddress in ipHostInfo.AddressList)
+                //{
+                //    if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+                //    {
+                //        print (string.Format ("IP address:   {0}", ipAddress));
+                //        IPEndPoint  localEndPoint = new IPEndPoint (ipAddress, CommandPort);
+
+                //        listeningSocket = new Socket (ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                //        listeningSocket.Bind (localEndPoint);
+                //        listeningSocket.Listen (5);
+
+                //      //
+                //      // start an asynchronous task to accept connections
+                //      //            
+                //        Callback functionPtr = new Callback (AcceptConnections);
+                //        functionPtr.BeginInvoke (null, null);
+                //    }
+                //}
+
+                int index = 0;
+
+                for ( ; index < ipHostInfo.AddressList.Length; index++)
+                { 
+                    IPAddress ipAddress = ipHostInfo.AddressList [index];
+
                     if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
-                    {
+                    { 
                         print (string.Format ("IP address:   {0}", ipAddress));
-                        IPEndPoint  localEndPoint = new IPEndPoint (ipAddress, CommandPort);
+                        IPEndPoint localEndPoint = new IPEndPoint (ipAddress, CommandPort);
 
-                        listeningSocket = new Socket (ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                        listeningSocket.Bind (localEndPoint);
-                        listeningSocket.Listen (1);
+                        listeningSocket0 = new Socket (ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                        listeningSocket0.Bind (localEndPoint);
+                        listeningSocket0.Listen (5);
 
-                      //
-                      // start an asynchronous task to accept connections
-                      //            
-                        Callback functionPtr = new Callback (AcceptConnections);
+                        Callback functionPtr = new Callback (AcceptConnections0);
                         functionPtr.BeginInvoke (null, null);
+
+                        break;
+                    }
+                }
+
+
+                for (index++ ; index < ipHostInfo.AddressList.Length; index++)
+                { 
+                    IPAddress ipAddress = ipHostInfo.AddressList [index];
+
+                    if (ipAddress.AddressFamily == AddressFamily.InterNetwork)
+                    { 
+                        print (string.Format ("IP address:   {0}", ipAddress));
+                        IPEndPoint localEndPoint = new IPEndPoint (ipAddress, CommandPort);
+
+                        listeningSocket1 = new Socket (ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                        listeningSocket1.Bind (localEndPoint);
+                        listeningSocket1.Listen (5);
+
+                        Callback functionPtr = new Callback (AcceptConnections1);
+                        functionPtr.BeginInvoke (null, null);
+
+                        break;
                     }
                 }
             }
@@ -68,7 +112,7 @@ namespace SocketLibrary
         //
         //  Loops here until program teminates
         //
-        void AcceptConnections ()
+        void AcceptConnections0 ()
         {        
             try
             { 
@@ -78,7 +122,7 @@ namespace SocketLibrary
                     allDone.Reset ();
 
                     PrintHandler?.Invoke ("Ready for connections");
-                    listeningSocket.BeginAccept  (new AsyncCallback (AcceptCallback), listeningSocket);
+                    listeningSocket0.BeginAccept  (new AsyncCallback (AcceptCallback0), listeningSocket0);
 
                     // Wait until a connection is made before continuing.
                     allDone.WaitOne ();
@@ -87,29 +131,72 @@ namespace SocketLibrary
 
             catch (Exception ex)
             {
-                PrintHandler?.Invoke (string.Format ("AcceptConnection exception: {0}", ex.Message));
+                PrintHandler?.Invoke (string.Format ("AcceptConnection0 exception: {0}", ex.Message));
+            }
+        }
+
+        void AcceptConnections1 ()
+        {        
+            try
+            { 
+                while (true)  // loop here accepting connections
+                {
+                    // Set the event to nonsignaled state.
+                    allDone.Reset ();
+
+                    PrintHandler?.Invoke ("Ready for connections");
+                    listeningSocket1.BeginAccept  (new AsyncCallback (AcceptCallback1), listeningSocket1);
+
+                    // Wait until a connection is made before continuing.
+                    allDone.WaitOne ();
+                }
+            }
+
+            catch (Exception ex)
+            {
+                PrintHandler?.Invoke (string.Format ("AcceptConnection1 exception: {0}", ex.Message));
             }
         }
 
         //*********************************************************************************************************
 
-        void AcceptCallback (IAsyncResult ar)
+        void AcceptCallback0 (IAsyncResult ar)
         {
             try
             {
-                PrintHandler?.Invoke ("Accepted connection");
+                PrintHandler?.Invoke ("Accepted connection 0");
 
                 // Signal the main thread to continue.
                 allDone.Set ();
 
                 // Get the socket that will handle messages to/from the client
-                Socket clientSocket = listeningSocket.EndAccept (ar);
+                Socket clientSocket = listeningSocket0.EndAccept (ar);
                 NewConnectionHandler?.Invoke (clientSocket);
             }
 
             catch (Exception ex)
             {
-                PrintHandler?.Invoke (string.Format ("AcceptCallback exception: {0}", ex.Message)); 
+                PrintHandler?.Invoke (string.Format ("AcceptCallback0 exception: {0}", ex.Message)); 
+            }
+        }
+
+        void AcceptCallback1 (IAsyncResult ar)
+        {
+            try
+            {
+                PrintHandler?.Invoke ("Accepted connection 1");
+
+                // Signal the main thread to continue.
+                allDone.Set ();
+
+                // Get the socket that will handle messages to/from the client
+                Socket clientSocket = listeningSocket1.EndAccept (ar);
+                NewConnectionHandler?.Invoke (clientSocket);
+            }
+
+            catch (Exception ex)
+            {
+                PrintHandler?.Invoke (string.Format ("AcceptCallback1 exception: {0}", ex.Message)); 
             }
         }
 
