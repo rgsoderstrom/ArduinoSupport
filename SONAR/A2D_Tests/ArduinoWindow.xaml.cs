@@ -254,7 +254,7 @@ namespace A2D_Tests
         { 
             try
             { 
-                samplesFile = new StreamWriter ("samples.txt");
+                //samplesFile = new StreamWriter ("samples.txt");
 
                 Samples.Clear ();
 
@@ -332,18 +332,12 @@ namespace A2D_Tests
                     }
                 }
 
-                Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
+                //Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
 
                 if (Samples.Count < ExpectedBatchSize)
                 {
                     SendButton_Click (null, null);
                 }
-                //else
-                //{
-                //    PlotArea.Clear ();
-                //    PlotArea.Plot (new LineView (Samples));
-                //    PlotArea.RectangularGridOn = true;
-                //}
             }
 
             catch (Exception ex)
