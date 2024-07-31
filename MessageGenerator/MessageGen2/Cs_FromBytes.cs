@@ -52,14 +52,14 @@ namespace MessageGenerator
             MethodText.Add ("        //");
             MethodText.Add ("        public " + msgName + " (byte [] fromBytes)");
             MethodText.Add ("        {");
-            MethodText.Add ("            header = new MessageHeader ();");
+            MethodText.Add ("            header = new MessageHeader (fromBytes);");
             MethodText.Add ("            data = new Data ();");
-            MethodText.Add ("            int byteIndex = 0;");
+            MethodText.Add ("            int byteIndex = Marshal.SizeOf (typeof (MessageHeader));");
             MethodText.Add ("");
-            MethodText.Add ("            header.Sync           = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.ByteCount      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.MessageId      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.SequenceNumber = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.Sync           = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.ByteCount      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.MessageId      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.SequenceNumber = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
 
             List<string> code = MessageCodeGenerator.CodeGenerator_Variables (memberTokens, CsFromByteRules, CsArrayFromByteRules);
 
@@ -77,13 +77,13 @@ namespace MessageGenerator
             MethodText.Add ("        //");
             MethodText.Add ("        public " + msgName + " (byte [] fromBytes)");
             MethodText.Add ("        {");
-            MethodText.Add ("            header = new MessageHeader ();");
-            MethodText.Add ("            int byteIndex = 0;");
+            MethodText.Add ("            header = new MessageHeader (fromBytes);");
+            MethodText.Add ("            int byteIndex = Marshal.SizeOf (typeof (MessageHeader));");
             MethodText.Add ("");
-            MethodText.Add ("            header.Sync           = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.ByteCount      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.MessageId      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
-            MethodText.Add ("            header.SequenceNumber = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.Sync           = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.ByteCount      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.MessageId      = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
+            //MethodText.Add ("            header.SequenceNumber = BitConverter.ToUInt16 (fromBytes, byteIndex); byteIndex += 2;");
             MethodText.Add ("        }");
         }
 
