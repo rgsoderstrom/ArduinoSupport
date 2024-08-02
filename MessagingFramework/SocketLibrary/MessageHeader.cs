@@ -11,7 +11,7 @@ namespace SocketLibrary
     // used by all messages
     abstract public class Message 
     {
-        public const ushort Sync = 0x1234;
+        public const ushort SyncPattern = 0x1234;
     }
 
     //*********************************************************************************************
@@ -39,7 +39,7 @@ namespace SocketLibrary
 
         public MessageHeader ()
         {
-            Sync           = Message.Sync;
+            Sync           = Message.SyncPattern;
             SequenceNumber = NextSequenceNumber++;
         }
         

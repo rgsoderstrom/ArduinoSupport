@@ -52,7 +52,7 @@ namespace SocketLibrary
 
                     do
                     {
-                        if (first2Bytes == Message.Sync)
+                        if (first2Bytes == Message.SyncPattern)
                             break;
                         else
                             state.pendingMsgBytes.RemoveAt (0);
@@ -62,7 +62,7 @@ namespace SocketLibrary
                     } while (state.pendingMsgBytes.Count >= Marshal.SizeOf (typeof (MessageHeader)));
 
                     // see if we have a complete message pass to handler
-                    if (first2Bytes == Message.Sync && state.pendingMsgBytes.Count >= 8)
+                    if (first2Bytes == Message.SyncPattern && state.pendingMsgBytes.Count >= 8)
                     {
                         ushort msgByteCount = (ushort)(state.pendingMsgBytes [3] << 8 | state.pendingMsgBytes [2]);
 
