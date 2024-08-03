@@ -42,7 +42,7 @@ namespace ArduinoSimulator
                 statusMsg.Name = Name;
 
                 Console.WriteLine ("Connecting to server");
-                thisClientSocket = new SocketLibrary.TcpClient (PrintToConsole); 
+                thisClientSocket = new SocketLibrary.TcpClient ("RandysLaptop", PrintToConsole); 
 
                 if (thisClientSocket.Connected == false)
                 {
