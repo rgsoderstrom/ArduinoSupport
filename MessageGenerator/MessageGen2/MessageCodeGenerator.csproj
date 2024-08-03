@@ -46,6 +46,7 @@
     <Compile Include="Cs_DefaultCtor.cs" />
     <Compile Include="Cs_FormatFile.cs" />
     <Compile Include="Cs_FromBytes.cs" />
+    <Compile Include="Cs_InterfaceFile.cs" />
     <Compile Include="Cs_MethodsFile.cs" />
     <Compile Include="Cs_ToBytes.cs" />
     <Compile Include="Cs_ToString.cs" />

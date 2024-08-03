@@ -64,7 +64,7 @@ namespace MessageGenerator
             sw.WriteLine ("{");
             sw.WriteLine ("    memset (this, 0, sizeof (" + msgName + "));");
             sw.WriteLine ("");
-            sw.WriteLine ("    header.Sync           = " + SocketLibrary.Message.Sync + ";");
+            sw.WriteLine ("    header.Sync           = " + SocketLibrary.Message.SyncPattern + ";");
 
             if (headerOnly == false) sw.WriteLine ("    header.ByteCount      = sizeof (header) + sizeof (data);");
             else                     sw.WriteLine ("    header.ByteCount      = sizeof (header);");

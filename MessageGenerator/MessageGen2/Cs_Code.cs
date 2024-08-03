@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,8 +31,14 @@ namespace MessageGenerator
 
         static internal void OpenClass (List<string> code, string msgName)
         {
-            code.Add ("    public partial class " + msgName);
+            code.Add ("    public partial class " + msgName + " : IMessage_Auto");
             code.Add ("    {");
+
+            code.Add ("        public ushort Sync           {get {return header.Sync;}}");
+            code.Add ("        public ushort ByteCount      {get {return header.ByteCount;}}");
+            code.Add ("        public ushort MessageId      {get {return header.MessageId;}}");
+            code.Add ("        public ushort SequenceNumber {get {return header.SequenceNumber;}}");
+            code.Add ("");
         }
     }
 }

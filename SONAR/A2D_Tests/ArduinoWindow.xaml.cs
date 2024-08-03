@@ -50,8 +50,6 @@ namespace A2D_Tests
                 KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
                 KeepAliveTimer.Enabled = true;
 
-                messageQueue.ArduinoReady (); //************************************
-
                 try
                 {                
                     var hostEntry = Dns.GetHostEntry (((IPEndPoint) socket.RemoteEndPoint).Address);
@@ -144,13 +142,21 @@ namespace A2D_Tests
 
         void SocketMessageHandler (Socket sender, byte [] messageBytes)
         {
-            object [] args = new object [2];
-            args [0] = sender;
-            args [1] = messageBytes;
+            try
+            { 
+                object [] args = new object [2];
+                args [0] = sender;
+                args [1] = messageBytes;
 
-            // this will run MessageProcessing in the main thread, i.e. the one that can
-            // access WPF objects
-            Dispatcher.BeginInvoke ((MsgProcessingDelegate) MessageProcessing, args);
+                // this will run MessageProcessing in the main thread, i.e. the one that can
+                // access WPF objects
+                Dispatcher.BeginInvoke ((MsgProcessingDelegate) MessageProcessing, args);
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine ("Exception in SocketMessageHandler: " + ex.Message);
+            }
         }
 
         //*******************************************************************************************************
@@ -197,7 +203,9 @@ namespace A2D_Tests
         private void KeepAliveTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
-            messageQueue.AddMessage (msg.ToBytes ());
+            messageQueue.AddMessage (msg);
+
+            Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
         }
 
         //*******************************************************************************************************
@@ -259,9 +267,9 @@ namespace A2D_Tests
                 Samples.Clear ();
 
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
-                messageQueue.AddMessage (msg.ToBytes ());
+                messageQueue.AddMessage (msg);
 
-                Print ("Sending Clear msg");
+                Print ("Sending Clear msg, seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -277,9 +285,9 @@ namespace A2D_Tests
                 Samples.Clear ();
 
                 CollectMsg_Auto msg = new CollectMsg_Auto ();
-                messageQueue.AddMessage (msg.ToBytes ());
+                messageQueue.AddMessage (msg);
 
-                Print ("Sending Collect msg");
+                Print ("Sending Collect msg, seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -292,16 +300,23 @@ namespace A2D_Tests
         {
             try
             { 
+                sendMsgCounter = 1;
                 SendMsg_Auto msg = new SendMsg_Auto ();
-                messageQueue.AddMessage (msg.ToBytes ());
+                messageQueue.AddMessage (msg);
 
-                Print ("Sending Send msg");
+                Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
             {
                 EventLog.WriteLine (string.Format ("Exception in SendButton click: {0}", ex.Message));
             }
+        }
+
+
+        private void ResendLastMsg_Click (object sender, RoutedEventArgs e)
+        {
+            messageQueue.ResendLastMsg ();
         }
 
         //*******************************************************************************************************
@@ -313,6 +328,8 @@ namespace A2D_Tests
 
         List<Point> Samples = new List<Point> ();
         int ExpectedBatchSize = 1024;
+
+        int sendMsgCounter = 0;
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
@@ -428,7 +445,7 @@ namespace A2D_Tests
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                //Print ("AckMsg " + msg.header.SequenceNumber);
+                Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         
             catch (Exception ex)

@@ -18,11 +18,11 @@ namespace ArduinoInterface
     public class MessageQueue
     {
         // list of messages waiting to be sent
-        private Queue<QueuedBytes> pendingMessages = new Queue<QueuedBytes> (10);
+        private Queue<IMessage_Auto> pendingMessages = new Queue<IMessage_Auto> (10);
         private bool QueueEmpty {get {return pendingMessages.Count == 0;}}
 
         // message put here to be sent and left here until acknowledged
-        private QueuedBytes currentMessage = null;
+        private IMessage_Auto currentMessage = null;
         private bool NoCurrentMsg {get {return currentMessage == null;}}
 
         // ready to accept messages
@@ -46,10 +46,8 @@ namespace ArduinoInterface
 
         //**********************************************************************
 
-        public void AddMessage (byte [] msgBytes)
+        public void AddMessage (IMessage_Auto msg)
         {
-            QueuedBytes msg = new QueuedBytes (msgBytes);
-
             if (arduinoReady == false || socket.Connected == false)
             {                
                 pendingMessages.Enqueue (msg);
@@ -137,30 +135,30 @@ namespace ArduinoInterface
     //****************************************************************************************
     //****************************************************************************************
 
-    internal class QueuedBytes
-    {
-        public QueuedBytes (byte [] MsgBytes)
-        {
-            MessageBytes = MsgBytes;
+    //internal class QueuedBytes
+    //{
+    //    public QueuedBytes (byte [] MsgBytes)
+    //    {
+    //        MessageBytes = MsgBytes;
 
-            if ((MsgBytes.Length != ByteCount) || (Sync != Message.SyncPattern))
-            {
-                throw new Exception ("QueuedMessage ctor not passed a valid message");
-            }
-        }
+    //        if ((MsgBytes.Length != ByteCount) || (Sync != Message.SyncPattern))
+    //        {
+    //            throw new Exception ("QueuedMessage ctor not passed a valid message");
+    //        }
+    //    }
 
-        public byte[] ToBytes ()
-        {
-            return MessageBytes;
-        }
+    //    public byte[] ToBytes ()
+    //    {
+    //        return MessageBytes;
+    //    }
 
-        public ushort Sync           {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("Sync"));}}
-        public ushort ByteCount      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("ByteCount"));}}
-        public ushort MessageId      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("MessageId"));}}
-        public ushort SequenceNumber {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("SequenceNumber"));}}
+    //    public ushort Sync           {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("Sync"));}}
+    //    public ushort ByteCount      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("ByteCount"));}}
+    //    public ushort MessageId      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("MessageId"));}}
+    //    public ushort SequenceNumber {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("SequenceNumber"));}}
 
-        byte [] MessageBytes = null;
-    }
+    //    byte [] MessageBytes = null;
+    //}
 }
 
 

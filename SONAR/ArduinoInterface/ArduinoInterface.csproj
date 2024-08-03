@@ -54,6 +54,7 @@
     <Compile Include="KeepAliveMsg_Auto_Format.cs" />
     <Compile Include="KeepAliveMsg_Auto_Methods.cs" />
     <Compile Include="MessageIDs.cs" />
+    <Compile Include="IMessage_Auto.cs" />
     <Compile Include="MessageQueue.cs" />
     <Compile Include="ReadyMsg_Auto_Format.cs" />
     <Compile Include="ReadyMsg_Auto_Methods.cs" />
