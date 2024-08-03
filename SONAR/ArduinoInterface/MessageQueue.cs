@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using SocketLibrary;
+using System.Runtime.InteropServices;
 
 //
 // MessageQueue used to throttle messages to Arduino.
@@ -17,16 +18,18 @@ namespace ArduinoInterface
     public class MessageQueue
     {
         // list of messages waiting to be sent
-        private Queue<byte []> pendingMessages = new Queue<byte []> (10);
+        private Queue<QueuedBytes> pendingMessages = new Queue<QueuedBytes> (10);
+        private bool QueueEmpty {get {return pendingMessages.Count == 0;}}
 
-        // if this is true, passed-in messages are immediately sent
-        private bool arduinoReady { get; set; } = false;
+        // message put here to be sent and left here until acknowledged
+        private QueuedBytes currentMessage = null;
+        private bool NoCurrentMsg {get {return currentMessage == null;}}
+
+        // ready to accept messages
+        private bool arduinoReady {get; set;} = false;
 
         // socket to Arduino
-        //TcpServer socket;
         Socket socket;
-
-        List<ushort> sentSeqNumbers = new List<ushort> ();
 
         //**********************************************************************
 
@@ -45,19 +48,38 @@ namespace ArduinoInterface
 
         public void AddMessage (byte [] msgBytes)
         {
-            if (false) // arduinoReady == false)
-            {
-                pendingMessages.Enqueue (msgBytes);
+            QueuedBytes msg = new QueuedBytes (msgBytes);
+
+            if (arduinoReady == false || socket.Connected == false)
+            {                
+                pendingMessages.Enqueue (msg);
             }
 
             else
             {
-                MessageHeader header = new MessageHeader (msgBytes);
-                sentSeqNumbers.Add (header.SequenceNumber);
+                if (QueueEmpty == false)
+                { 
+                    pendingMessages.Enqueue (msg);
+                }
 
-                if (socket.Connected) socket.Send (msgBytes);
-                arduinoReady = false;
+                else
+                {
+                    if (NoCurrentMsg)
+                    {
+                        currentMessage = msg;
+                        socket.Send (currentMessage.ToBytes ());
+                    }
+
+                    else
+                        pendingMessages.Enqueue (msg);
+                }
             }
+        }
+
+        public void ResendLastMsg ()
+        {
+            if (currentMessage != null)
+                socket.Send (currentMessage.ToBytes ());
         }
 
         //**********************************************************************
@@ -66,20 +88,28 @@ namespace ArduinoInterface
 
         public bool MessageAcknowledged (ushort seqNumber)
         {
-            bool flag = sentSeqNumbers.Contains (seqNumber);
+            bool flag = seqNumber == currentMessage.SequenceNumber;
 
             if (flag)
             {
-                sentSeqNumbers.Remove (seqNumber);
-                ArduinoReady ();
+                currentMessage = null;
+
+                if (QueueEmpty == false)
+                { 
+                    currentMessage = pendingMessages.Dequeue ();
+                    socket.Send (currentMessage.ToBytes ());
+                }
             }
+
+            else
+                throw new Exception ("Ack not for msg just sent");
 
             return flag;
         }
 
         //**********************************************************************
 
-        // set status to "not ready"
+        // stop sending messages
 
         public void ArduinoNotReady ()
         {
@@ -92,22 +122,44 @@ namespace ArduinoInterface
 
         public void ArduinoReady ()
         {
+            arduinoReady = true;
+
             // if a message is waiting to go out, then send it
-            if (pendingMessages.Count > 0)
+            if (QueueEmpty == false && socket.Connected == true)
             {
-                Byte [] nextMessage = pendingMessages.Dequeue ();
-                MessageHeader header = new MessageHeader (nextMessage);
-                sentSeqNumbers.Add (header.SequenceNumber);
-
-                if (socket.Connected) socket.Send (nextMessage);
-                arduinoReady = false;
-            }
-
-            else
-            {
-                arduinoReady = true;
+                    currentMessage = pendingMessages.Dequeue ();
+                    socket.Send (currentMessage.ToBytes ());
             }
         }
+    }
+
+    //****************************************************************************************
+    //****************************************************************************************
+    //****************************************************************************************
+
+    internal class QueuedBytes
+    {
+        public QueuedBytes (byte [] MsgBytes)
+        {
+            MessageBytes = MsgBytes;
+
+            if ((MsgBytes.Length != ByteCount) || (Sync != Message.SyncPattern))
+            {
+                throw new Exception ("QueuedMessage ctor not passed a valid message");
+            }
+        }
+
+        public byte[] ToBytes ()
+        {
+            return MessageBytes;
+        }
+
+        public ushort Sync           {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("Sync"));}}
+        public ushort ByteCount      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("ByteCount"));}}
+        public ushort MessageId      {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("MessageId"));}}
+        public ushort SequenceNumber {get {return BitConverter.ToUInt16 (MessageBytes, (int) Marshal.OffsetOf<MessageHeader> ("SequenceNumber"));}}
+
+        byte [] MessageBytes = null;
     }
 }
 
