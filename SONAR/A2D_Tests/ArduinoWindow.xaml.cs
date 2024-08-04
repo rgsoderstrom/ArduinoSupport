@@ -205,7 +205,7 @@ namespace A2D_Tests
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
             messageQueue.AddMessage (msg);
 
-            Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            //Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
         }
 
         //*******************************************************************************************************
@@ -269,7 +269,7 @@ namespace A2D_Tests
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                Print ("Sending Clear msg, seq number " + msg.header.SequenceNumber);
+                //Print ("Sending Clear msg, seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -287,7 +287,7 @@ namespace A2D_Tests
                 CollectMsg_Auto msg = new CollectMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                Print ("Sending Collect msg, seq number " + msg.header.SequenceNumber);
+                //Print ("Sending Collect msg, seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -304,7 +304,7 @@ namespace A2D_Tests
                 SendMsg_Auto msg = new SendMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+                //Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -369,7 +369,7 @@ namespace A2D_Tests
         {
             try
             { 
-                Print ("All Sent message received "); // + hdr.SequenceNumber);
+                //Print ("All Sent message received "); // + hdr.SequenceNumber);
 
                 PlotArea.Clear ();
                 PlotArea.Plot (new LineView (Samples));
@@ -402,7 +402,7 @@ namespace A2D_Tests
                 messageQueue.ArduinoReady ();
 
                 //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-                Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
+                //Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
             }
 
             catch (Exception ex)
@@ -445,7 +445,7 @@ namespace A2D_Tests
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
+                //Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         
             catch (Exception ex)
