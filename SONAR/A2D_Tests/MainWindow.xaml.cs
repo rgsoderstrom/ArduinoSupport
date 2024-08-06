@@ -17,9 +17,6 @@ namespace A2D_Tests
     public partial class MainWindow : Window
     {
         SocketLibrary.TcpServer ServerSocket = null;
-        MessageQueue messageQueue; // messages to Arduino pass through here
-
-        //System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (20000); // milliseconds
 
         // only the thread that created WPF objects can access them. others must use Invoke () to
         // run a task on that thread. Its ID stored here
