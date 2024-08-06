@@ -15,6 +15,7 @@ using Plot2D_Embedded;
 using System.Net;
 using System.Windows.Controls;
 using System.IO;
+using System.Reflection.Emit;
 
 namespace A2D_Tests
 {
@@ -29,6 +30,8 @@ namespace A2D_Tests
         readonly int WpfThread;
 
         string clientName = "???"; // for error reporting
+
+        int Verbosity = 1;
 
         public ArduinoWindow (Socket socket)
         {
@@ -78,7 +81,8 @@ namespace A2D_Tests
         {
             try
             {
-              //PrintHandler?.Invoke ("Message received");
+                if (Verbosity > 1)
+                    Print ("Message received");
 
               // Retrieve the state object and the handler socket from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
@@ -87,7 +91,8 @@ namespace A2D_Tests
               // Read data from the socket. 
                 int bytesRead = handler.EndReceive (ar);
 
-                //PrintHandler?.Invoke (string.Format ("{0} bytes", bytesRead));
+                if (Verbosity > 2)
+                    Print (string.Format ("{0} bytes", bytesRead));
 
                 if (bytesRead == 0)
                 {
@@ -203,9 +208,14 @@ namespace A2D_Tests
         private void KeepAliveTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
-            messageQueue.AddMessage (msg);
 
-            //Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            if (Verbosity > 3)
+                Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+
+            else if (Verbosity > 2)
+                Print ("Sending KeepAlive msg");
+
+            messageQueue.AddMessage (msg);
         }
 
         //*******************************************************************************************************
@@ -246,6 +256,12 @@ namespace A2D_Tests
         private void ArduinoWindow_Loaded (object sender, RoutedEventArgs e)
         {
             EventLog.WriteLine ("Arduino Window Loaded");
+            int number = 0;
+
+            bool success = ConvertTagToInteger ((Verbosity_ComboBox.SelectedItem as ComboBoxItem).Tag, ref number);
+
+            if (success)
+                Verbosity = number;
         }
 
         //*******************************************************************************************************
@@ -267,9 +283,14 @@ namespace A2D_Tests
                 Samples.Clear ();
 
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
-                messageQueue.AddMessage (msg);
 
-                //Print ("Sending Clear msg, seq number " + msg.header.SequenceNumber);
+                if (Verbosity > 1)
+                    Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
+
+                else if (Verbosity > 0)
+                    Print ("Sending Clear msg");
+
+                messageQueue.AddMessage (msg);
             }
         
             catch (Exception ex)
@@ -282,12 +303,17 @@ namespace A2D_Tests
         {
             try
             { 
+                CollectMsg_Auto msg = new CollectMsg_Auto ();
+
+                if (Verbosity > 1)
+                    Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
+
+                else if (Verbosity > 0)
+                    Print ("Sending Collect msg");
+
                 Samples.Clear ();
 
-                CollectMsg_Auto msg = new CollectMsg_Auto ();
                 messageQueue.AddMessage (msg);
-
-                //Print ("Sending Collect msg, seq number " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -296,15 +322,30 @@ namespace A2D_Tests
             }
         }
 
+        //*****************************************************************************************
+
         private void SendButton_Click (object sender, RoutedEventArgs e)
+        {
+            if (Verbosity > 0)
+                Print ("Send button clicked");
+
+            sendMsgCounter = 1;
+            RequestSamples ();
+        }
+
+        private void RequestSamples ()
         {
             try
             { 
-                sendMsgCounter = 1;
                 SendMsg_Auto msg = new SendMsg_Auto ();
-                messageQueue.AddMessage (msg);
 
-                //Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+                if (Verbosity > 1)
+                    Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+
+                else if (Verbosity > 0)
+                    Print ("Sending Send msg");
+
+                messageQueue.AddMessage (msg);
             }
         
             catch (Exception ex)
@@ -313,10 +354,42 @@ namespace A2D_Tests
             }
         }
 
+        //*****************************************************************************************
 
-        private void ResendLastMsg_Click (object sender, RoutedEventArgs e)
+        private void Resend_Click (object sender, RoutedEventArgs e)
         {
             messageQueue.ResendLastMsg ();
+        }
+
+        private bool ConvertTagToInteger (object tag, ref int results)
+        {
+            bool success = false;
+
+            try
+            {
+                string s = tag as string;
+                results = Int32.Parse (s);
+                success = true;
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine ("Error converting tag to integer: " + ex.Message);
+            }
+
+            return success;
+        }
+
+        private void Verbosity_ComboBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            ComboBoxItem cbi = cb.SelectedItem as ComboBoxItem;
+            int number = 0;
+
+            bool success = ConvertTagToInteger (cbi.Tag, ref number);
+
+            if (success)
+                Verbosity = number;
         }
 
         //*******************************************************************************************************
@@ -349,11 +422,18 @@ namespace A2D_Tests
                     }
                 }
 
-                //Print (Samples.Count.ToString () + " total samples received"); // , seq = " + msg.header.SequenceNumber);
+                if (Verbosity > 2)
+                    Print ("Sample msg received" + Samples.Count.ToString () + " total samples received" + " seq = " + msg.header.SequenceNumber);
+
+                else if (Verbosity > 1)
+                    Print ("Sample msg received" + Samples.Count.ToString () + " total samples received");
+
+                else if (Verbosity > 0)
+                    Print ("Sample msg received");
 
                 if (Samples.Count < ExpectedBatchSize)
                 {
-                    SendButton_Click (null, null);
+                    RequestSamples ();
                 }
             }
 
@@ -369,7 +449,13 @@ namespace A2D_Tests
         {
             try
             { 
-                //Print ("All Sent message received "); // + hdr.SequenceNumber);
+                AllSentMsg_Auto msg = new AllSentMsg_Auto (msgBytes);
+
+                if (Verbosity > 1)
+                    Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+
+                else if (Verbosity > 0)
+                    Print ("Received AllSent msg");
 
                 PlotArea.Clear ();
                 PlotArea.Plot (new LineView (Samples));
@@ -401,8 +487,13 @@ namespace A2D_Tests
                 ReadyEllipse.Fill = Brushes.Green;
                 messageQueue.ArduinoReady ();
 
-                //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-                //Print ("FPGA Ready message received "); // + hdr.SequenceNumber);
+                SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+
+                if (Verbosity > 1)
+                    Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
+
+                else if (Verbosity > 0)
+                    Print ("FPGA Ready message received");
             }
 
             catch (Exception ex)
@@ -423,7 +514,7 @@ namespace A2D_Tests
             try
             { 
                 TextMessage msg = new TextMessage (msgBytes);
-                Print ("Text from Arduino: " + msg.Text.TrimEnd (new char [] {'\0'}));
+                Print ("Text received: " + msg.Text.TrimEnd (new char [] {'\0'}));
 
                 //Print ("Text " + msg.header.SequenceNumber);
             }
@@ -445,7 +536,8 @@ namespace A2D_Tests
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                //Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
+                if (Verbosity > 1)
+                    Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         
             catch (Exception ex)
