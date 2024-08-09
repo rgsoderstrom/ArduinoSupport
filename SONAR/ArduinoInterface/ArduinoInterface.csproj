@@ -67,6 +67,12 @@
     <Compile Include="TextMsg_Auto_Methods.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Plotting\Plot2D_Embedded\bin\Debug\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="SocketLibrary">
       <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
     </Reference>

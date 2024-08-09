@@ -21,17 +21,35 @@ namespace A2D_Tests
 {
     public partial class ArduinoWindow : Window
     {
-        MessageQueue messageQueue; // messages to Arduino pass through here
+        readonly MessageQueue messageQueue; // messages to Arduino pass through here
 
-        System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (20000); // milliseconds
+        readonly System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (20000); // milliseconds
 
         // only the thread that created WPF objects can access them. others must use Invoke () to
         // run a task on that thread. Its ID stored here
         readonly int WpfThread;
 
-        string clientName = "???"; // for error reporting
+        readonly string clientName = "Unknown"; // only used for error reporting
 
         int Verbosity = 1;
+
+        //*******************************************************************************
+
+        //
+        // Message re-send
+        //
+        void EnableButton () // runs in the trad that can access WPF objects
+        {
+            ResendBtn.IsEnabled = true;
+        }
+
+        void ResendTimerCallback ()
+        {
+            Print ("Message to Arduino not acknowledged");
+            Dispatcher.BeginInvoke ((Callback) EnableButton);
+        }
+
+        //*******************************************************************************
 
         public ArduinoWindow (Socket socket)
         {
@@ -39,7 +57,8 @@ namespace A2D_Tests
             {
                 InitializeComponent ();
 
-                messageQueue = new MessageQueue (socket);
+                // queue to hold and send msgs to Arduino
+                messageQueue = new MessageQueue (ResendTimerCallback, socket);
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -278,7 +297,7 @@ namespace A2D_Tests
         { 
             try
             { 
-                //samplesFile = new StreamWriter ("samples.txt");
+                samplesFile = new StreamWriter ("samples.txt");
 
                 Samples.Clear ();
 
@@ -359,6 +378,7 @@ namespace A2D_Tests
         private void Resend_Click (object sender, RoutedEventArgs e)
         {
             messageQueue.ResendLastMsg ();
+            ResendBtn.IsEnabled = false;
         }
 
         private bool ConvertTagToInteger (object tag, ref int results)
