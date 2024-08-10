@@ -291,14 +291,10 @@ namespace A2D_Tests
         // Button-press handlers, cause message to be sent
         //
 
-        StreamWriter samplesFile = null;
-
         private void ClearButton_Click (object sender, RoutedEventArgs e)
         { 
             try
             { 
-                samplesFile = new StreamWriter ("samples.txt");
-
                 Samples.Clear ();
 
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
@@ -435,11 +431,6 @@ namespace A2D_Tests
                 for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
                 {
                     Samples.Add (new Point (x + i, msg.data.Sample [i]));
-
-                    if (samplesFile != null)
-                    {
-                        samplesFile.WriteLine ((x + i).ToString () + ", " + msg.data.Sample [i].ToString () + " ; ...");
-                    }
                 }
 
                 if (Verbosity > 2)
@@ -465,6 +456,9 @@ namespace A2D_Tests
 
         //*******************************************************************************************************
 
+        readonly bool WriteSamplesFile = true;
+        int fileCounter = 1;
+
         private void AllSentMessageHandler (byte [] msgBytes)
         {
             try
@@ -481,10 +475,17 @@ namespace A2D_Tests
                 PlotArea.Plot (new LineView (Samples));
                 PlotArea.RectangularGridOn = true;
 
-                if (samplesFile != null)
+                if (WriteSamplesFile)
                 {
+                    string fileName = "samples" + fileCounter++ + ".m";
+                    StreamWriter samplesFile = new StreamWriter (fileName);
+                    samplesFile.WriteLine ("z = [...");
+                    
+                    for (int i=0; i<Samples.Count-1; i++)
+                        samplesFile.WriteLine (Samples [i].ToString () + " ; ...");
+
+                    samplesFile.WriteLine (Samples [Samples.Count-1].ToString () + "];");
                     samplesFile.Close ();
-                    samplesFile = null;
                 }
             }
 
