@@ -96,6 +96,8 @@ namespace ArduinoSimulator
 
         //************************************************************************************
 
+        static int aaa = 5;
+
         private void MessageHandler (Socket src, byte [] msgBytes)
         {
             try
@@ -111,6 +113,24 @@ namespace ArduinoSimulator
 
                     Console.WriteLine ();
                 }
+
+                //**************************************************************************
+                //
+                // Acknowledge before handling, like real Arduino
+                //
+                MessageHeader hdr = new MessageHeader (msgBytes);
+
+                //if (aaa-- == 0)
+                //    hdr.SequenceNumber = 77;
+
+                //if (aaa == -5)
+                //    hdr.SequenceNumber = 77;
+
+                AcknowledgeMsg_Auto ackMsg = new AcknowledgeMsg_Auto ();
+                ackMsg.data.MsgSequenceNumber = hdr.SequenceNumber;
+                thisClientSocket.Send (ackMsg.ToBytes ());
+
+                //**************************************************************************
 
                 switch (header.MessageId)
                 {
@@ -136,12 +156,6 @@ namespace ArduinoSimulator
                         PrintToLog ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
                 }
-
-                MessageHeader hdr = new MessageHeader (msgBytes);
-
-                AcknowledgeMsg_Auto ackMsg = new AcknowledgeMsg_Auto ();
-                ackMsg.data.MsgSequenceNumber = hdr.SequenceNumber;
-                thisClientSocket.Send (ackMsg.ToBytes ());
             }
 
             catch (Exception ex)
