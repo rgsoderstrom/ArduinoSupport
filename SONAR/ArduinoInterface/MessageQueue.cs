@@ -41,7 +41,7 @@ namespace ArduinoInterface
         //
         // if a message is not acknowledged let the user re-send it
         //
-        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (100); // milliseconds. must be unacknowledged for this 
+        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (500); // milliseconds. must be unacknowledged for this 
                                                                                            // long before the Resend button is enabled
         readonly Callback QueueStuck = null;
 
