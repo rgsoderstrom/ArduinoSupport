@@ -16,6 +16,7 @@ using System.Net;
 using System.Windows.Controls;
 using System.IO;
 using System.Reflection.Emit;
+using System.Windows.Documents;
 
 namespace A2D_Tests
 {
@@ -272,9 +273,13 @@ namespace A2D_Tests
             }
         }
 
+        bool WindowIsLoaded = false;
+
         private void ArduinoWindow_Loaded (object sender, RoutedEventArgs e)
         {
             EventLog.WriteLine ("Arduino Window Loaded");
+
+            WindowIsLoaded = true;
             int number = 0;
 
             bool success = ConvertTagToInteger ((Verbosity_ComboBox.SelectedItem as ComboBoxItem).Tag, ref number);
@@ -286,6 +291,46 @@ namespace A2D_Tests
         //*******************************************************************************************************
         //*******************************************************************************************************
         //*******************************************************************************************************
+
+        private void ZoomOptionButton_Checked (object sender, RoutedEventArgs args)
+        {
+
+            if (sender is RadioButton rb)
+            {
+                string tag = rb.Tag as string;
+
+                if (WindowIsLoaded)
+                {
+                    switch (tag)
+                    {
+                        case "Zoom_Both":
+                            PlotArea.ZoomX = true;
+                            PlotArea.ZoomY = true;
+                            break;
+
+                        case "Zoom_X":
+                            PlotArea.AxesEqual = false;
+                            PlotArea.ZoomX = true;
+                            PlotArea.ZoomY = false;
+                            break;
+
+                        case "Zoom_Y":
+                            PlotArea.AxesEqual = false;
+                            PlotArea.ZoomX = false;
+                            PlotArea.ZoomY = true;
+                            break;
+
+                        default:
+                            PlotArea.ZoomX = true;
+                            PlotArea.ZoomY = true;
+                            break;
+                    }
+                }
+            }
+
+        }
+
+
 
         //
         // Button-press handlers, cause message to be sent

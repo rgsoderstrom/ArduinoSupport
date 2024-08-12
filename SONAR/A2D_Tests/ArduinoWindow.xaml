@@ -10,6 +10,15 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 1 10 10">
 
+            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
+                <StackPanel Orientation="Vertical">
+                    <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked" IsChecked="True">Zoom Both</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>
+                </StackPanel>
+            </GroupBox>
+
+
             <StackPanel Name="ButtonStack" Orientation="Vertical" VerticalAlignment="Top">
                 <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Commands" FontSize="16">
                     <StackPanel Orientation="Vertical">
