@@ -10,15 +10,6 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 1 10 10">
 
-            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
-                <StackPanel Orientation="Vertical">
-                    <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked" IsChecked="True">Zoom Both</RadioButton>
-                    <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
-                    <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>
-                </StackPanel>
-            </GroupBox>
-
-
             <StackPanel Name="ButtonStack" Orientation="Vertical" VerticalAlignment="Top">
                 <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Commands" FontSize="16">
                     <StackPanel Orientation="Vertical">
@@ -29,14 +20,23 @@
                         <Button MinWidth="60" Name="ResendBtn" MaxWidth="140" Margin="3, 10, 3, 3" Content="Resend Unack'd"      IsEnabled="False"  Click="Resend_Click"/>
 
                         <ComboBox Margin="3,1,3,3" Name="Verbosity_ComboBox" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
-                            <ComboBoxItem Content="Quiet"      ToolTip="Errors Only"         Tag="0"></ComboBoxItem>
-                            <ComboBoxItem Content="Normal"     ToolTip="Clicks and Messages" Tag="1" IsSelected="True"></ComboBoxItem>
+                            <ComboBoxItem Content="Quiet"      ToolTip="Errors Only"         Tag="0" IsSelected="True"></ComboBoxItem>
+                            <ComboBoxItem Content="Normal"     ToolTip="Clicks and Messages" Tag="1"></ComboBoxItem>
                             <ComboBoxItem Content="Detailed"   ToolTip="Message info"        Tag="2"></ComboBoxItem>
                             <ComboBoxItem Content="Diagnostic" ToolTip="More Details"        Tag="3"></ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+
+
+            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
+                <StackPanel Orientation="Vertical">
+                    <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked" IsChecked="True">Zoom Both</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>
+                </StackPanel>
+            </GroupBox>
 
 
             <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">

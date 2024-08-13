@@ -135,17 +135,17 @@ namespace ArduinoSimulator
                 switch (header.MessageId)
                 {
                     case (ushort) ArduinoMessageIDs.ClearMsgId:
-                        PrintToLog ("Clear message received");
+                        if (Verbose) PrintToLog ("Clear message received");
                         ClearMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.CollectMsgId:
-                        PrintToLog ("Collect message received");
+                        if (Verbose) PrintToLog ("Collect message received");
                         CollectMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.SendMsgId:
-                        PrintToLog ("Send message received");
+                        if (Verbose) PrintToLog ("Send message received");
                         SendMessageHandler (msgBytes);
                         break;
                         
@@ -186,6 +186,7 @@ namespace ArduinoSimulator
 
         //***************************************************************************************************************
 
+        static Random random = new Random ();
         double f = 5;
 
         private void CollectMessageHandler (byte [] msgBytes)
@@ -195,7 +196,7 @@ namespace ArduinoSimulator
 
             for (int i=0; i<Count; i++)
             { 
-                Samples.Add (512 + 500 * Math.Sin (2 * Math.PI * f * i / Count));
+                Samples.Add (100 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * f * i / Count));
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
@@ -208,7 +209,8 @@ namespace ArduinoSimulator
 
         private void SendMessageHandler (byte [] msgBytes)
         {
-            PrintToLog ("Sending, get = " + get.ToString ());
+            if (Verbose)
+                PrintToLog ("Sending, get = " + get.ToString ());
 
             SampleDataMsg_Auto msg = new SampleDataMsg_Auto ();
 

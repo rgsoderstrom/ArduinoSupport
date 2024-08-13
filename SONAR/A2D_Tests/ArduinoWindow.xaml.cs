@@ -17,10 +17,12 @@ using System.Windows.Controls;
 using System.IO;
 using System.Reflection.Emit;
 using System.Windows.Documents;
+using MathNet.Numerics.IntegralTransforms;
+using MathNet.Numerics;
 
 namespace A2D_Tests
 {
-    public partial class ArduinoWindow : Window
+    public partial class ArduinoWindow : System.Windows.Window
     {
         readonly MessageQueue messageQueue; // messages to Arduino pass through here
 
@@ -501,7 +503,7 @@ namespace A2D_Tests
 
         //*******************************************************************************************************
 
-        readonly bool WriteSamplesFile = true;
+        readonly bool WriteSamplesFile = false;
         int fileCounter = 1;
 
         private void AllSentMessageHandler (byte [] msgBytes)
@@ -517,7 +519,11 @@ namespace A2D_Tests
                     Print ("Received AllSent msg");
 
                 PlotArea.Clear ();
-                PlotArea.Plot (new LineView (Samples));
+                //PlotArea.Plot (new LineView (Samples));
+
+                List<Point> mag = DoFFT (Samples);
+                PlotArea.Plot (new LineView (mag));
+
                 PlotArea.RectangularGridOn = true;
 
                 if (WriteSamplesFile)
@@ -539,6 +545,78 @@ namespace A2D_Tests
                 EventLog.WriteLine (string.Format ("Exception in SampleDataMsg handler: {0}", ex.Message));
             }
         }
+
+        //*******************************************************************************************************
+
+        double sampleRate = 4096;
+
+        private List<Point> DoFFT (List<Point> samples)
+        {
+            int sampleCount = samples.Count;
+            int pad = sampleCount.IsEven () ? 2 : 1;
+
+            double [] fftReal    = new double [sampleCount];
+            double [] fftImag    = new double [sampleCount];
+            double [] workBuffer = new double [sampleCount + pad]; // before FFT: input signal
+                                                                    // after FFT: half of complex spectrum
+
+            for (int i=0; i<sampleCount; i++)
+                workBuffer [i] = samples [i].Y;
+
+            Fourier.ForwardReal (workBuffer, sampleCount, FourierOptions.NoScaling);
+
+            int put = 0;
+                
+            for (int k=0; k<workBuffer.Length; k+=2, put++)
+            { 
+                fftReal [put] = workBuffer [k];
+                fftImag [put] = workBuffer [k+1];
+            }
+
+            put = fftReal.Length - 1;
+
+            for (int k = 2; k<workBuffer.Length; k+=2, put--)
+            {
+                fftReal [put] = workBuffer [k];
+                fftImag [put] = workBuffer [k+1] * -1;
+            }
+
+            List<Point> results = FormatResults (fftReal, fftImag, sampleRate);
+            return results;
+        }
+
+/***/
+        private static List<Point> FormatResults (double [] real, double [] imag, double sampleRate)
+        {
+            int length = real.Length;
+            List<Point> results = new List<Point> ();
+
+            double [] frequencyScale = Fourier.FrequencyScale (length, sampleRate);
+
+            int L2 = 1 + length / 2;
+            int put = 0;
+
+            for (int i = L2; i<length; i++, put++)
+            {
+                Point pt = new Point (frequencyScale [i], Math.Log10 (PowerSpectrum (real [i], imag [i], length)));
+                results.Add (pt);
+            }
+
+            for (int i = 0; i<L2; i++, put++)
+            {
+                Point pt = new Point (frequencyScale [i], Math.Log10 (PowerSpectrum (real [i], imag [i], length)));
+                results.Add (pt);
+            }
+
+            return results;
+        }
+/***/
+
+        private static double PowerSpectrum (double re, double im, double len)
+        {
+            return (re * re + im * im) / len;
+        }
+
 
         //*******************************************************************************************************
 
