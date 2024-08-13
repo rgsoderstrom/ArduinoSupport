@@ -7,7 +7,6 @@ MessageGenerator/MessageGenTest2/Messages/
 log.txt
 SimulatorLog.txt
 *.dll
-*.p7s
 *.mov
 *.png
 *.editorconfig
