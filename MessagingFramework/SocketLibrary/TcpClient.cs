@@ -123,7 +123,7 @@ namespace SocketLibrary
 
         void ReceiveCallback (IAsyncResult ar)
         {
-            PrintHandler?.Invoke ("Receive Callback");
+            //PrintHandler?.Invoke ("Receive Callback");
  
             try
             {
