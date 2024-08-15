@@ -112,8 +112,9 @@ namespace A2D_Tests
             {   
                 double dB = 10 * Math.Log10 (Utils.PowerSpectrum (real [i], imag [i], length));
                 
-                if (peakMagnitude < dB)
-                    peakMagnitude = dB;
+                if (i != 0) // ignore DC when looking for strongest bin
+                    if (peakMagnitude < dB)
+                        peakMagnitude = dB;
 
                 magnitudeSpectrum [i] = dB;
             }
