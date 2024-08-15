@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using SocketLibrary;
 using ArduinoInterface;
 using Common;
+using System.ComponentModel.Design;
 
 namespace ArduinoSimulator
 {
@@ -168,7 +169,13 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        private int Count = 1024;
+        private const int BatchSize = 1024;
+        private const double SampleRate = 100000;
+        private const double Resolution = SampleRate / BatchSize;
+
+        private const double SignalBin = 200; // 200.5;
+        private const double Frequency = SignalBin * Resolution;
+
         private List<double> Samples = new List<double> ();
         private int get = 0;
 
@@ -177,7 +184,7 @@ namespace ArduinoSimulator
             Samples.Clear ();
             get = 0;
 
-            for (int i=0; i<Count; i++)
+            for (int i=0; i<BatchSize; i++) // Write a test pattern. Will be overwritten by "Collect"
                 Samples.Add (i);
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
@@ -187,22 +194,22 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
 
         static Random random = new Random ();
-        double f = 5;
 
         private void CollectMessageHandler (byte [] msgBytes)
         {
+            Console.WriteLine ("Frequency = " + Frequency);
             Samples.Clear ();
             get = 0;
 
-            for (int i=0; i<Count; i++)
+            double t = 0;
+
+            for (int i=0; i<BatchSize; i++, t+=1/SampleRate)
             { 
-                Samples.Add (100 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * f * i / Count));
+                Samples.Add (2 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * Frequency * t));
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
             thisClientSocket.Send (rdyMsg.ToBytes ());
-
-            f += 1;
         }
 
         //***************************************************************************************************************
@@ -223,7 +230,7 @@ namespace ArduinoSimulator
 
                 thisClientSocket.Send (msg.ToBytes ());
 
-                if (get >= Count)
+                if (get >= BatchSize)
                 {
                     PrintToLog ("All Sent");
 
