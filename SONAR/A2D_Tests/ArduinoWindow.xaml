@@ -20,6 +20,7 @@
                         <Button MinWidth="60" Name="ResendBtn" MaxWidth="140" Margin="3, 10, 3, 3" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
 
                         <ComboBox Margin="3,1,3,3" Name="Verbosity_ComboBox" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
+                            <!-- Default set in code -->
                             <ComboBoxItem Content="Quiet"      Name="Verbose_Quiet"      ToolTip="Errors Only"         Tag="0"></ComboBoxItem>
                             <ComboBoxItem Content="Normal"     Name="Verbose_Normal"     ToolTip="Clicks and Messages" Tag="1"></ComboBoxItem>
                             <ComboBoxItem Content="Detailed"   Name="Verbose_Detailed"   ToolTip="Message info"        Tag="2"></ComboBoxItem>
@@ -32,6 +33,7 @@
 
             <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
                 <StackPanel Orientation="Vertical">
+                    <!-- Default set in code -->
                     <RadioButton Margin="8,4,8,0" Name="InputTime_Button"   Tag="Input_Samples"  Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
                     <RadioButton Margin="8,2,8,0" Name="InputSpect_Button"  Tag="Input_Spect"    Checked="DisplayOptionButton_Checked">Input Spectrum</RadioButton>
                 </StackPanel>
@@ -40,6 +42,7 @@
 
             <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
                 <StackPanel Orientation="Vertical">
+                    <!-- Default set in code -->
                     <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked">Zoom Both</RadioButton>
                     <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
                     <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>

@@ -250,7 +250,7 @@ namespace A2D_Tests
             // set default options
             //
             Verbose_Normal.IsSelected = true;
-            ZoomBoth_Button.IsChecked = true;
+            ZoomX_Button.IsChecked = true;
             InputSpect_Button.IsChecked = true;
         }
 
