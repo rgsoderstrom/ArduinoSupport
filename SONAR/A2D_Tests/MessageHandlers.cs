@@ -119,9 +119,6 @@ namespace A2D_Tests
 
         //*******************************************************************************************************
 
-        readonly bool WriteSamplesFile = false;
-        int fileCounter = 1;
-
         SignalProcessing signalProcessor;
 
         private void AllSentMessageHandler (byte [] msgBytes)
@@ -134,6 +131,7 @@ namespace A2D_Tests
                 else if (Verbosity > 0) Print ("Received AllSent msg");
 
                 signalProcessor = new SignalProcessing (Samples, 100000);
+                SaveButton.IsEnabled = true;
 
                 PlotArea.Clear ();
 
@@ -141,19 +139,6 @@ namespace A2D_Tests
                 if (SelectedDisplay == DisplayOptions.InputSpectrum) PlotArea.Plot (new LineView (signalProcessor.InputSpectrum));
 
                 PlotArea.RectangularGridOn = true;
-
-                if (WriteSamplesFile)
-                {
-                    string fileName = "samples" + fileCounter++ + ".m";
-                    StreamWriter samplesFile = new StreamWriter (fileName);
-                    samplesFile.WriteLine ("z = [...");
-                    
-                    for (int i=0; i<Samples.Count-1; i++)
-                        samplesFile.WriteLine (Samples [i].ToString () + " ; ...");
-
-                    samplesFile.WriteLine (Samples [Samples.Count-1].ToString () + "];");
-                    samplesFile.Close ();
-                }
             }
 
             catch (Exception ex)

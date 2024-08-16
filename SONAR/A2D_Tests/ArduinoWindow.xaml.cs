@@ -342,6 +342,7 @@ namespace A2D_Tests
             try
             { 
                 Samples.Clear ();
+                SaveButton.IsEnabled = false;
 
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
                 messageQueue.AddMessage (msg);
@@ -374,6 +375,8 @@ namespace A2D_Tests
         }
 
         //*****************************************************************************************
+        //*****************************************************************************************
+        //*****************************************************************************************
 
         private void SendButton_Click (object sender, RoutedEventArgs e)
         {
@@ -383,6 +386,8 @@ namespace A2D_Tests
             RequestSamples ();
         }
 
+        // send the request message. Invoked after button click and after a sample message is received if there are more 
+        // samples expected
         private void RequestSamples ()
         {
             try
@@ -400,6 +405,32 @@ namespace A2D_Tests
             }
         }
 
+        //*****************************************************************************************
+        //*****************************************************************************************
+        //*****************************************************************************************
+
+        double Fs = 100000;
+        int fileCounter = 1;
+
+        private void SaveButton_Click (object sender, RoutedEventArgs e)
+        {
+
+            string fileName = "samples" + fileCounter++ + ".m";
+            StreamWriter samplesFile = new StreamWriter (fileName);
+
+            samplesFile.WriteLine ("Fs = " + Fs + "; % sample rate");
+
+            samplesFile.WriteLine ("z = [...");
+                    
+            for (int i=0; i<Samples.Count-1; i++)
+                samplesFile.WriteLine (Samples [i].ToString () + " ; ...");
+
+            samplesFile.WriteLine (Samples [Samples.Count-1].ToString () + "];");
+            samplesFile.Close ();
+        }
+
+        //*****************************************************************************************
+        //*****************************************************************************************
         //*****************************************************************************************
 
         private void Resend_Click (object sender, RoutedEventArgs e)

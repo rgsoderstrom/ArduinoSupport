@@ -16,7 +16,8 @@
                         <Button MinWidth="60" MaxWidth="140" Margin="3, 10, 3, 3" Content="Clear Buffer"    Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
                         <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Collect Samples" Name="CollectButton" IsEnabled="True"  Click="CollectButton_Click"/>
                         <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Send Samples"    Name="SendButton"    IsEnabled="True"  Click="SendButton_Click"/>
-                        
+                        <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Save Samples"    Name="SaveButton"    IsEnabled="False" Click="SaveButton_Click"/>
+
                         <Button MinWidth="60" Name="ResendBtn" MaxWidth="140" Margin="3, 10, 3, 3" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
 
                         <ComboBox Margin="3,1,3,3" Name="Verbosity_ComboBox" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
