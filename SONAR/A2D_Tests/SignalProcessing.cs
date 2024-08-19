@@ -26,7 +26,7 @@ namespace A2D_Tests
         private readonly List<Point> inputSpectrum;
         public List<Point> InputSpectrum {get {return inputSpectrum;}}
 
-        private readonly double inputSampleRate;// = 100000;
+        private readonly double inputSampleRate;
 
         //*******************************************************************************
         //

@@ -22,6 +22,18 @@ namespace A2D_Tests
         // run a task on that thread. Its ID stored here
         readonly int WpfThread;
 
+        //*****************************************************************
+        //
+        // Processing parameters
+        //
+        readonly double SampleRate = 100000; // must match FPGA
+        readonly int    BatchSize  = 1024;   // 
+
+
+        readonly double Frequency  = 40150;
+
+        //*****************************************************************
+
         public MainWindow ()
         {
             EventLog.Open (@"..\..\Log.txt", true);
@@ -51,7 +63,7 @@ namespace A2D_Tests
 
         private void GainedClient (Socket sock)
         {
-            ArduinoWindow ard = new ArduinoWindow (sock);
+            ArduinoWindow ard = new ArduinoWindow (sock, SampleRate, BatchSize);
             ard.Owner = this;
             ard.Show ();
             Print ("Gained Client");
@@ -102,10 +114,25 @@ namespace A2D_Tests
             EventLog.Close ();
         }
 
+        //*****************************************************************************************************
+        //*****************************************************************************************************
+        //*****************************************************************************************************
+
         private void LaunchSimButton_Click (object sender, RoutedEventArgs e)
         {
             var p = new System.Diagnostics.Process();
-            p.StartInfo.FileName   = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";  // just for example, you can use yours.
+            p.StartInfo.FileName  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";
+
+            string [] AllArgs = new string [] {"ServerName", System.Net.Dns.GetHostName (),
+                                               "SampleRate", SampleRate.ToString (),
+                                               "BatchSize",  BatchSize.ToString (),
+                                               "Frequency",  Frequency.ToString ()};
+            string args = "";
+
+            for (int i=0; i<AllArgs.Length; i++)
+                args += AllArgs [i] + " ";
+
+            p.StartInfo.Arguments = args;                        
             p.Start();
         }
     }

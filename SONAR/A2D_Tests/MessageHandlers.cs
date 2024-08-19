@@ -84,7 +84,6 @@ namespace A2D_Tests
         //*******************************************************************************************************
 
         List<double> Samples = new List<double> ();
-        int ExpectedBatchSize = 1024;
 
         int sendMsgCounter = 0;
 
@@ -105,7 +104,7 @@ namespace A2D_Tests
                 else if (Verbosity > 1) Print ("Sample msg received" + Samples.Count.ToString () + " total samples received");
                 else if (Verbosity > 0) Print ("Sample msg received");
 
-                if (Samples.Count < ExpectedBatchSize)
+                if (Samples.Count < BatchSize)
                 {
                     RequestSamples ();
                 }
@@ -130,7 +129,7 @@ namespace A2D_Tests
                 if (Verbosity > 1)      Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
                 else if (Verbosity > 0) Print ("Received AllSent msg");
 
-                signalProcessor = new SignalProcessing (Samples, 100000);
+                signalProcessor = new SignalProcessing (Samples, Fs);
                 SaveButton.IsEnabled = true;
 
                 PlotArea.Clear ();

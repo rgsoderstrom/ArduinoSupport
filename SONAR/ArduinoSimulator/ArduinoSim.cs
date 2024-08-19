@@ -17,24 +17,31 @@ namespace ArduinoSimulator
 
         SocketLibrary.TcpClient thisClientSocket = null;
 
-        string Name;
+        private readonly string ThisArduinoName;
+        private readonly string ServerName;
+
+        private readonly double SampleRate;
+        private readonly int    BatchSize; // number of samples in one collection
+        private readonly double Frequency;
 
         //****************************************************************************
 
-        int seconds = 100;
-
-        public ArduinoSim (string name, int sec)
-        {
-            Name = name;
-            seconds = sec;
+        public ArduinoSim (string name, 
+                           string serverName, 
+                           double sampleRate, 
+                           int    batchSize,
+                           double frequency)
+        {            
+            ThisArduinoName = name;
+            ServerName      = serverName;
+            SampleRate      = sampleRate;
+            BatchSize       = batchSize;
+            Frequency       = frequency;
         }
 
         //****************************************************************************
 
         bool Running = true;
-
-        string machineName = "RandysLaptop";
-        //string machineName = "RandysLG";
 
         public void Run ()
         {
@@ -44,7 +51,7 @@ namespace ArduinoSimulator
                 Console.WriteLine ("cwd " + str);
 
                 PrintToLog ("Connecting to server");
-                thisClientSocket = new SocketLibrary.TcpClient (machineName, PrintToConsole); 
+                thisClientSocket = new SocketLibrary.TcpClient (ServerName, PrintToConsole); 
 
                 if (thisClientSocket.Connected == false)
                 {
@@ -68,7 +75,7 @@ namespace ArduinoSimulator
                     Thread.Sleep (1000);
                 }
 
-                PrintToLog (Name + " closing socket");
+                PrintToLog (ThisArduinoName + " closing socket");
 
                 thisClientSocket.Close ();
 
@@ -161,20 +168,13 @@ namespace ArduinoSimulator
 
             catch (Exception ex)
             {
-                PrintToLog ("Exception: " + Name + ", " + ex.Message);
+                PrintToLog ("Exception: " + ThisArduinoName + ", " + ex.Message);
             }
         } 
         
         //***************************************************************************************************************
         //***************************************************************************************************************
         //***************************************************************************************************************
-
-        private const int BatchSize = 1024;
-        private const double SampleRate = 100000;
-        private const double Resolution = SampleRate / BatchSize;
-
-        private const double SignalBin = 200; // 200.5;
-        private const double Frequency = SignalBin * Resolution;
 
         private List<double> Samples = new List<double> ();
         private int get = 0;
@@ -193,19 +193,20 @@ namespace ArduinoSimulator
 
         //***************************************************************************************************************
 
+        // Create a batch of simulated samples
+
         static Random random = new Random ();
 
         private void CollectMessageHandler (byte [] msgBytes)
         {
-            Console.WriteLine ("Frequency = " + Frequency);
             Samples.Clear ();
             get = 0;
 
-            double t = 0;
+            double time = 0;
 
-            for (int i=0; i<BatchSize; i++, t+=1/SampleRate)
+            for (int i=0; i<BatchSize; i++, time+=1/SampleRate)
             { 
-                Samples.Add (2 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * Frequency * t));
+                Samples.Add (2 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * Frequency * time));
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();

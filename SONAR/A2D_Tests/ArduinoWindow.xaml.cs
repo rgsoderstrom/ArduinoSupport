@@ -34,6 +34,9 @@ namespace A2D_Tests
 
         readonly string clientName = "Unknown"; // only used for error reporting
 
+        double Fs; // sample rate, passed in
+        int BatchSize;
+
         int Verbosity = 1;
 
         //*******************************************************************************
@@ -41,7 +44,7 @@ namespace A2D_Tests
         //
         // Message re-send
         //
-        void EnableButton () // runs in the trad that can access WPF objects
+        void EnableButton () // this runs in the thread that can access WPF objects
         {
             ResendBtn.IsEnabled = true;
         }
@@ -54,8 +57,11 @@ namespace A2D_Tests
 
         //*******************************************************************************
 
-        public ArduinoWindow (Socket socket)
+        public ArduinoWindow (Socket socket, double sampleRate, int batchSize)
         {
+            BatchSize = batchSize;
+            Fs = sampleRate;
+
             try
             {
                 InitializeComponent ();
@@ -323,7 +329,8 @@ namespace A2D_Tests
                 }
             }
 
-            if (SelectedDisplay != wasSelected && signalProcessor != null)
+            //if (SelectedDisplay != wasSelected && signalProcessor != null)
+            if (signalProcessor != null)
             {
                 PlotArea.Clear ();
                 if (SelectedDisplay == DisplayOptions.InputSamples)  PlotArea.Plot (new LineView (signalProcessor.InputSamples));
@@ -409,7 +416,6 @@ namespace A2D_Tests
         //*****************************************************************************************
         //*****************************************************************************************
 
-        double Fs = 100000;
         int fileCounter = 1;
 
         private void SaveButton_Click (object sender, RoutedEventArgs e)
