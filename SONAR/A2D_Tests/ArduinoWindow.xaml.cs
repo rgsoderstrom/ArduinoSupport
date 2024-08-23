@@ -19,6 +19,7 @@ using System.Reflection.Emit;
 using System.Windows.Documents;
 using MathNet.Numerics.IntegralTransforms;
 using MathNet.Numerics;
+using System.Linq;
 
 namespace A2D_Tests
 {
@@ -350,6 +351,7 @@ namespace A2D_Tests
             { 
                 Samples.Clear ();
                 SaveButton.IsEnabled = false;
+                PeaksButton.IsEnabled = false;
 
                 ClearMsg_Auto msg = new ClearMsg_Auto ();
                 messageQueue.AddMessage (msg);
@@ -416,12 +418,27 @@ namespace A2D_Tests
         //*****************************************************************************************
         //*****************************************************************************************
 
-        int fileCounter = 1;
-
         private void SaveButton_Click (object sender, RoutedEventArgs e)
         {
+            int lastNumber = 0;
 
-            string fileName = "samples" + fileCounter++ + ".m";
+            string[] existingFiles = Directory.GetFiles(@".", "samples*.m");
+
+            foreach (string fname in existingFiles)
+            {
+                string numStr = new string (fname.SkipWhile (c=>!char.IsDigit (c))
+                                                 .TakeWhile (c=>char.IsDigit(c))
+                                                 .ToArray ());
+                
+                if (numStr != null && numStr.Length > 0)
+                { 
+                    int number = Convert.ToInt32 (numStr);
+                    if (lastNumber < number) lastNumber = number;
+                }
+            }
+
+            string fileName = "samples" + ++lastNumber + ".m";
+            Print ("Saving to file " + fileName);
             StreamWriter samplesFile = new StreamWriter (fileName);
 
             samplesFile.WriteLine ("Fs = " + Fs + "; % sample rate");
@@ -433,6 +450,28 @@ namespace A2D_Tests
 
             samplesFile.WriteLine (Samples [Samples.Count-1].ToString () + "];");
             samplesFile.Close ();
+        }
+
+        //*****************************************************************************************
+        //*****************************************************************************************
+        //*****************************************************************************************
+
+        private void PeaksButton_Click (object sender, RoutedEventArgs e)
+        {
+            double thresh;            
+            bool success = Double.TryParse (ThreshBox.Text, out thresh);
+
+            if (success == true)
+            { 
+                List<Point> peaks = signalProcessor.FindPeaks (thresh);
+                Print ("Peaks:");
+
+                foreach (Point pk in peaks)
+                    if (pk.X > 0)
+                        Print (pk.X.ToString ());
+            }
+            else
+                Print ("Error: peak threshold invalid");
         }
 
         //*****************************************************************************************

@@ -22,7 +22,7 @@ namespace ArduinoSimulator
 
         private readonly double SampleRate;
         private readonly int    BatchSize; // number of samples in one collection
-        private readonly double Frequency;
+        private          double Frequency;
 
         //****************************************************************************
 
@@ -197,8 +197,14 @@ namespace ArduinoSimulator
 
         static Random random = new Random ();
 
+        List<double> harmonics = new List<double> () {1, 2, 3, 4, 5};
+
         private void CollectMessageHandler (byte [] msgBytes)
         {
+            PrintToConsole ("Frequency = " + Frequency);
+            if (harmonics.Count > 1)
+                PrintToConsole ("plus " + (harmonics.Count - 1) + " harmonics");
+
             Samples.Clear ();
             get = 0;
 
@@ -206,7 +212,15 @@ namespace ArduinoSimulator
 
             for (int i=0; i<BatchSize; i++, time+=1/SampleRate)
             { 
-                Samples.Add (2 * random.NextDouble () + 512 + 500 * Math.Sin (2 * Math.PI * Frequency * time));
+                double s = 0;
+
+                for (int k=0; k<harmonics.Count; k++)
+                { 
+                    double ampl = k == 0 ? 1 : 0.1;
+                    s += ampl * 500 * Math.Sin (2 * Math.PI * Frequency * harmonics [k] * time);
+                }
+
+                Samples.Add (random.NextDouble () + 512 + s);
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();

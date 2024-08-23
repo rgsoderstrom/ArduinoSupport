@@ -26,11 +26,11 @@ namespace A2D_Tests
         //
         // Processing parameters
         //
-        readonly double SampleRate = 100000; // must match FPGA
+        const double SampleRate = 100000; // must match FPGA
         readonly int    BatchSize  = 1024;   // 
 
-
-        readonly double Frequency  = 40150;
+        // Simulator parameters
+        readonly double Frequency  = 15625; // 200 * SampleRate / 1024; // 40150;
 
         //*****************************************************************
 

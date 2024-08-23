@@ -31,7 +31,11 @@ namespace A2D_Tests
 
         internal static double PowerSpectrum (double re, double im, double len)
         {
-            return (re * re + im * im) / len;
+            re /= len;
+            im /= len;
+
+            double magSqd = re * re + im * im;
+            return magSqd;
         }
 
     }

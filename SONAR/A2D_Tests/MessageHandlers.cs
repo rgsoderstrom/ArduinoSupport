@@ -131,6 +131,7 @@ namespace A2D_Tests
 
                 signalProcessor = new SignalProcessing (Samples, Fs);
                 SaveButton.IsEnabled = true;
+                PeaksButton.IsEnabled = true;
 
                 PlotArea.Clear ();
 

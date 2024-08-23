@@ -59,6 +59,27 @@ namespace A2D_Tests
         //
         // FFT
         //
+
+
+
+        private double RaisedCosWindow (int index, int count)
+        {
+            double val = 0.5 * (1 - Math.Cos (2 * Math.PI * index / count));
+            return val;
+        }
+
+        private double DC (List<Point> samples)
+        {
+            double sum = 0;
+
+            foreach (Point pt in samples)
+                sum += pt.Y;
+
+            return sum / samples.Count;
+        }
+
+
+
         private List<Point> DoFFT (List<Point> samples, double sampleRate)
         {
             int sampleCount = samples.Count;
@@ -69,8 +90,13 @@ namespace A2D_Tests
             double [] workBuffer = new double [sampleCount + pad]; // before FFT: input signal
                                                                    // after FFT: half of complex spectrum
 
+            double dc = DC (samples);
+
+
             for (int i=0; i<sampleCount; i++)
-                workBuffer [i] = samples [i].Y;
+                workBuffer [i] = (samples [i].Y - dc) * RaisedCosWindow (i, sampleCount);
+
+
 
             Fourier.ForwardReal (workBuffer, sampleCount, FourierOptions.NoScaling);
 
@@ -106,11 +132,12 @@ namespace A2D_Tests
             // Magnitude spectrum, in dB. Normalized to strongest bin
             //
             double [] magnitudeSpectrum = new double [length];
-            double peakMagnitude = 0;
+            double peakMagnitude = 0; // in dB
 
             for (int i = 0; i<length; i++)
             {   
-                double dB = 10 * Math.Log10 (Utils.PowerSpectrum (real [i], imag [i], length));
+                double pwr = Utils.PowerSpectrum (real [i], imag [i], length);
+                double dB = 10 * Math.Log10 (pwr > 0 ? pwr : 1e-99);
                 
                 if (i != 0) // ignore DC when looking for strongest bin
                     if (peakMagnitude < dB)
@@ -148,7 +175,27 @@ namespace A2D_Tests
             return results;
         }
 
+        //*****************************************************************************************
+        //
+        // FindPeaks - find peak in spectrum
+        //
 
+        internal List<Point> FindPeaks (double threshold)
+        {
+            List<Point> peaks = new List<Point> ();
 
+            for (int i=1; i<InputSpectrum.Count - 1; i++)
+            {
+                if (InputSpectrum [i].Y > threshold)
+                {
+                    if (InputSpectrum [i].Y > InputSpectrum [i-1].Y && InputSpectrum [i].Y > InputSpectrum [i+1].Y)
+                    {
+                        peaks.Add (InputSpectrum [i]);
+                    }
+                }
+            }
+
+            return peaks;
+        }
     }
 }
