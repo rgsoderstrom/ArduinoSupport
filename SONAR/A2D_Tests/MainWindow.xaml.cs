@@ -30,7 +30,7 @@ namespace A2D_Tests
         readonly int    BatchSize  = 1024;   // 
 
         // Simulator parameters
-        readonly double Frequency  = 15625; // 200 * SampleRate / 1024; // 40150;
+        readonly double Frequency  = 19580; // 200 * SampleRate / 1024; // 40150;
 
         //*****************************************************************
 

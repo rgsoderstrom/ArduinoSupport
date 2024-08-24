@@ -23,8 +23,24 @@ namespace A2D_Tests
         // Spectrum of samples as received
         //      x = frequency, y = 10*log10 (power)
         //
-        private readonly List<Point> inputSpectrum;
+        private readonly List<Point> inputSpectrum = new List<Point> ();
         public List<Point> InputSpectrum {get {return inputSpectrum;}}
+
+        //
+        // Samples windowed and DC removed
+        //      x = sample times, y = amplitude
+        //
+        private readonly List<Point> windowedSamples = new List<Point> ();
+        public List<Point> WindowedSamples {get {return windowedSamples;}}
+
+        //
+        // Spectrum of windowed samples
+        //      x = frequency, y = 10*log10 (power)
+        //
+        private readonly List<Point> windowedSpectrum = new List<Point> ();
+        public List<Point> WindowedSpectrum {get {return windowedSpectrum;}}
+
+
 
         private readonly double inputSampleRate;
 
@@ -42,13 +58,28 @@ namespace A2D_Tests
             double dt = 1 / sampleRate;
 
             for (int i=0; i<samp.Count; i++, t+=dt)
-            {
                 inputSamples.Add (new Point (t, samp [i]));
-            }
 
             inputSpectrum = DoFFT (InputSamples, inputSampleRate);
 
 
+            // raised cosine window
+            double [] window = new double [InputSamples.Count];
+            for (int i = 0; i<samp.Count; i++, t+=dt)
+                window [i] = 0.5 * (1 - Math.Cos (2 * Math.PI * i / samp.Count));
+
+            // DC component of input samples
+            double sum = 0;
+
+            foreach (Point pt in inputSamples)
+                sum += pt.Y;
+
+            double DC = sum / inputSamples.Count;
+
+            for (int i = 0; i<samp.Count; i++, t+=dt)
+                windowedSamples.Add (new Point (t, window [i] * (samp [i] - DC)));
+
+            windowedSpectrum = DoFFT (WindowedSamples, inputSampleRate);
         }
 
         //**************************************************************************************
@@ -59,27 +90,6 @@ namespace A2D_Tests
         //
         // FFT
         //
-
-
-
-        private double RaisedCosWindow (int index, int count)
-        {
-            double val = 0.5 * (1 - Math.Cos (2 * Math.PI * index / count));
-            return val;
-        }
-
-        private double DC (List<Point> samples)
-        {
-            double sum = 0;
-
-            foreach (Point pt in samples)
-                sum += pt.Y;
-
-            return sum / samples.Count;
-        }
-
-
-
         private List<Point> DoFFT (List<Point> samples, double sampleRate)
         {
             int sampleCount = samples.Count;
@@ -90,13 +100,8 @@ namespace A2D_Tests
             double [] workBuffer = new double [sampleCount + pad]; // before FFT: input signal
                                                                    // after FFT: half of complex spectrum
 
-            double dc = DC (samples);
-
-
-            for (int i=0; i<sampleCount; i++)
-                workBuffer [i] = (samples [i].Y - dc) * RaisedCosWindow (i, sampleCount);
-
-
+           for (int i=0; i<sampleCount; i++)
+                workBuffer [i] = samples [i].Y;
 
             Fourier.ForwardReal (workBuffer, sampleCount, FourierOptions.NoScaling);
 

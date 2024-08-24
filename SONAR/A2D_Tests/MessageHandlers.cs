@@ -137,6 +137,8 @@ namespace A2D_Tests
 
                 if (SelectedDisplay == DisplayOptions.InputSamples)  PlotArea.Plot (new LineView (signalProcessor.InputSamples));
                 if (SelectedDisplay == DisplayOptions.InputSpectrum) PlotArea.Plot (new LineView (signalProcessor.InputSpectrum));
+                if (SelectedDisplay == DisplayOptions.WindowedSamples)  PlotArea.Plot (new LineView (signalProcessor.WindowedSamples));
+                if (SelectedDisplay == DisplayOptions.WindowedSpectrum) PlotArea.Plot (new LineView (signalProcessor.WindowedSpectrum));
 
                 PlotArea.RectangularGridOn = true;
             }

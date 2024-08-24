@@ -12,7 +12,7 @@
 	<!-- -->
     <Message Name="SampleDataMsg_Auto">
         <Constants>
-            unsigned int MaxCount = 32
+            unsigned int MaxCount = 256
        </Constants>
 
         <Variables>

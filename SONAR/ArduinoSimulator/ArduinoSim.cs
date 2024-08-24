@@ -197,7 +197,7 @@ namespace ArduinoSimulator
 
         static Random random = new Random ();
 
-        List<double> harmonics = new List<double> () {1, 2, 3, 4, 5};
+        List<double> harmonics = new List<double> () {1};//, 2, 3, 4, 5};
 
         private void CollectMessageHandler (byte [] msgBytes)
         {

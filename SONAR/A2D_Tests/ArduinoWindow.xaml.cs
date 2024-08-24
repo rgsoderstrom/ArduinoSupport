@@ -301,7 +301,7 @@ namespace A2D_Tests
 
         //**************************************************************************************
 
-        enum DisplayOptions {InputSamples, InputSpectrum};
+        enum DisplayOptions {InputSamples, InputSpectrum, WindowedSamples, WindowedSpectrum};
         private DisplayOptions SelectedDisplay ;//= DisplayOptions.InputSamples;
 
         private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
@@ -324,6 +324,14 @@ namespace A2D_Tests
                             SelectedDisplay = DisplayOptions.InputSpectrum;
                             break;
 
+                        case "Win_Samples":
+                            SelectedDisplay = DisplayOptions.WindowedSamples;
+                            break;
+
+                        case "Win_Spect":
+                            SelectedDisplay = DisplayOptions.WindowedSpectrum;
+                            break;
+
                         default:
                             throw new Exception ("Invalid display option");
                     }
@@ -336,6 +344,8 @@ namespace A2D_Tests
                 PlotArea.Clear ();
                 if (SelectedDisplay == DisplayOptions.InputSamples)  PlotArea.Plot (new LineView (signalProcessor.InputSamples));
                 if (SelectedDisplay == DisplayOptions.InputSpectrum) PlotArea.Plot (new LineView (signalProcessor.InputSpectrum));
+                if (SelectedDisplay == DisplayOptions.WindowedSamples)  PlotArea.Plot (new LineView (signalProcessor.WindowedSamples));
+                if (SelectedDisplay == DisplayOptions.WindowedSpectrum) PlotArea.Plot (new LineView (signalProcessor.WindowedSpectrum));
                 PlotArea.RectangularGridOn = true;
             }
         }
