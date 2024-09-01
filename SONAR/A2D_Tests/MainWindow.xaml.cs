@@ -66,6 +66,7 @@ namespace A2D_Tests
             ArduinoWindow ard = new ArduinoWindow (sock, SampleRate, BatchSize);
             ard.Owner = this;
             ard.Show ();
+            ard.Activate ();
             Print ("Gained Client");
         }
 
