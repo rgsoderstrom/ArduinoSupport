@@ -188,14 +188,15 @@ namespace A2D_Tests
         internal List<Point> FindPeaks (double threshold)
         {
             List<Point> peaks = new List<Point> ();
+            List<Point> spect = WindowedSpectrum;
 
-            for (int i=1; i<InputSpectrum.Count - 1; i++)
+            for (int i=1; i<spect.Count - 1; i++)
             {
-                if (InputSpectrum [i].Y > threshold)
+                if (spect [i].Y > threshold)
                 {
-                    if (InputSpectrum [i].Y > InputSpectrum [i-1].Y && InputSpectrum [i].Y > InputSpectrum [i+1].Y)
+                    if (spect [i].Y > spect [i-1].Y && spect [i].Y > spect [i+1].Y)
                     {
-                        peaks.Add (InputSpectrum [i]);
+                        peaks.Add (spect [i]);
                     }
                 }
             }
