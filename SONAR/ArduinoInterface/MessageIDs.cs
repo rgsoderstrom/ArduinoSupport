@@ -18,6 +18,9 @@ namespace ArduinoInterface
 		ClearMsgId   = 100, // PC->Arduino->FPGA
 		CollectMsgId = 101,
 		SendMsgId    = 102,
+
+        AnalogGainMsgId = 103,
+        SampleRateMsgId = 104,
     
 		SampleDataMsgId = 200, // FPGA->Arduino->PC  
 		ReadyMsgId      = 201,

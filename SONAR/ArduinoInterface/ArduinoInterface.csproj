@@ -47,6 +47,8 @@
     <Compile Include="AcknowledgeMsg_Auto_Methods.cs" />
     <Compile Include="AllSentMsg_Auto_Format.cs" />
     <Compile Include="AllSentMsg_Auto_Methods.cs" />
+    <Compile Include="AnalogGainMsg_Auto_Format.cs" />
+    <Compile Include="AnalogGainMsg_Auto_Methods.cs" />
     <Compile Include="ClearMsg_Auto_Format.cs" />
     <Compile Include="ClearMsg_Auto_Methods.cs" />
     <Compile Include="CollectMsg_Auto_Format.cs" />
@@ -60,6 +62,8 @@
     <Compile Include="ReadyMsg_Auto_Methods.cs" />
     <Compile Include="SampleDataMsg_Auto_Format.cs" />
     <Compile Include="SampleDataMsg_Auto_Methods.cs" />
+    <Compile Include="SampleRateMsg_Auto_Format.cs" />
+    <Compile Include="SampleRateMsg_Auto_Methods.cs" />
     <Compile Include="SendMsg_Auto_Format.cs" />
     <Compile Include="SendMsg_Auto_Methods.cs" />
     <Compile Include="TextMessage.cs" />

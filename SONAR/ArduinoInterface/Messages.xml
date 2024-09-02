@@ -45,6 +45,22 @@
     
     <!-- ***************************************** -->
 
+    <Message Name="SampleRateMsg_Auto">
+        <Variables>
+              unsigned short RateDivisor;
+        </Variables>
+    </Message>
+    
+    <!-- ***************************************** -->
+
+    <Message Name="AnalogGainMsg_Auto">
+        <Variables>
+              unsigned short DacValue;
+        </Variables>
+    </Message>
+    
+    <!-- ***************************************** -->
+
     <Message Name="AcknowledgeMsg_Auto">
         <Variables>
               unsigned short MsgSequenceNumber;

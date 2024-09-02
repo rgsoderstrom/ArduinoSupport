@@ -154,7 +154,17 @@ namespace ArduinoSimulator
                         
                     case (ushort) ArduinoMessageIDs.SendMsgId:
                         if (Verbose) PrintToLog ("Send message received");
-                        SendMessageHandler (msgBytes);
+                        SendSamplesMessageHandler (msgBytes);
+                        break;
+                        
+                    case (ushort) ArduinoMessageIDs.SampleRateMsgId:
+                        if (Verbose) PrintToLog ("Sample rate message received");
+                        SampleRateMessageHandler (msgBytes);
+                        break;
+                        
+                    case (ushort) ArduinoMessageIDs.AnalogGainMsgId:
+                        if (Verbose) PrintToLog ("Analog gain message received");
+                        AnalogGainMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
@@ -174,6 +184,20 @@ namespace ArduinoSimulator
         
         //***************************************************************************************************************
         //***************************************************************************************************************
+        //***************************************************************************************************************
+
+        private void SampleRateMessageHandler (byte [] msgBytes)
+        {
+            SampleRateMsg_Auto msg = new SampleRateMsg_Auto (msgBytes);
+            PrintToConsole ("Sample rate: " + msg.data.RateDivisor);
+        }
+
+        private void AnalogGainMessageHandler (byte [] msgBytes)
+        {
+            AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto (msgBytes);
+            PrintToConsole ("Sample rate: " + msg.data.DacValue);
+        }
+
         //***************************************************************************************************************
 
         private List<double> Samples = new List<double> ();
@@ -229,7 +253,7 @@ namespace ArduinoSimulator
 
         //***************************************************************************************************************
 
-        private void SendMessageHandler (byte [] msgBytes)
+        private void SendSamplesMessageHandler (byte [] msgBytes)
         {
             if (Verbose)
                 PrintToLog ("Sending, get = " + get.ToString ());
