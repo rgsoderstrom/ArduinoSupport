@@ -6,24 +6,47 @@
         xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
         xmlns:local="clr-namespace:A2D_Tests"
         mc:Ignorable="d"
-        Title="MainWindow" Height="750" Width="1200" Loaded="ArduinoWindow_Loaded">
+        Title="MainWindow" Height="850" Width="1200" Loaded="ArduinoWindow_Loaded">
     <DockPanel>
-        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="10 1 10 10">
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="5 1 5 0">
 
             <StackPanel Name="ButtonStack" Orientation="Vertical" VerticalAlignment="Top">
-                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Commands" FontSize="16">
+                <GroupBox BorderBrush="Black" BorderThickness="1" Header="FPGA" FontSize="16">
                     <StackPanel Orientation="Vertical">
-                        <Button MinWidth="60" MaxWidth="140" Margin="3, 10, 3, 3" Content="Clear Buffer"    Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Collect Samples" Name="CollectButton" IsEnabled="True"  Click="CollectButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Send Samples"    Name="SendButton"    IsEnabled="True"  Click="SendButton_Click"/>
-                        <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Save Samples"    Name="SaveButton"    IsEnabled="False" Click="SaveButton_Click"/>
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Clear Buffer"    Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Collect Samples" Name="CollectButton" IsEnabled="True"  Click="CollectButton_Click"/>
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Send Samples"    Name="SendButton"    IsEnabled="True"  Click="SendSamplesButton_Click"/>
+                            </StackPanel>
+                        </GroupBox>
 
-                        <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Find Peaks"      Name="PeaksButton"   IsEnabled="False" Click="PeaksButton_Click"/>
-                        <TextBox MaxWidth="140" Name="ThreshBox">-50</TextBox>
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="2" Header="Setup" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Send Sample Rate" Name="SampleRateButton"   IsEnabled="True"  Click="SendSampleRateButton_Click"/>
+                                <TextBox MaxWidth="140" Name="SampleRateBox">100000</TextBox>
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Send Gain" Name="GainButton"    IsEnabled="True"  Click="SendGainButton_Click"/>
+                                <TextBox MaxWidth="140" Name="GainBox" ToolTip="Gain percentage, 0 - 100">0</TextBox>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+
+
+
+                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5,5,5,0" Header="PC" FontSize="16">
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Save Samples"    Name="SaveButton"    IsEnabled="False" Click="SaveButton_Click"/>
+                                <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 3"  Content="Find Peaks"      Name="PeaksButton"   IsEnabled="False" Click="PeaksButton_Click"/>
+                                <TextBox MaxWidth="140" Name="ThreshBox">-50</TextBox>
+                            </StackPanel>
+                        </GroupBox>
                         
-                        <Button MinWidth="60" Name="ResendBtn" MaxWidth="140" Margin="3, 10, 3, 3" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
+                        <Button MinWidth="60" Name="ResendBtn" MaxWidth="140" Margin="3, 2, 3, 3" ToolTip="Resend unacknowledged message" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
 
-                        <ComboBox MaxWidth="140" Margin="3,1,3,3" Name="Verbosity_ComboBox" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
+                        <ComboBox MaxWidth="140" Margin="3,1,3,3" Name="Verbosity_ComboBox" ToolTip="Choose verbosity" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
                             <!-- Default set in code -->
                             <ComboBoxItem Content="Quiet"      Name="Verbose_Quiet"      ToolTip="Errors Only"         Tag="0"></ComboBoxItem>
                             <ComboBoxItem Content="Normal"     Name="Verbose_Normal"     ToolTip="Clicks and Messages" Tag="1"></ComboBoxItem>
@@ -35,7 +58,9 @@
             </StackPanel>
 
 
-            <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
+            
+            
+            <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
                 <StackPanel Orientation="Vertical">
                     <!-- Default set in code -->
                     <RadioButton Margin="8,4,8,0" Name="InputTime_Button"     Tag="Input_Samples"  Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
@@ -46,7 +71,7 @@
             </GroupBox>
 
 
-            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,10,8,0">
+            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
                 <StackPanel Orientation="Vertical">
                     <!-- Default set in code -->
                     <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked">Zoom Both</RadioButton>
@@ -56,7 +81,7 @@
             </GroupBox>
 
 
-            <GroupBox BorderBrush="Black" BorderThickness="1" Margin="10" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">
+            <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal" ToolTip="Socket connected">
                         <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ConnectedEllipse"></Ellipse>

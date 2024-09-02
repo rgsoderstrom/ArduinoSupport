@@ -397,7 +397,55 @@ namespace A2D_Tests
         //*****************************************************************************************
         //*****************************************************************************************
 
-        private void SendButton_Click (object sender, RoutedEventArgs e)
+        private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
+        {
+            if (Verbosity > 0) Print ("Send Sample Rate clicked");
+
+            double sampleRate = 0;
+            bool success = Double.TryParse (SampleRateBox.Text, out sampleRate);
+
+            if (success == true)
+            {
+                ushort divisor = (ushort) (0.5 + 50e6 / sampleRate); 
+                SampleRateMsg_Auto msg = new SampleRateMsg_Auto ();
+                msg.data.RateDivisor = divisor;
+                messageQueue.AddMessage (msg);
+            }
+            else
+                Print ("Invalid sample rate");
+        }
+
+        private void SendGainButton_Click (object sender, RoutedEventArgs e)
+        {
+            if (Verbosity > 0) Print ("Send Gain clicked");
+
+            double gainPercent = 0;
+            bool success = Double.TryParse (GainBox.Text, out gainPercent);
+
+            if (success == false)
+            {
+                Print ("Invalid gain percentage");
+                return;
+            }
+
+            if (gainPercent < 0 || gainPercent > 100)
+            {
+                Print ("Gain percentage out of range");
+                return;
+            }
+
+            ushort gainWord = (ushort) ((gainPercent / 100) * 1.25 * (1024 / 2.048)); 
+            AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto ();
+            msg.data.DacValue = gainWord;
+            messageQueue.AddMessage (msg);
+        }
+
+
+        //*****************************************************************************************
+        //*****************************************************************************************
+        //*****************************************************************************************
+
+        private void SendSamplesButton_Click (object sender, RoutedEventArgs e)
         {
             if (Verbosity > 0) Print ("Send button clicked");
 
