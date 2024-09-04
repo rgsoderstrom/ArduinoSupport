@@ -35,7 +35,7 @@ namespace A2D_Tests
 
         readonly string clientName = "Unknown"; // only used for error reporting
 
-        double Fs; // sample rate, passed in
+        public static double SampleRate = 100000;
         int BatchSize;
 
         int Verbosity = 1;
@@ -61,7 +61,7 @@ namespace A2D_Tests
         public ArduinoWindow (Socket socket, double sampleRate, int batchSize)
         {
             BatchSize = batchSize;
-            Fs = sampleRate;
+            SampleRate = sampleRate;
 
             try
             {
@@ -401,18 +401,31 @@ namespace A2D_Tests
         {
             if (Verbosity > 0) Print ("Send Sample Rate clicked");
 
-            double sampleRate = 0;
-            bool success = Double.TryParse (SampleRateBox.Text, out sampleRate);
+            try
+            { 
+                double sampleRate = 0;
+                bool success = Double.TryParse (SampleRateBox.Text, out sampleRate);
 
-            if (success == true)
-            {
-                ushort divisor = (ushort) (0.5 + 50e6 / sampleRate); 
-                SampleRateMsg_Auto msg = new SampleRateMsg_Auto ();
-                msg.data.RateDivisor = divisor;
-                messageQueue.AddMessage (msg);
+                if (success == true)
+                {
+                    SampleRate = sampleRate;
+
+                    ushort divisor = (ushort) (0.5 + 50e6 / sampleRate); 
+                    SampleRateMsg_Auto msg = new SampleRateMsg_Auto ();
+                    msg.data.RateDivisor = divisor;
+                    messageQueue.AddMessage (msg);
+
+                    double ActualRate = 50e6 / divisor;
+                    SampleRateBox.Text = string.Format ("{0:0.###}", ActualRate);
+                }
+                else
+                    Print ("Invalid sample rate");
             }
-            else
-                Print ("Invalid sample rate");
+
+            catch (Exception ex)
+            {
+                Print ("Exception processing sample rate: " + ex.Message);
+            }
         }
 
         private void SendGainButton_Click (object sender, RoutedEventArgs e)
@@ -499,7 +512,7 @@ namespace A2D_Tests
             Print ("Saving to file " + fileName);
             StreamWriter samplesFile = new StreamWriter (fileName);
 
-            samplesFile.WriteLine ("Fs = " + Fs + "; % sample rate");
+            samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
 
             samplesFile.WriteLine ("z = [...");
                     

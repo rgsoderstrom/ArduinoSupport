@@ -26,11 +26,10 @@ namespace A2D_Tests
         //
         // Processing parameters
         //
-        const double SampleRate = 100000; // must match FPGA
-        readonly int    BatchSize  = 1024;   // 
+        readonly int BatchSize  = 1024;   // 
 
         // Simulator parameters
-        readonly double Frequency  = 19580; // 200 * SampleRate / 1024; // 40150;
+        readonly double Frequency  = 19580; 
 
         //*****************************************************************
 
@@ -63,7 +62,7 @@ namespace A2D_Tests
 
         private void GainedClient (Socket sock)
         {
-            ArduinoWindow ard = new ArduinoWindow (sock, SampleRate, BatchSize);
+            ArduinoWindow ard = new ArduinoWindow (sock, ArduinoWindow.SampleRate, BatchSize);
             ard.Owner = this;
             ard.Show ();
             ard.Activate ();
@@ -125,7 +124,7 @@ namespace A2D_Tests
             p.StartInfo.FileName  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";
 
             string [] AllArgs = new string [] {"ServerName", System.Net.Dns.GetHostName (),
-                                               "SampleRate", SampleRate.ToString (),
+                                               "SampleRate", ArduinoWindow.SampleRate.ToString (),
                                                "BatchSize",  BatchSize.ToString (),
                                                "Frequency",  Frequency.ToString ()};
             string args = "";

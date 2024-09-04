@@ -129,7 +129,7 @@ namespace A2D_Tests
                 if (Verbosity > 1)      Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
                 else if (Verbosity > 0) Print ("Received AllSent msg");
 
-                signalProcessor = new SignalProcessing (Samples, Fs);
+                signalProcessor = new SignalProcessing (Samples, SampleRate);
                 SaveButton.IsEnabled = true;
                 PeaksButton.IsEnabled = true;
 

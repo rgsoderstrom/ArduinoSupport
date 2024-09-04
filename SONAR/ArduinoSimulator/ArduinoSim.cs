@@ -20,7 +20,7 @@ namespace ArduinoSimulator
         private readonly string ThisArduinoName;
         private readonly string ServerName;
 
-        private readonly double SampleRate;
+        private          double SampleRate;
         private readonly int    BatchSize; // number of samples in one collection
         private          double Frequency;
 
@@ -189,7 +189,9 @@ namespace ArduinoSimulator
         private void SampleRateMessageHandler (byte [] msgBytes)
         {
             SampleRateMsg_Auto msg = new SampleRateMsg_Auto (msgBytes);
-            PrintToConsole ("Sample rate: " + msg.data.RateDivisor);
+            SampleRate = 50e6 / msg.data.RateDivisor;
+
+            PrintToConsole ("Sample rate: " + SampleRate);
         }
 
         private void AnalogGainMessageHandler (byte [] msgBytes)
