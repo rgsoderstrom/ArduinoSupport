@@ -246,7 +246,8 @@ namespace ArduinoSimulator
                     s += ampl * 500 * Math.Sin (2 * Math.PI * Frequency * harmonics [k] * time);
                 }
 
-                Samples.Add (random.NextDouble () + 512 + s);
+                double withNoiseAndDC = random.NextDouble () + 512 + s;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
             ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
