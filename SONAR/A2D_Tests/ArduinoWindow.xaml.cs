@@ -306,8 +306,6 @@ namespace A2D_Tests
 
         private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
         {
-            DisplayOptions wasSelected = SelectedDisplay;
-
             if (sender is RadioButton rb)
             {
                 string tag = rb.Tag as string;
@@ -316,29 +314,15 @@ namespace A2D_Tests
                 {
                     switch (tag)
                     {
-                        case "Input_Samples":
-                            SelectedDisplay = DisplayOptions.InputSamples;
-                            break;
-
-                        case "Input_Spect":
-                            SelectedDisplay = DisplayOptions.InputSpectrum;
-                            break;
-
-                        case "Win_Samples":
-                            SelectedDisplay = DisplayOptions.WindowedSamples;
-                            break;
-
-                        case "Win_Spect":
-                            SelectedDisplay = DisplayOptions.WindowedSpectrum;
-                            break;
-
-                        default:
-                            throw new Exception ("Invalid display option");
+                        case "Input_Samples": SelectedDisplay = DisplayOptions.InputSamples;  break;
+                        case "Input_Spect":   SelectedDisplay = DisplayOptions.InputSpectrum; break;
+                        case "Win_Samples":   SelectedDisplay = DisplayOptions.WindowedSamples; break;
+                        case "Win_Spect":     SelectedDisplay = DisplayOptions.WindowedSpectrum; break;
+                        default: throw new Exception ("Invalid display option");
                     }
                 }
             }
 
-            //if (SelectedDisplay != wasSelected && signalProcessor != null)
             if (signalProcessor != null)
             {
                 PlotArea.Clear ();
