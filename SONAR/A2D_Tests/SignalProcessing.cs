@@ -76,6 +76,8 @@ namespace A2D_Tests
 
             double DC = sum / inputSamples.Count;
 
+            t = 0;
+
             for (int i = 0; i<samp.Count; i++, t+=dt)
                 windowedSamples.Add (new Point (t, window [i] * (samp [i] - DC)));
 
