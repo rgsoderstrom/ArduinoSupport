@@ -401,6 +401,7 @@ namespace A2D_Tests
 
                     double ActualRate = 50e6 / divisor;
                     SampleRateBox.Text = string.Format ("{0:0.###}", ActualRate);
+                    SampleRate = ActualRate;
                 }
                 else
                     Print ("Invalid sample rate");
