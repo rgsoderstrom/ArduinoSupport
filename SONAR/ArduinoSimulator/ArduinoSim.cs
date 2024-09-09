@@ -203,12 +203,12 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
 
         private List<double> Samples = new List<double> ();
-        private int get = 0;
+        private int samplesGetIndex = 0;
 
         private void ClearMessageHandler (byte [] msgBytes)
         {
             Samples.Clear ();
-            get = 0;
+            samplesGetIndex = 0;
 
             for (int i=0; i<BatchSize; i++) // Write a test pattern. Will be overwritten by "Collect"
                 Samples.Add (i);
@@ -232,7 +232,7 @@ namespace ArduinoSimulator
                 PrintToConsole ("plus " + (harmonics.Count - 1) + " harmonics");
 
             Samples.Clear ();
-            get = 0;
+            samplesGetIndex = 0;
 
             double time = 0;
 
@@ -258,28 +258,27 @@ namespace ArduinoSimulator
 
         private void SendSamplesMessageHandler (byte [] msgBytes)
         {
+            int remaining = Samples.Count - samplesGetIndex;
+
+            if (remaining < 0)
+                remaining = 0;
+
+            short thisMsgCount = (short) (remaining < SampleDataMsg_Auto.Data.MaxCount ? remaining : SampleDataMsg_Auto.Data.MaxCount);
+
             if (Verbose)
-                PrintToLog ("Sending, get = " + get.ToString ());
+                PrintToLog ("Sending " + thisMsgCount + " samples");
 
             SampleDataMsg_Auto msg = new SampleDataMsg_Auto ();
+            msg.data.Count = thisMsgCount;
 
             try
             { 
-                for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
+                for (int i=0; i<thisMsgCount; i++)
                 {
-                    msg.data.Sample [i] = (short) Samples [get++];
+                    msg.data.Sample [i] = (short) Samples [samplesGetIndex++];
                 }
 
                 thisClientSocket.Send (msg.ToBytes ());
-
-                if (get >= BatchSize)
-                {
-                    PrintToLog ("All Sent");
-
-                    AllSentMsg_Auto msg2 = new AllSentMsg_Auto ();
-                    thisClientSocket.Send (msg2.ToBytes ());
-                    get = 0;
-                }
             }
 
             catch (Exception ex)

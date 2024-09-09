@@ -24,7 +24,7 @@ namespace ArduinoInterface
     
 		SampleDataMsgId = 200, // FPGA->Arduino->PC  
 		ReadyMsgId      = 201,
-		AllSentMsgId    = 202, 
+	  //AllSentMsgId    = 202, 
 
         HeaderOnlyMsgId  = 999,
     };

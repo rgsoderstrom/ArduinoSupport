@@ -35,7 +35,6 @@ namespace A2D_Tests
                 {
                     case (ushort)ArduinoMessageIDs.ReadyMsgId:      ReadyMessageHandler      (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.SampleDataMsgId: SampleDataMessageHandler (msgBytes); break;
-                    case (ushort)ArduinoMessageIDs.AllSentMsgId:    AllSentMessageHandler    (msgBytes); break;
 
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
@@ -85,26 +84,31 @@ namespace A2D_Tests
 
         List<double> Samples = new List<double> ();
 
-        int sendMsgCounter = 0;
+        int sendMsgCounter = 0; // number of sample request messages sent, just for status display
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
             try
             { 
-                int x = Samples.Count;
-
                 SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
 
-                for (int i=0; i<SampleDataMsg_Auto.Data.MaxCount; i++)
+                int samplesThisMsg = msg.data.Count;
+                bool lastSamples   = msg.data.Count < SampleDataMsg_Auto.Data.MaxCount;
+
+                for (int i=0; i<samplesThisMsg; i++)
                 {
                     Samples.Add (msg.data.Sample [i]);
                 }
 
-                if (Verbosity > 2)      Print ("Sample msg received" + Samples.Count.ToString () + " total samples received" + " seq = " + msg.header.SequenceNumber);
-                else if (Verbosity > 1) Print ("Sample msg received" + Samples.Count.ToString () + " total samples received");
+                if (Verbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
+                else if (Verbosity > 1) Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message");
                 else if (Verbosity > 0) Print ("Sample msg received");
 
-                if (Samples.Count < BatchSize)
+                if (lastSamples)
+                {
+                    DisplaySamples ();
+                }
+                else
                 {
                     RequestSamples ();
                 }
@@ -120,14 +124,12 @@ namespace A2D_Tests
 
         SignalProcessing signalProcessor;
 
-        private void AllSentMessageHandler (byte [] msgBytes)
+        private void DisplaySamples ()
         {
             try
             { 
-                AllSentMsg_Auto msg = new AllSentMsg_Auto (msgBytes);
-
-                if (Verbosity > 1)      Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Received AllSent msg");
+                //if (Verbosity > 1)      Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+                //else if (Verbosity > 0) Print ("Received AllSent msg");
 
                 signalProcessor = new SignalProcessing (Samples, SampleRate);
                 SaveButton.IsEnabled = true;

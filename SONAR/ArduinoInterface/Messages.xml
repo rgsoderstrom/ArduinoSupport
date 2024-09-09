@@ -16,6 +16,7 @@
        </Constants>
 
         <Variables>
+            int Count
             int Sample [Data.MaxCount]
         </Variables>
     </Message>
@@ -29,9 +30,6 @@
     </Message>
     
     <Message Name="ReadyMsg_Auto">
-    </Message>
-    
-    <Message Name="AllSentMsg_Auto">
     </Message>
     
     <Message Name="ClearMsg_Auto">

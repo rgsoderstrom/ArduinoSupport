@@ -45,8 +45,6 @@
   <ItemGroup>
     <Compile Include="AcknowledgeMsg_Auto_Format.cs" />
     <Compile Include="AcknowledgeMsg_Auto_Methods.cs" />
-    <Compile Include="AllSentMsg_Auto_Format.cs" />
-    <Compile Include="AllSentMsg_Auto_Methods.cs" />
     <Compile Include="AnalogGainMsg_Auto_Format.cs" />
     <Compile Include="AnalogGainMsg_Auto_Methods.cs" />
     <Compile Include="ClearMsg_Auto_Format.cs" />
