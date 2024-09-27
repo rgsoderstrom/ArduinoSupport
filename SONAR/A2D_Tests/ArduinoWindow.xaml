@@ -24,9 +24,9 @@
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="2" Header="Setup" FontSize="16">
                             <StackPanel Orientation="Vertical">
                                 <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Send Sample Rate" Name="SampleRateButton"   IsEnabled="True"  Click="SendSampleRateButton_Click"/>
-                                <TextBox MaxWidth="140" Name="SampleRateBox">100000</TextBox>
+                                <TextBox MaxWidth="140" Name="SampleRateBox">-----</TextBox>
                                 <Button MinWidth="60" MaxWidth="140" Margin="3, 1, 3, 2" Content="Send Gain" Name="GainButton"    IsEnabled="True"  Click="SendGainButton_Click"/>
-                                <TextBox MaxWidth="140" Name="GainBox" ToolTip="Gain percentage, 0 - 100">0</TextBox>
+                                <TextBox MaxWidth="140" Name="GainBox" ToolTip="Gain percentage, 0 - 100">---</TextBox>
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>
