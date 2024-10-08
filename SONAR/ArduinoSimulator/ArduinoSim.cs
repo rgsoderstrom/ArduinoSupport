@@ -197,7 +197,7 @@ namespace ArduinoSimulator
         private void AnalogGainMessageHandler (byte [] msgBytes)
         {
             AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto (msgBytes);
-            PrintToConsole ("Sample rate: " + msg.data.DacValue);
+            PrintToConsole ("DAC word: " + msg.data.DacValue);
         }
 
         //***************************************************************************************************************
