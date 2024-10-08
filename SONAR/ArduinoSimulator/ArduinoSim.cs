@@ -13,7 +13,7 @@ namespace ArduinoSimulator
 {
     public class ArduinoSim
     {
-        bool Verbose = false;
+        bool Verbose = true;
 
         SocketLibrary.TcpClient thisClientSocket = null;
 
@@ -168,6 +168,7 @@ namespace ArduinoSimulator
                         break;
                         
                     case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
+                        if (Verbose) PrintToLog ("Keep-Alive message received");
                         break;
                         
                     default:

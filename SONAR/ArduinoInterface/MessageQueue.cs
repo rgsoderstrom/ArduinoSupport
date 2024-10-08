@@ -44,15 +44,17 @@ namespace ArduinoInterface
         readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (500); // milliseconds. must be unacknowledged for this 
                                                                                            // long before the Resend button is enabled
         readonly Callback QueueStuck = null;
+        readonly PrintCallback Print = null;
 
         //**********************************************************************
         //
         // ctor
         //
-        public MessageQueue (Callback queueStuckCallback, Socket _socket)
+        public MessageQueue (Callback queueStuckCallback, PrintCallback print, Socket _socket)
         {
             socket = _socket;
             QueueStuck = queueStuckCallback;
+            Print = print;
 
             AcknowledgeWaitTimer.AutoReset = false; 
             AcknowledgeWaitTimer.Elapsed += QueueStuckTimerElapsed;
@@ -104,7 +106,10 @@ namespace ArduinoInterface
         public void ResendLastMsg ()
         {
             if (currentMessage != null)
+            {
+                Print ("Resending ID" + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                 socket.Send (currentMessage.ToBytes ());
+            }
         }
 
         //**********************************************************************

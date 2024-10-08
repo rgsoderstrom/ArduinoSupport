@@ -38,14 +38,14 @@ namespace A2D_Tests
         public static double SampleRate = 100000;
         int BatchSize;
 
-        int Verbosity = 1;
+        int Verbosity = 3;//1;
 
         //*******************************************************************************
 
         //
         // Message re-send
         //
-        void EnableButton () // this runs in the thread that can access WPF objects
+        void EnableReSendButton () // this runs in the thread that can access WPF objects
         {
             ResendBtn.IsEnabled = true;
         }
@@ -53,7 +53,7 @@ namespace A2D_Tests
         void ResendTimerCallback ()
         {
             Print ("Message to Arduino not acknowledged");
-            Dispatcher.BeginInvoke ((Callback) EnableButton);
+            Dispatcher.BeginInvoke ((Callback) EnableReSendButton);
         }
 
         //*******************************************************************************
@@ -68,7 +68,7 @@ namespace A2D_Tests
                 InitializeComponent ();
 
                 // queue to hold and send msgs to Arduino
-                messageQueue = new MessageQueue (ResendTimerCallback, socket);
+                messageQueue = new MessageQueue (ResendTimerCallback, Print, socket);
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -80,7 +80,7 @@ namespace A2D_Tests
                 WpfThread = Thread.CurrentThread.ManagedThreadId;
 
                 KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
-                KeepAliveTimer.Enabled = true;
+                KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
 
                 try
                 {                
@@ -110,9 +110,6 @@ namespace A2D_Tests
         {
             try
             {
-                if (Verbosity > 1)
-                    Print ("Message received");
-
               // Retrieve the state object and the handler socket from the asynchronous state object.
                 StateObject state = (StateObject)ar.AsyncState;
                 Socket handler = state.workSocket;
@@ -120,14 +117,14 @@ namespace A2D_Tests
               // Read data from the socket. 
                 int bytesRead = handler.EndReceive (ar);
 
-                if (Verbosity > 2)
-                    Print (string.Format ("{0} bytes", bytesRead));
+              //if (Verbosity > 2)
+              //    Print (string.Format ("Message received, {0} bytes", bytesRead));
 
                 if (bytesRead == 0)
                 {
                    // allClients.Remove (state.workSocket);
                     state.workSocket.Close ();
-                    Print ("bytesRead == 0");
+                    Print ("bytesRead == 0"); // this is an error, so always print
                 }
 
                 else if (bytesRead > 0)
@@ -202,11 +199,8 @@ namespace A2D_Tests
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
 
-            if (Verbosity > 3)
-                Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
-
-            else if (Verbosity > 2)
-                Print ("Sending KeepAlive msg");
+            if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            else if (Verbosity > 1) Print ("Sending KeepAlive msg");
 
             messageQueue.AddMessage (msg);
         }
@@ -383,7 +377,7 @@ namespace A2D_Tests
 
         private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
         {
-            if (Verbosity > 0) Print ("Send Sample Rate clicked");
+            if (Verbosity > 0) Print ("Send Sample Rate button clicked");
 
             try
             { 
@@ -415,7 +409,7 @@ namespace A2D_Tests
 
         private void SendGainButton_Click (object sender, RoutedEventArgs e)
         {
-            if (Verbosity > 0) Print ("Send Gain clicked");
+            if (Verbosity > 0) Print ("Send Gain button clicked");
 
             double gainPercent = 0;
             bool success = Double.TryParse (GainBox.Text, out gainPercent);
@@ -494,7 +488,7 @@ namespace A2D_Tests
             }
 
             string fileName = "samples" + ++lastNumber + ".m";
-            Print ("Saving to file " + fileName);
+            Print ("Saving samples to file " + fileName);
             StreamWriter samplesFile = new StreamWriter (fileName);
 
             samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
