@@ -26,7 +26,7 @@ namespace A2D_Tests
         //
         // Processing parameters
         //
-        readonly int BatchSize  = 1024;   // 
+        readonly int BatchSize  = 4096;   // 
 
         // Simulator parameters
         readonly double Frequency  = 40150; 
