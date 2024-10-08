@@ -36,9 +36,8 @@ namespace A2D_Tests
         readonly string clientName = "Unknown"; // only used for error reporting
 
         public static double SampleRate = 100000;
-        int BatchSize;
-
-        int Verbosity = 3;//1;
+        private int BatchSize;
+        private int Verbosity = 3;//1;
 
         //*******************************************************************************
 
@@ -250,7 +249,24 @@ namespace A2D_Tests
             //
             // set default options
             //
-            Verbose_Normal.IsSelected = true;
+            foreach (object child in Verbosity_ComboBox.Items)
+            {
+                if (child is ComboBoxItem)
+                { 
+                    ComboBoxItem cbi = child as ComboBoxItem;
+                    int tagAsInt = 0;
+
+                    if (Utils.ConvertTagToInteger (cbi.Tag, ref tagAsInt))
+                    {
+                        if (tagAsInt == Verbosity)
+                        {
+                            cbi.IsSelected = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             ZoomX_Button.IsChecked = true;
             InputSpect_Button.IsChecked = true;
         }
