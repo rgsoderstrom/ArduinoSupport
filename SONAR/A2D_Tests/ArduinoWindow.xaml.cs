@@ -393,8 +393,6 @@ namespace A2D_Tests
 
         private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
         {
-            if (Verbosity > 0) Print ("Send Sample Rate button clicked");
-
             try
             { 
                 double sampleRate = 0;
@@ -408,6 +406,10 @@ namespace A2D_Tests
                     SampleRateMsg_Auto msg = new SampleRateMsg_Auto ();
                     msg.data.RateDivisor = divisor;
                     messageQueue.AddMessage (msg);
+
+                    if (Verbosity > 1)      Print ("Sending Sample Rate msg, seq numb " + msg.header.SequenceNumber);
+                    else if (Verbosity > 0) Print ("Sending Sample Rate msg");
+
 
                     double ActualRate = 50e6 / divisor;
                     SampleRateBox.Text = string.Format ("{0:0.###}", ActualRate);
@@ -446,6 +448,9 @@ namespace A2D_Tests
             AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto ();
             msg.data.DacValue = gainWord;
             messageQueue.AddMessage (msg);
+
+            if (Verbosity > 1)      Print ("Sending Gain msg, seq numb " + msg.header.SequenceNumber);
+            else if (Verbosity > 0) Print ("Sending Gain msg");
         }
 
 
