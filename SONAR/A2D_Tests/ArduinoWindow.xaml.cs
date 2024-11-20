@@ -393,6 +393,9 @@ namespace A2D_Tests
 
         private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
         {
+
+            return;
+
             try
             { 
                 double sampleRate = 0;
@@ -427,6 +430,10 @@ namespace A2D_Tests
 
         private void SendGainButton_Click (object sender, RoutedEventArgs e)
         {
+
+            return;
+
+
             if (Verbosity > 0) Print ("Send Gain button clicked");
 
             double gainPercent = 0;
