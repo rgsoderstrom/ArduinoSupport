@@ -469,6 +469,7 @@ namespace A2D_Tests
         {
             if (Verbosity > 0) Print ("Send button clicked");
 
+            Samples.Clear ();
             sendMsgCounter = 1;
             RequestSamples ();
         }
