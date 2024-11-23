@@ -6,7 +6,7 @@
         xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
         xmlns:local="clr-namespace:A2D_Tests"
         mc:Ignorable="d"
-        Title="MainWindow" Height="850" Width="1200" Loaded="ArduinoWindow_Loaded">
+        Title="A2D Tests" Height="850" Width="1200" Loaded="ArduinoWindow_Loaded">
     <DockPanel>
         <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="5 1 5 0">
 
