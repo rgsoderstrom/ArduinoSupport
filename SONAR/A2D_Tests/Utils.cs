@@ -28,15 +28,5 @@ namespace A2D_Tests
 
             return success;
         }
-
-        internal static double PowerSpectrum (double re, double im, double len)
-        {
-            re /= len;
-            im /= len;
-
-            double magSqd = re * re + im * im;
-            return magSqd;
-        }
-
     }
 }

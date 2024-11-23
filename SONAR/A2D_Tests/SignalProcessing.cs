@@ -130,6 +130,15 @@ namespace A2D_Tests
         //
         // FormatSpectrum
         //
+        internal static double PowerSpectrum (double re, double im, double len)
+        {
+            re /= len;
+            im /= len;
+
+            double magSqd = re * re + im * im;
+            return magSqd;
+        }
+
         private static List<Point> FormatSpectrum (double [] real, double [] imag, double sampleRate)
         {
             int length = real.Length;
@@ -143,7 +152,7 @@ namespace A2D_Tests
 
             for (int i = 0; i<length; i++)
             {   
-                double pwr = Utils.PowerSpectrum (real [i], imag [i], length);
+                double pwr = PowerSpectrum (real [i], imag [i], length);
                 double dB = 10 * Math.Log10 (pwr > 0 ? pwr : 1e-99);
                 
                 if (i != 0) // ignore DC when looking for strongest bin
