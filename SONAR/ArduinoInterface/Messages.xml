@@ -2,14 +2,57 @@
 
 <!-- 
     Messages.xml
-      - Messages for A2D tests
+      - Messages for A2D tests and Sonar1Chan
 -->
 
 <Messages>
 
 	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface"/>
+
+  <!-- ****************************************************** -->
+	<!-- PC<->Arduino -->
+  <!-- ****************************************************** -->
+
+    <Message Name="KeepAliveMsg_Auto">
+    </Message>
+    
+  <!-- ******************* -->
+
+    <Message Name="TextMsg_Auto">
+  		<Constants>      
+           int TextBufferSize = 40;
+  		</Constants>
+
+ 		  <Variables>
+          char text [Data.TextBufferSize];  
+		  </Variables>      
+    </Message>
   
-	<!-- -->
+  <!-- ******************* -->
+
+    <Message Name="AcknowledgeMsg_Auto">
+        <Variables>
+              unsigned short MsgSequenceNumber;
+        </Variables>
+    </Message>
+    
+  <!-- ****************************************************** -->
+	<!-- FPGA messages, common to all -->
+  <!-- ****************************************************** -->
+  
+    <Message Name="ReadyMsg_Auto">
+    </Message>
+    
+    <Message Name="ClearSamplesMsg_Auto">
+    </Message>
+    
+    <Message Name="SendSamplesMsg_Auto">
+    </Message>
+    
+  <!-- ****************************************************** -->
+	<!-- A2D_Test -->
+  <!-- ****************************************************** -->
+  
     <Message Name="SampleDataMsg_Auto">
         <Constants>
             unsigned int MaxCount = 256
@@ -20,62 +63,60 @@
             int Sample [Data.MaxCount]
         </Variables>
     </Message>
-	<!-- -->
-	
-    <!-- ***************************************** -->
-	
-	<!-- Header-only messages --> 
-	
-    <Message Name="KeepAliveMsg_Auto">
+  
+  <!-- ******************* -->
+  
+    <Message Name="BeginSamplingMsg_Auto">
     </Message>
     
-    <Message Name="ReadyMsg_Auto">
-    </Message>
-    
-    <Message Name="ClearMsg_Auto">
-    </Message>
-    
-    <Message Name="CollectMsg_Auto">
-    </Message>
-    
-    <Message Name="SendMsg_Auto">
-    </Message>
-    
-    <!-- ***************************************** -->
-
     <Message Name="SampleRateMsg_Auto">
         <Variables>
               unsigned short RateDivisor;
         </Variables>
     </Message>
     
-    <!-- ***************************************** -->
-
     <Message Name="AnalogGainMsg_Auto">
         <Variables>
               unsigned short DacValue;
         </Variables>
     </Message>
     
-    <!-- ***************************************** -->
+  <!-- ****************************************************** -->
+	<!-- Sonar1Chan -->
+  <!-- ****************************************************** -->
+  
+    <Message Name="PingReturnDataMsg_Auto">
+        <Constants>
+            unsigned int MaxCount = 256
+       </Constants>
 
-    <Message Name="AcknowledgeMsg_Auto">
         <Variables>
-              unsigned short MsgSequenceNumber;
+            int Count
+            int Sample [Data.MaxCount]
         </Variables>
     </Message>
-    
-    <!-- ***************************************** -->
-
-    <Message Name="TextMsg_Auto">
-  		<Constants>      
-           int TextBufferSize = 40;
-  		</Constants>
-
-		<Variables>
-          char text [Data.TextBufferSize];  
-		</Variables>      
+  
+  <!-- ******************* -->
+  
+    <Message Name="BeginPingCycleMsg_Auto">
     </Message>
+  
+  <!-- ******************* -->
+  
+    <Message Name="SonarParametersMsg_Auto">
+        <Variables>
+            int SampleClockDivisor;
+            int RampStartingLevel;
+            int RampStoppingLevel;
+            int BlankingLevel;
+            int RampRateClockDivisor;
+            int PingFrequency;
+            int PingDuration;
+        </Variables>
+    </Message>
+  
+  
+
 
 </Messages>
 

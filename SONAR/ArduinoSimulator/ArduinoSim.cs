@@ -142,17 +142,22 @@ namespace ArduinoSimulator
 
                 switch (header.MessageId)
                 {
-                    case (ushort) ArduinoMessageIDs.ClearMsgId:
+                    case (ushort) ArduinoMessageIDs.ClearSamplesMsgId:
                         if (Verbose) PrintToLog ("Clear message received");
                         ClearMessageHandler (msgBytes);
                         break;
                         
-                    case (ushort) ArduinoMessageIDs.CollectMsgId:
+                    case (ushort) ArduinoMessageIDs.BeginSamplingMsgId:
                         if (Verbose) PrintToLog ("Collect message received");
                         CollectMessageHandler (msgBytes);
                         break;
                         
-                    case (ushort) ArduinoMessageIDs.SendMsgId:
+                    case (ushort) ArduinoMessageIDs.BeginPingCycleMsgId:
+                        if (Verbose) PrintToLog ("Collect message received");
+                        CollectMessageHandler (msgBytes);
+                        break;
+                        
+                    case (ushort) ArduinoMessageIDs.SendSamplesMsgId:
                         if (Verbose) PrintToLog ("Send message received");
                         SendSamplesMessageHandler (msgBytes);
                         break;
