@@ -357,7 +357,7 @@ namespace A2D_Tests
                 SaveButton.IsEnabled = false;
                 PeaksButton.IsEnabled = false;
 
-                ClearMsg_Auto msg = new ClearMsg_Auto ();
+                ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
                 if (Verbosity > 1)      Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
@@ -374,7 +374,7 @@ namespace A2D_Tests
         {
             try
             { 
-                CollectMsg_Auto msg = new CollectMsg_Auto ();
+                BeginSamplingMsg_Auto msg = new BeginSamplingMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
                 if (Verbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
@@ -480,7 +480,7 @@ namespace A2D_Tests
         {
             try
             { 
-                SendMsg_Auto msg = new SendMsg_Auto ();
+                SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
                 if (Verbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
