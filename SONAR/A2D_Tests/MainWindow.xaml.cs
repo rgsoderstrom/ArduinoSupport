@@ -23,15 +23,6 @@ namespace A2D_Tests
         readonly int WpfThread;
 
         //*****************************************************************
-        //
-        // Processing parameters
-        //
-        readonly int BatchSize  = 4096;   // 
-
-        // Simulator parameters
-        readonly double Frequency  = 40150; 
-
-        //*****************************************************************
 
         public MainWindow ()
         {
@@ -62,7 +53,7 @@ namespace A2D_Tests
 
         private void GainedClient (Socket sock)
         {
-            ArduinoWindow ard = new ArduinoWindow (sock, ArduinoWindow.SampleRate, BatchSize);
+            ArduinoWindow ard = new ArduinoWindow (sock);
             ard.Owner = this;
             ard.Show ();
             ard.Activate ();
@@ -124,9 +115,7 @@ namespace A2D_Tests
             p.StartInfo.FileName  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";
 
             string [] AllArgs = new string [] {"ServerName", System.Net.Dns.GetHostName (),
-                                               "SampleRate", ArduinoWindow.SampleRate.ToString (),
-                                               "BatchSize",  BatchSize.ToString (),
-                                               "Frequency",  Frequency.ToString ()};
+                                               "SimName",    "A2D_Tests"};
             string args = "";
 
             for (int i=0; i<AllArgs.Length; i++)

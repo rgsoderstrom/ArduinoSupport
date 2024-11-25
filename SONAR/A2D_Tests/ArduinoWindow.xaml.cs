@@ -2,11 +2,8 @@
 using System.Windows;
 using System.Net.Sockets;
 using System.Threading;
-using System.Runtime.InteropServices;
-using System.Windows.Media;
 
 using System.Collections.Generic;
-using System.Windows.Interop;
 
 using Common;
 using ArduinoInterface;
@@ -15,10 +12,6 @@ using Plot2D_Embedded;
 using System.Net;
 using System.Windows.Controls;
 using System.IO;
-using System.Reflection.Emit;
-using System.Windows.Documents;
-using MathNet.Numerics.IntegralTransforms;
-using MathNet.Numerics;
 using System.Linq;
 
 namespace A2D_Tests
@@ -36,7 +29,6 @@ namespace A2D_Tests
         readonly string clientName = "Unknown"; // only used for error reporting
 
         public static double SampleRate = 100000;
-        private int BatchSize;
         private int Verbosity = 3;//1;
 
         //*******************************************************************************
@@ -57,11 +49,8 @@ namespace A2D_Tests
 
         //*******************************************************************************
 
-        public ArduinoWindow (Socket socket, double sampleRate, int batchSize)
+        public ArduinoWindow (Socket socket)
         {
-            BatchSize = batchSize;
-            SampleRate = sampleRate;
-
             try
             {
                 InitializeComponent ();
@@ -393,9 +382,6 @@ namespace A2D_Tests
 
         private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
         {
-
-            return;
-
             try
             { 
                 double sampleRate = 0;
@@ -430,10 +416,6 @@ namespace A2D_Tests
 
         private void SendGainButton_Click (object sender, RoutedEventArgs e)
         {
-
-            return;
-
-
             if (Verbosity > 0) Print ("Send Gain button clicked");
 
             double gainPercent = 0;

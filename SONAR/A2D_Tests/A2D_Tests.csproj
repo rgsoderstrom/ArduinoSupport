@@ -124,5 +124,8 @@
   <ItemGroup>
     <Resource Include="Log.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LogSimulator.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

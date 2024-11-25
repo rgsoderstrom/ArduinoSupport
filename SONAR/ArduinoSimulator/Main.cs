@@ -15,46 +15,41 @@ namespace ArduinoSimulator
 {
     public class ConsoleTest
     {
-        // Parameters initially set to default values
-        static string ServerName = "RandysLaptop";
-        //static string ServerName = "RandysLG";
 
-        static double SampleRate = 4096;
-        static int    BatchSize  = 1024;
-        static double Frequency  = 128;
+        static string ServerName;
+        static string SimulatorName;
+
+
+        
+
+        private static void PrintToLog (string str)
+        {
+            EventLog.WriteLine (str);
+            Console.WriteLine (str);
+        }
 
         //************************************************************************
 
         public static int Main (string [] args)
         {
-            EventLog.Open (@"..\..\SimulatorLog.txt", true);
-            EventLog.WriteLine ("Arduino Simulator");
+            EventLog.Open (@"..\..\LogSimulator.txt", true);
+            PrintToLog ("Arduino Simulator");
 
             try
             { 
                 for (int i=0; i<args.Length; i+=2)
                 {
-                    //Console.WriteLine (i.ToString () + ": " + args [i] + ", " + args [i+1]);
-
-                    if (i + 1 == args.Length) // not enough args passed in
+                    if (i + 1 == args.Length) // odd number of args passed in. require (name, value) pairs
                         break;
 
                     switch (args [i])
                     {
+                        case "SimName":
+                            SimulatorName = args [i+1];
+                            break;
+
                         case "ServerName":
                             ServerName = args [i+1];
-                            break;
-
-                        case "SampleRate":
-                            SampleRate = Convert.ToDouble (args [i+1]);
-                            break;
-
-                        case "Frequency":
-                            Frequency = Convert.ToDouble (args [i+1]);
-                            break;
-
-                        case "BatchSize":
-                            BatchSize = Convert.ToInt32 (args [i+1]);
                             break;
 
                         default:
@@ -71,18 +66,32 @@ namespace ArduinoSimulator
 
             try
             {
-                ArduinoSim arduino1 = new ArduinoSim ("ard1",
-                                                      ServerName, 
-                                                      SampleRate,
-                                                      BatchSize,
-                                                      Frequency);
+                PrintToLog (SimulatorName + " connecting to server " + ServerName);
 
-                //ArduinoSim arduino2 = new ArduinoSim ("ard2");
+                SocketLibrary.TcpClient thisClientSocket = new SocketLibrary.TcpClient (ServerName, PrintToLog); 
+
+                if (thisClientSocket.Connected == false)
+                {
+                    PrintToLog ("\n\nFailed to connect to server");
+
+                    while (true)
+                        Thread.Sleep (1000);
+                }
+
+                thisClientSocket.PrintHandler += PrintToLog;
+
+                //**********************************************************************************************
+
+                ArduinoSim arduino1;
+                
+                if      (SimulatorName == "A2D_Tests")  arduino1 = new ArduinoSim_A2D_Tests  ("ard1", thisClientSocket, PrintToLog);
+                else if (SimulatorName == "Sonar1Chan") arduino1 = new ArduinoSim_Sonar1Chan ("ard1", thisClientSocket, PrintToLog);
+                else throw new Exception ("Unrecognized simulator type requested");
+
 
                 Task [] allTasks =
                 {
-                        new Task (arduino1.Run),
-                        //new Task (arduino2.Run)
+                    new Task (arduino1.Run),
                 };
 
                 foreach (Task t in allTasks)
@@ -102,8 +111,6 @@ namespace ArduinoSimulator
             }
 
             EventLog.Close ();
-            //Console.WriteLine ("Hit a key to exit");
-           // var c = Console.ReadKey ();                
             return 0;
         }
     }
