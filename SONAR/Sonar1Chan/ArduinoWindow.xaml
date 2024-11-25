@@ -1,0 +1,144 @@
+﻿<Window x:Class="Sonar1Chan.ArduinoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
+        xmlns:local="clr-namespace:Sonar1Chan"
+        mc:Ignorable="d" 
+        d:DesignHeight="450" d:DesignWidth="800"
+        Title="Single Channel SONAR" Height="850" Width="1200" Loaded="ArduinoWindow_Loaded">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="5 1 5 0">
+
+            <StackPanel Name="ButtonStack" Orientation="Vertical" VerticalAlignment="Top">
+                <GroupBox BorderBrush="Black" BorderThickness="1" Header="FPGA" FontSize="16">
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Clear Buffer" Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
+                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingButton_Click"/>
+                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Send Samples" Name="SendButton"    IsEnabled="True"  Click="SendSamplesButton_Click"/>
+
+                                <Expander BorderBrush="Black" BorderThickness="1" Background="Gainsboro" Margin="3,1,3,2" Header="Parameters" IsExpanded="False">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                                        
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Sample Rate</Label>
+                                            <TextBox ToolTip="Samples per Second" Name="SampleRate" VerticalAlignment="Center">100000</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Ramp Start</Label>
+                                            <TextBox ToolTip="Volts" Name="RampStart" VerticalAlignment="Center">0.050</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Ramp Stop</Label>
+                                            <TextBox ToolTip="Volts" Name="RampStop" VerticalAlignment="Center">0.125</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Blanking Level</Label>
+                                            <TextBox ToolTip="Volts" Name="BlankingLevel" VerticalAlignment="Center">0</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Ramp Rise Time</Label>
+                                            <TextBox ToolTip="Milliseconds" Name="RampRate" VerticalAlignment="Center">20</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Ping Frequency</Label>
+                                            <TextBox ToolTip="Hz" Name="PingFrequency" VerticalAlignment="Center">40000</TextBox>
+                                        </StackPanel>
+
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label>Ping Duration</Label>
+                                            <TextBox ToolTip="Milliseconds" Name="PingDuration" VerticalAlignment="Center">0.25</TextBox>
+                                        </StackPanel>
+
+                                        <Button Margin="5,3,5,3" MaxWidth="140" IsEnabled="True" Background="GhostWhite">Send</Button>
+                                    </StackPanel>
+                                </Expander>
+                            </StackPanel>
+                        </GroupBox>
+
+
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5,5,5,0" Header="PC" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
+                                    <StackPanel Orientation="Vertical">
+                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Save Samples"    Name="SaveButton"    IsEnabled="False" Click="SaveButton_Click"/>
+
+                                        <!-- 
+                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Find Peaks"      Name="PeaksButton"   IsEnabled="False" Click="PeaksButton_Click"/>
+                                        <TextBox Name="ThreshBox">-50</TextBox>
+                                        -->
+                                    </StackPanel>
+                                </GroupBox>
+
+                                <Button MinWidth="60" Name="ResendBtn" Margin="3, 2, 3, 3" ToolTip="Resend unacknowledged message" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
+
+                                <ComboBox Margin="3,1,3,3" Name="Verbosity_ComboBox" ToolTip="Choose verbosity" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
+                                    <!-- Default set in code -->
+                                    <ComboBoxItem Content="Quiet"      Name="Verbose_Quiet"      ToolTip="Errors Only"         Tag="0"></ComboBoxItem>
+                                    <ComboBoxItem Content="Normal"     Name="Verbose_Normal"     ToolTip="Clicks and Messages" Tag="1"></ComboBoxItem>
+                                    <ComboBoxItem Content="Detailed"   Name="Verbose_Detailed"   ToolTip="Message info"        Tag="2"></ComboBoxItem>
+                                    <ComboBoxItem Content="Diagnostic" Name="Verbose_Diagnostic" ToolTip="More Details"        Tag="3"></ComboBoxItem>
+                                </ComboBox>
+
+                                <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
+                                    <StackPanel Orientation="Vertical">
+                                        <!-- Default set in code -->
+                                        <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked">Zoom Both</RadioButton>
+                                        <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
+                                        <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>
+                                    </StackPanel>
+                                </GroupBox>
+
+
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- 
+                        <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
+                            <StackPanel Orientation="Vertical">
+                                <!** Default set in code **>
+                                <RadioButton Margin="8,4,8,0" Name="InputTime_Button"     Tag="Input_Samples"  Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
+                                <RadioButton Margin="8,2,8,0" Name="InputSpect_Button"    Tag="Input_Spect"    Checked="DisplayOptionButton_Checked">Input Spectrum</RadioButton>
+                                <RadioButton Margin="8,4,8,0" Name="WindowedTime_Button"  Tag="Win_Samples"    Checked="DisplayOptionButton_Checked">Windowed Samples</RadioButton>
+                                <RadioButton Margin="8,2,8,0" Name="WindowedSpect_Button" Tag="Win_Spect"      Checked="DisplayOptionButton_Checked">Windowed Spectrum</RadioButton>
+                            </StackPanel>
+                        </GroupBox>
+                        -->
+
+
+                        <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" ToolTip="Socket connected">
+                                    <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ConnectedEllipse"></Ellipse>
+                                    <Label HorizontalAlignment="Center" >Connected</Label>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" ToolTip="Ready to accept messages">
+                                    <Ellipse Width="10" Height="10" Fill="White" Stroke="Black" Name="ReadyEllipse"></Ellipse>
+                                    <Label HorizontalAlignment="Center">Ready</Label>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+
+                    </StackPanel>
+                </GroupBox>
+
+            </StackPanel>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Bottom" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="2" Height="130">
+            <TextBox Name="TextDisplay"  VerticalScrollBarVisibility="Visible"/>
+        </Border>
+
+        <Plot2D_Embedded:Bare2DPlot Name="PlotArea"/>
+    </DockPanel>
+</Window>
