@@ -57,11 +57,6 @@ namespace ArduinoSimulator
                         ClearMessageHandler (msgBytes);
                         break;
                         
-                    case (ushort) ArduinoMessageIDs.BeginSamplingMsgId:
-                        if (Verbose) PrintToLog ("Collect message received");
-                        CollectMessageHandler (msgBytes);
-                        break;
-                        
                     case (ushort) ArduinoMessageIDs.BeginPingCycleMsgId:
                         if (Verbose) PrintToLog ("Collect message received");
                         CollectMessageHandler (msgBytes);
@@ -72,18 +67,9 @@ namespace ArduinoSimulator
                         SendSamplesMessageHandler (msgBytes);
                         break;
                         
-                    case (ushort) ArduinoMessageIDs.SampleRateMsgId:
-                        if (Verbose) PrintToLog ("Sample rate message received");
-                        SampleRateMessageHandler (msgBytes);
-                        break;
-                        
-                    case (ushort) ArduinoMessageIDs.AnalogGainMsgId:
-                        if (Verbose) PrintToLog ("Analog gain message received");
-                        AnalogGainMessageHandler (msgBytes);
-                        break;
-                        
-                    case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
-                        if (Verbose) PrintToLog ("Keep-Alive message received");
+                    case (ushort) ArduinoMessageIDs.SonarParametersMsgId:
+                        if (Verbose) PrintToLog ("SONAR parameters message received");
+                        SonarParametersMessageHandler (msgBytes);
                         break;
                         
                     default:
@@ -102,18 +88,11 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        private void SampleRateMessageHandler (byte [] msgBytes)
+        private void SonarParametersMessageHandler (byte [] msgBytes)
         {
-            SampleRateMsg_Auto msg = new SampleRateMsg_Auto (msgBytes);
-            SampleRate = 50e6 / msg.data.RateDivisor;
+            SonarParametersMsg_Auto msg = new SonarParametersMsg_Auto (msgBytes);
 
-            PrintToLog ("Sample rate: " + SampleRate);
-        }
-
-        private void AnalogGainMessageHandler (byte [] msgBytes)
-        {
-            AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto (msgBytes);
-            PrintToLog ("DAC word: " + msg.data.DacValue);
+            PrintToLog ("Parameters: " + msg.ToString ());
         }
 
         //***************************************************************************************************************
@@ -203,6 +182,5 @@ namespace ArduinoSimulator
                 PrintToLog ("Exception: " + ex.Message);
             }
         }
-
     }
 }

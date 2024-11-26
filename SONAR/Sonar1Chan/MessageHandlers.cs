@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Windows;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -60,18 +60,18 @@ namespace Sonar1Chan
         private void ReadyMessageHandler (byte [] msgBytes)
         {
             try
-            { 
-                //ClearButton.IsEnabled = true;
-                //CollectButton.IsEnabled = true;
-                //SendButton.IsEnabled = true;
+            {
+                ClearButton.IsEnabled = true;
+                PingButton.IsEnabled = true;
+                SendButton.IsEnabled = true;
 
-                //ReadyEllipse.Fill = Brushes.Green;
-                //messageQueue.ArduinoReady ();
+                ReadyEllipse.Fill = Brushes.Green;
+                messageQueue.ArduinoReady ();
 
-                //SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
+                SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
 
-                //if (Verbosity > 1)      Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
-                //else if (Verbosity > 0) Print ("FPGA Ready message received");
+                if (SelectedVerbosity > 1) Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
+                else if (SelectedVerbosity > 0) Print ("FPGA Ready message received");
             }
 
             catch (Exception ex)
@@ -82,7 +82,12 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-        List<double> Samples = new List<double> ();
+        const double SoundSpeed = 1125; // feet per second
+        double BlankingTime = 0.005; // seconds from ping command to first sample
+        double SampleTime = 1 / 100_000.0;
+
+        List<Point> Samples = new List<Point> ();
+        double TimeTag = 0; // set to BlankingTime when user requests sample
 
         int sendMsgCounter = 0; // number of sample request messages sent, just for status display
 
@@ -97,12 +102,14 @@ namespace Sonar1Chan
 
                 for (int i=0; i<samplesThisMsg; i++)
                 {
-                    Samples.Add (msg.data.Sample [i]);
+                    double range = TimeTag * SoundSpeed / 2;
+                    Samples.Add (new Point (range, msg.data.Sample [i]));
+                    TimeTag += SampleTime;
                 }
 
-                if (Verbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
-                else if (Verbosity > 1) Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message");
-                else if (Verbosity > 0) Print ("Sample msg received");
+                if (SelectedVerbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
+                else if (SelectedVerbosity > 1) Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message");
+                else if (SelectedVerbosity > 0) Print ("Sample msg received");
 
                 if (lastSamples)
                 {
@@ -187,7 +194,7 @@ namespace Sonar1Chan
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                if (Verbosity > 1)
+                if (SelectedVerbosity > 1)
                     Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         

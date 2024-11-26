@@ -16,49 +16,49 @@
                     <StackPanel Orientation="Vertical">
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
                             <StackPanel Orientation="Vertical">
-                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Clear Buffer" Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
-                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingButton_Click"/>
-                                <Button MinWidth="60" MaxWidth="1140" Margin="3, 1, 3, 2" Content="Send Samples" Name="SendButton"    IsEnabled="True"  Click="SendSamplesButton_Click"/>
+                                <Button Width="180" Margin="3, 1, 3, 2" Content="Clear Buffer" Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
+                                <Button Width="180" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingButton_Click"/>
+                                <Button Width="180" Margin="3, 1, 3, 2" Content="Send Samples" Name="SendButton"    IsEnabled="True"  Click="SendSamplesButton_Click"/>
 
-                                <Expander BorderBrush="Black" BorderThickness="1" Background="Gainsboro" Margin="3,1,3,2" Header="Parameters" IsExpanded="False">
+                                <Expander Width="180" BorderBrush="Black" BorderThickness="1" Background="Gainsboro" Margin="3,1,3,2" Header="Parameters" IsExpanded="False">
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
                                         
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Sample Rate</Label>
-                                            <TextBox ToolTip="Samples per Second" Name="SampleRate" VerticalAlignment="Center">100000</TextBox>
+                                            <TextBox ToolTip="Samples per Second" Name="SampleRateTB" VerticalAlignment="Center">100000</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Ramp Start</Label>
-                                            <TextBox ToolTip="Volts" Name="RampStart" VerticalAlignment="Center">0.050</TextBox>
+                                            <TextBox ToolTip="Volts" Name="RampStartTB" VerticalAlignment="Center">0.250</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Ramp Stop</Label>
-                                            <TextBox ToolTip="Volts" Name="RampStop" VerticalAlignment="Center">0.125</TextBox>
+                                            <TextBox ToolTip="Volts" Name="RampStopTB" VerticalAlignment="Center">1.25</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Blanking Level</Label>
-                                            <TextBox ToolTip="Volts" Name="BlankingLevel" VerticalAlignment="Center">0</TextBox>
+                                            <TextBox ToolTip="Volts" Name="BlankingLevelTB" VerticalAlignment="Center">0.025</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Ramp Rise Time</Label>
-                                            <TextBox ToolTip="Milliseconds" Name="RampRate" VerticalAlignment="Center">20</TextBox>
+                                            <TextBox ToolTip="Milliseconds" Name="RampTimeTB" VerticalAlignment="Center">20</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Ping Frequency</Label>
-                                            <TextBox ToolTip="Hz" Name="PingFrequency" VerticalAlignment="Center">40000</TextBox>
+                                            <TextBox ToolTip="Hz" Name="PingFrequencyTB" VerticalAlignment="Center">40200</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label>Ping Duration</Label>
-                                            <TextBox ToolTip="Milliseconds" Name="PingDuration" VerticalAlignment="Center">0.25</TextBox>
+                                            <TextBox ToolTip="Milliseconds" Name="PingDurationTB" VerticalAlignment="Center">0.25</TextBox>
                                         </StackPanel>
 
-                                        <Button Margin="5,3,5,3" MaxWidth="140" IsEnabled="True" Background="GhostWhite">Send</Button>
+                                        <Button Margin="5,3,5,3" MaxWidth="140" IsEnabled="True" Background="GhostWhite" Click="SendParamsButton_Click">Send</Button>
                                     </StackPanel>
                                 </Expander>
                             </StackPanel>

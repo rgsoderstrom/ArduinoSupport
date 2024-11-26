@@ -8,7 +8,7 @@ namespace ArduinoSimulator
 {
     public abstract class ArduinoSim
     {
-        protected bool Verbose = false;
+        protected bool Verbose = true;
 
         protected SocketLibrary.TcpClient thisClientSocket = null;
         protected PrintCallback PrintToLog;

@@ -32,7 +32,7 @@ namespace Sonar1Chan
         readonly string clientName = "Unknown"; // only used for error reporting
 
        // public static double SampleRate = 100000;
-        private int Verbosity = 3;//1;
+        private int SelectedVerbosity = 3;//1;
 
         //*******************************************************************************
 
@@ -190,8 +190,8 @@ namespace Sonar1Chan
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
 
-            if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
-            else if (Verbosity > 1) Print ("Sending KeepAlive msg");
+            if (SelectedVerbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            else if (SelectedVerbosity > 1) Print ("Sending KeepAlive msg");
 
             messageQueue.AddMessage (msg);
         }
@@ -246,11 +246,11 @@ namespace Sonar1Chan
                 if (child is ComboBoxItem)
                 {
                     ComboBoxItem cbi = child as ComboBoxItem;
-                    int tagAsInt = 0;
+                    int thisItemsTag = 0;
 
-                    if (Utils.ConvertTagToInteger (cbi.Tag, ref tagAsInt))
+                    if (Utils.ConvertTagToInteger (cbi.Tag, ref thisItemsTag))
                     {
-                        if (tagAsInt == Verbosity)
+                        if (thisItemsTag == SelectedVerbosity)
                         {
                             cbi.IsSelected = true;
                             break;
@@ -341,21 +341,70 @@ namespace Sonar1Chan
         // Button-press handlers
         //
 
-        private void ClearButton_Click (object sender, RoutedEventArgs e)
+        private void SendParamsButton_Click (object sender, RoutedEventArgs e)
         { 
             try
             { 
-                //Samples.Clear ();
-                //SaveButton.IsEnabled = false;
-                //PeaksButton.IsEnabled = false;
+                const double CountsPerVolt = 1024 / 2.048;  // Mercury 2 DAC
+                const double ClockFreq     = 50e6;          // FPGA Clock
+                const double FreqScale     = 1 / 190.0;     // Mercury 2 CORDIC
 
-                //ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
-                //messageQueue.AddMessage (msg);
+                double SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
+                double RampStart     = double.Parse (RampStartTB.Text);     // volts
+                double RampStop      = double.Parse (RampStopTB.Text);      // "
+                double BlankingLevel = double.Parse (BlankingLevelTB.Text); // "
+                double RampTime      = double.Parse (RampTimeTB.Text);      // milliseconds
+                double PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
+                double PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
 
-                //if (Verbosity > 1)      Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
-                //else if (Verbosity > 0) Print ("Sending Clear msg");
+
+                short sampleClockDiv = (short) (ClockFreq / SampleRate);
+                short rampStart      = (short) (RampStart * CountsPerVolt);
+                short rampStop       = (short) (RampStop  * CountsPerVolt);
+                short blankingLevel  = (short) (BlankingLevel * CountsPerVolt);
+
+                double rampRate = (rampStop - rampStart) / (RampTime / 1000); // counts per second
+                short  rampDivisor = (short) (ClockFreq / rampRate);
+
+                short  frequency = (short) (PingFrequency * FreqScale);
+                short  duration  = (short) ((PingDuration / 1000) * ClockFreq);
+
+                SonarParametersMsg_Auto msg = new SonarParametersMsg_Auto ();
+
+                msg.data.SampleClockDivisor   = sampleClockDiv;
+                msg.data.RampStartingLevel    = rampStart;
+                msg.data.RampStoppingLevel    = rampStop;
+                msg.data.BlankingLevel        = blankingLevel;
+                msg.data.RampRateClockDivisor = rampDivisor;
+                msg.data.PingFrequency        = frequency;
+                msg.data.PingDuration         = duration;
+                
+                Print (msg.ToString ());
+
+                messageQueue.AddMessage (msg);
             }
         
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in SendParams Button click: {0}", ex.Message));
+            }
+        }
+        
+        private void ClearButton_Click (object sender, RoutedEventArgs e)
+        { 
+            try
+            {
+                Samples.Clear ();
+                SaveButton.IsEnabled = false;
+              //  PeaksButton.IsEnabled = false;
+
+                ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
+                messageQueue.AddMessage (msg);
+
+                if (SelectedVerbosity > 1) Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
+                else if (SelectedVerbosity > 0) Print ("Sending Clear msg");
+            }
+
             catch (Exception ex)
             {
                 EventLog.WriteLine (string.Format ("Exception in ClearButton click: {0}", ex.Message));
@@ -369,8 +418,8 @@ namespace Sonar1Chan
                 BeginPingCycleMsg_Auto msg = new BeginPingCycleMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (Verbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending Collect msg");
+                if (SelectedVerbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
+                else if (SelectedVerbosity > 0) Print ("Sending Collect msg");
             }
         
             catch (Exception ex)
@@ -459,9 +508,10 @@ namespace Sonar1Chan
 
         private void SendSamplesButton_Click (object sender, RoutedEventArgs e)
         {
-            if (Verbosity > 0) Print ("Send button clicked");
+            if (SelectedVerbosity > 0) Print ("Send button clicked");
 
             Samples.Clear ();
+            TimeTag = BlankingTime;
             sendMsgCounter = 1;
             RequestSamples ();
         }
@@ -475,8 +525,8 @@ namespace Sonar1Chan
                 SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (Verbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending Send msg");
+                if (SelectedVerbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+                else if (SelectedVerbosity > 0) Print ("Sending Send msg");
             }
         
             catch (Exception ex)
@@ -551,9 +601,9 @@ namespace Sonar1Chan
 
         private void Resend_Click (object sender, RoutedEventArgs e)
         {
-            //Print ("Resending last message");
-            //messageQueue.ResendLastMsg ();
-            //ResendBtn.IsEnabled = false;
+            Print ("Resending last message");
+            messageQueue.ResendLastMsg ();
+            ResendBtn.IsEnabled = false;
         }
 
         private void Verbosity_ComboBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
@@ -565,7 +615,7 @@ namespace Sonar1Chan
             bool success = Utils.ConvertTagToInteger (cbi.Tag, ref number);
 
             if (success)
-                Verbosity = number;
+                SelectedVerbosity = number;
         }
     }
 }
