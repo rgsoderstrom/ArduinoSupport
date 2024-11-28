@@ -70,8 +70,8 @@ namespace Sonar1Chan
 
                 SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
 
-                if (SelectedVerbosity > 1) Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
-                else if (SelectedVerbosity > 0) Print ("FPGA Ready message received");
+                if (Verbosity > 1) Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
+                else if (Verbosity > 0) Print ("FPGA Ready message received");
             }
 
             catch (Exception ex)
@@ -83,16 +83,17 @@ namespace Sonar1Chan
         //*******************************************************************************************************
 
         const double SoundSpeed = 1125; // feet per second
-        double BlankingTime = 0.005; // seconds from ping command to first sample
-        double SampleTime = 1 / 100_000.0;
 
         List<Point> Samples = new List<Point> ();
-        double TimeTag = 0; // set to BlankingTime when user requests sample
+
+        double TimeTag = 0; // initialized to BlankingTime when user requests sample
 
         int sendMsgCounter = 0; // number of sample request messages sent, just for status display
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
+            double SampleTime = 1 / SampleRate;
+
             try
             { 
                 SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
@@ -107,9 +108,9 @@ namespace Sonar1Chan
                     TimeTag += SampleTime;
                 }
 
-                if (SelectedVerbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
-                else if (SelectedVerbosity > 1) Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message");
-                else if (SelectedVerbosity > 0) Print ("Sample msg received");
+                if (Verbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
+                else if (Verbosity > 1) Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message");
+                else if (Verbosity > 0) Print ("Sample msg received");
 
                 if (lastSamples)
                 {
@@ -129,27 +130,21 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-      //SignalProcessing signalProcessor;
+      SignalProcessing signalProcessor;
 
         private void DisplaySamples ()
         {
             try
-            { 
-                PlotArea.Plot (new LineView (Samples));
+            {
+                signalProcessor = new SignalProcessing (Samples);
+                SaveButton.IsEnabled = true;
 
-                //if (Verbosity > 1)      Print ("Received AllSent msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
-                //else if (Verbosity > 0) Print ("Received AllSent msg");
+                PlotArea.Clear ();
 
-                //signalProcessor = new SignalProcessing (Samples, SampleRate);
-                //SaveButton.IsEnabled = true;
-                //PeaksButton.IsEnabled = true;
-
-                //PlotArea.Clear ();
-
-                //if (SelectedDisplay == DisplayOptions.InputSamples)  PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                //if (SelectedDisplay == DisplayOptions.InputSpectrum) PlotArea.Plot (new LineView (signalProcessor.InputSpectrum));
-                //if (SelectedDisplay == DisplayOptions.WindowedSamples)  PlotArea.Plot (new LineView (signalProcessor.WindowedSamples));
-                //if (SelectedDisplay == DisplayOptions.WindowedSpectrum) PlotArea.Plot (new LineView (signalProcessor.WindowedSpectrum));
+                PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+                if (SelectedDisplay == DisplayOptions.InputSamples)    PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+                if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
+                if (SelectedDisplay == DisplayOptions.MedianFiltered)  PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
 
                 PlotArea.RectangularGridOn = true;
             }
@@ -194,7 +189,7 @@ namespace Sonar1Chan
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                if (SelectedVerbosity > 1)
+                if (Verbosity > 1)
                     Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         

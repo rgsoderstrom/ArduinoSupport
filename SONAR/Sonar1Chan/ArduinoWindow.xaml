@@ -101,17 +101,16 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!-- 
+                        <!-- -->
                         <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
                             <StackPanel Orientation="Vertical">
-                                <!** Default set in code **>
-                                <RadioButton Margin="8,4,8,0" Name="InputTime_Button"     Tag="Input_Samples"  Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
-                                <RadioButton Margin="8,2,8,0" Name="InputSpect_Button"    Tag="Input_Spect"    Checked="DisplayOptionButton_Checked">Input Spectrum</RadioButton>
-                                <RadioButton Margin="8,4,8,0" Name="WindowedTime_Button"  Tag="Win_Samples"    Checked="DisplayOptionButton_Checked">Windowed Samples</RadioButton>
-                                <RadioButton Margin="8,2,8,0" Name="WindowedSpect_Button" Tag="Win_Spect"      Checked="DisplayOptionButton_Checked">Windowed Spectrum</RadioButton>
+                                <!-- Default set in code -->
+                                <RadioButton Margin="8,4,8,0" Name="InputSamples_Button" Tag="Input_Samples" Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
+                                <RadioButton Margin="8,2,8,0" Name="InputAbs_Button"     Tag="Input_Abs"     Checked="DisplayOptionButton_Checked">Abs Input Samples</RadioButton>
+                                <RadioButton Margin="8,4,8,0" Name="InputMedian_Button"  Tag="Input_Med"     Checked="DisplayOptionButton_Checked">Median Filtered</RadioButton>
                             </StackPanel>
                         </GroupBox>
-                        -->
+                        <!-- -->
 
 
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">

@@ -32,7 +32,7 @@ namespace Sonar1Chan
         readonly string clientName = "Unknown"; // only used for error reporting
 
        // public static double SampleRate = 100000;
-        private int SelectedVerbosity = 3;//1;
+        private int Verbosity = 3;//1;
 
         //*******************************************************************************
 
@@ -190,8 +190,8 @@ namespace Sonar1Chan
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
 
-            if (SelectedVerbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
-            else if (SelectedVerbosity > 1) Print ("Sending KeepAlive msg");
+            if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            else if (Verbosity > 1) Print ("Sending KeepAlive msg");
 
             messageQueue.AddMessage (msg);
         }
@@ -250,7 +250,7 @@ namespace Sonar1Chan
 
                     if (Utils.ConvertTagToInteger (cbi.Tag, ref thisItemsTag))
                     {
-                        if (thisItemsTag == SelectedVerbosity)
+                        if (thisItemsTag == Verbosity)
                         {
                             cbi.IsSelected = true;
                             break;
@@ -260,7 +260,7 @@ namespace Sonar1Chan
             }
 
             ZoomX_Button.IsChecked = true;
-            //InputSpect_Button.IsChecked = true;
+            InputSamples_Button.IsChecked = true;
         }
 
         //*******************************************************************************************************
@@ -303,11 +303,14 @@ namespace Sonar1Chan
 
         //**************************************************************************************
 
-        enum DisplayOptions {InputSamples, InputSpectrum, WindowedSamples, WindowedSpectrum};
-        private DisplayOptions SelectedDisplay ;//= DisplayOptions.InputSamples;
+        enum DisplayOptions {InputSamples, AbsInputSamples, MedianFiltered};
+
+        private DisplayOptions SelectedDisplay;// = DisplayOptions.InputSamples;
 
         private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
         {
+            EventLog.WriteLine ("DisplayOptionButton_Checked");
+
             if (sender is RadioButton rb)
             {
                 string tag = rb.Tag as string;
@@ -317,29 +320,30 @@ namespace Sonar1Chan
                     switch (tag)
                     {
                         case "Input_Samples": SelectedDisplay = DisplayOptions.InputSamples;  break;
-                        case "Input_Spect":   SelectedDisplay = DisplayOptions.InputSpectrum; break;
-                        case "Win_Samples":   SelectedDisplay = DisplayOptions.WindowedSamples; break;
-                        case "Win_Spect":     SelectedDisplay = DisplayOptions.WindowedSpectrum; break;
+                        case "Input_Abs":     SelectedDisplay = DisplayOptions.AbsInputSamples; break;
+                        case "Input_Med":     SelectedDisplay = DisplayOptions.MedianFiltered; break;
                         default: throw new Exception ("Invalid display option");
                     }
                 }
             }
 
-            //if (signalProcessor != null)
-            //{
-            //    PlotArea.Clear ();
-            //    if (SelectedDisplay == DisplayOptions.InputSamples)  PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-            //    if (SelectedDisplay == DisplayOptions.InputSpectrum) PlotArea.Plot (new LineView (signalProcessor.InputSpectrum));
-            //    if (SelectedDisplay == DisplayOptions.WindowedSamples)  PlotArea.Plot (new LineView (signalProcessor.WindowedSamples));
-            //    if (SelectedDisplay == DisplayOptions.WindowedSpectrum) PlotArea.Plot (new LineView (signalProcessor.WindowedSpectrum));
-            //    PlotArea.RectangularGridOn = true;
-            //}
+            if (signalProcessor != null)
+            {
+                PlotArea.Clear ();
+                if (SelectedDisplay == DisplayOptions.InputSamples) PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+                if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
+                if (SelectedDisplay == DisplayOptions.MedianFiltered) PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
+                PlotArea.RectangularGridOn = true;
+            }
         }
 
         //**************************************************************************
         //
         // Button-press handlers
         //
+
+        double SampleRate = 100000;
+        double PingDuration = 1;
 
         private void SendParamsButton_Click (object sender, RoutedEventArgs e)
         { 
@@ -349,13 +353,13 @@ namespace Sonar1Chan
                 const double ClockFreq     = 50e6;          // FPGA Clock
                 const double FreqScale     = 1 / 190.0;     // Mercury 2 CORDIC
 
-                double SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
+                       SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
                 double RampStart     = double.Parse (RampStartTB.Text);     // volts
                 double RampStop      = double.Parse (RampStopTB.Text);      // "
                 double BlankingLevel = double.Parse (BlankingLevelTB.Text); // "
                 double RampTime      = double.Parse (RampTimeTB.Text);      // milliseconds
                 double PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
-                double PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
+                       PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
 
 
                 short sampleClockDiv = (short) (ClockFreq / SampleRate);
@@ -401,8 +405,8 @@ namespace Sonar1Chan
                 ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (SelectedVerbosity > 1) Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
-                else if (SelectedVerbosity > 0) Print ("Sending Clear msg");
+                if (Verbosity > 1) Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
+                else if (Verbosity > 0) Print ("Sending Clear msg");
             }
 
             catch (Exception ex)
@@ -418,8 +422,8 @@ namespace Sonar1Chan
                 BeginPingCycleMsg_Auto msg = new BeginPingCycleMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (SelectedVerbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
-                else if (SelectedVerbosity > 0) Print ("Sending Collect msg");
+                if (Verbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
+                else if (Verbosity > 0) Print ("Sending Collect msg");
             }
         
             catch (Exception ex)
@@ -432,83 +436,11 @@ namespace Sonar1Chan
         //*****************************************************************************************
         //*****************************************************************************************
 
-        private void SendSampleRateButton_Click (object sender, RoutedEventArgs e)
-        {
-
-       //     return;
-
-            //try
-            //{ 
-            //    double sampleRate = 0;
-            //    bool success = Double.TryParse (SampleRateBox.Text, out sampleRate);
-
-            //    if (success == true)
-            //    {
-            //      //  SampleRate = sampleRate;
-
-            //        ushort divisor = (ushort) (0.5 + 50e6 / sampleRate); 
-            //        SampleRateMsg_Auto msg = new SampleRateMsg_Auto ();
-            //        msg.data.RateDivisor = divisor;
-            //        messageQueue.AddMessage (msg);
-
-            //        if (Verbosity > 1)      Print ("Sending Sample Rate msg, seq numb " + msg.header.SequenceNumber);
-            //        else if (Verbosity > 0) Print ("Sending Sample Rate msg");
-
-
-            //        double ActualRate = 50e6 / divisor;
-            //        SampleRateBox.Text = string.Format ("{0:0.###}", ActualRate);
-            //  //      SampleRate = ActualRate;
-            //    }
-            //    else
-            //        Print ("Invalid sample rate");
-            //}
-
-            //catch (Exception ex)
-            //{
-            //    Print ("Exception processing sample rate: " + ex.Message);
-            //}
-        }
-
-        private void SendGainButton_Click (object sender, RoutedEventArgs e)
-        {
-
-            //return;
-
-
-            //if (Verbosity > 0) Print ("Send Gain button clicked");
-
-            //double gainPercent = 0;
-            //bool success = Double.TryParse (GainBox.Text, out gainPercent);
-
-            //if (success == false)
-            //{
-            //    Print ("Invalid gain percentage");
-            //    return;
-            //}
-
-            //if (gainPercent < 0 || gainPercent > 100)
-            //{
-            //    Print ("Gain percentage out of range");
-            //    return;
-            //}
-
-            //ushort gainWord = (ushort) ((gainPercent / 100) * 1.25 * (1024 / 2.048)); 
-            //AnalogGainMsg_Auto msg = new AnalogGainMsg_Auto ();
-            //msg.data.DacValue = gainWord;
-            //messageQueue.AddMessage (msg);
-
-            //if (Verbosity > 1)      Print ("Sending Gain msg, seq numb " + msg.header.SequenceNumber);
-            //else if (Verbosity > 0) Print ("Sending Gain msg");
-        }
-
-
-        //*****************************************************************************************
-        //*****************************************************************************************
-        //*****************************************************************************************
-
         private void SendSamplesButton_Click (object sender, RoutedEventArgs e)
         {
-            if (SelectedVerbosity > 0) Print ("Send button clicked");
+            if (Verbosity > 0) Print ("Send button clicked");
+
+            double BlankingTime = (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
 
             Samples.Clear ();
             TimeTag = BlankingTime;
@@ -525,8 +457,8 @@ namespace Sonar1Chan
                 SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (SelectedVerbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
-                else if (SelectedVerbosity > 0) Print ("Sending Send msg");
+                if (Verbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
+                else if (Verbosity > 0) Print ("Sending Send msg");
             }
         
             catch (Exception ex)
@@ -615,7 +547,7 @@ namespace Sonar1Chan
             bool success = Utils.ConvertTagToInteger (cbi.Tag, ref number);
 
             if (success)
-                SelectedVerbosity = number;
+                Verbosity = number;
         }
     }
 }

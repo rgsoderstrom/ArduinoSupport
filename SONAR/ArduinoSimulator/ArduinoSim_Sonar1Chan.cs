@@ -52,6 +52,10 @@ namespace ArduinoSimulator
 
                 switch (header.MessageId)
                 {
+                    case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
+                        if (Verbose) PrintToLog ("KeepAlive message received");
+                        break;
+                        
                     case (ushort) ArduinoMessageIDs.ClearSamplesMsgId:
                         if (Verbose) PrintToLog ("Clear message received");
                         ClearMessageHandler (msgBytes);
@@ -118,31 +122,30 @@ namespace ArduinoSimulator
 
         static Random random = new Random ();
 
-        List<double> harmonics = new List<double> () {1};//, 2, 3, 4, 5};
-
         private void CollectMessageHandler (byte [] msgBytes)
         {
-            PrintToLog ("Frequency = " + Frequency);
-
-            if (harmonics.Count > 1)
-                PrintToLog ("plus " + (harmonics.Count - 1) + " harmonics");
-
             Samples.Clear ();
             samplesGetIndex = 0;
 
             double time = 0;
+            int put = 0;
 
-            for (int i=0; i<BatchSize; i++, time+=1/SampleRate)
+            for (put=0; put<1000; put++, time+=1/SampleRate)
+            {
+                double withNoiseAndDC = random.NextDouble () + 512;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
+            }
+
+            for ( ; put<1500; put++, time+=1/SampleRate)
             { 
-                double s = 0;
-
-                for (int k=0; k<harmonics.Count; k++)
-                { 
-                    double ampl = k == 0 ? 1 : 0.1;
-                    s += ampl * 500 * Math.Sin (2 * Math.PI * Frequency * harmonics [k] * time);
-                }
-
+                double s = 300 * Math.Sin (2 * Math.PI * 40000 * time);
                 double withNoiseAndDC = random.NextDouble () + 512 + s;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
+            }
+
+            for (; put<BatchSize; put++, time+=1/SampleRate)
+            {
+                double withNoiseAndDC = random.NextDouble () + 512;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
