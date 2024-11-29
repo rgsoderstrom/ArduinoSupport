@@ -34,7 +34,7 @@ namespace Sonar1Chan
                 switch (MsgId)
                 {
                     case (ushort)ArduinoMessageIDs.ReadyMsgId:      ReadyMessageHandler      (msgBytes); break;
-                    case (ushort)ArduinoMessageIDs.SampleDataMsgId: SampleDataMessageHandler (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.PingReturnDataMsgId: SampleDataMessageHandler (msgBytes); break;
 
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
@@ -139,12 +139,14 @@ namespace Sonar1Chan
                 signalProcessor = new SignalProcessing (Samples);
                 SaveButton.IsEnabled = true;
 
-                PlotArea.Clear ();
+                //PlotArea.Clear ();
 
                 PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                if (SelectedDisplay == DisplayOptions.InputSamples)    PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
-                if (SelectedDisplay == DisplayOptions.MedianFiltered)  PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
+                PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
+
+                //if (SelectedDisplay == DisplayOptions.InputSamples)    PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+                //if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
+                //if (SelectedDisplay == DisplayOptions.MedianFiltered)  PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
 
                 PlotArea.RectangularGridOn = true;
             }

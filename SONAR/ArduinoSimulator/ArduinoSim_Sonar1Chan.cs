@@ -122,30 +122,55 @@ namespace ArduinoSimulator
 
         static Random random = new Random ();
 
+        int LeadingZero = 1000;
+        int Ramp        = 100;
+        int Level       = 500;
+
+        double ampl = 200;
+        int    DC = 512;
+
         private void CollectMessageHandler (byte [] msgBytes)
         {
             Samples.Clear ();
             samplesGetIndex = 0;
 
             double time = 0;
-            int put = 0;
-
-            for (put=0; put<1000; put++, time+=1/SampleRate)
+            
+            for (int i=0; i<LeadingZero; i++, time+=1/SampleRate)
             {
-                double withNoiseAndDC = random.NextDouble () + 512;
+                double withNoiseAndDC = random.NextDouble () + DC;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
-            for ( ; put<1500; put++, time+=1/SampleRate)
-            { 
-                double s = 300 * Math.Sin (2 * Math.PI * 40000 * time);
-                double withNoiseAndDC = random.NextDouble () + 512 + s;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
-            }
-
-            for (; put<BatchSize; put++, time+=1/SampleRate)
+            for (int i=0; i<Ramp; i++, time+=1/SampleRate)
             {
-                double withNoiseAndDC = random.NextDouble () + 512;
+                double win = (double) i / Ramp;
+                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double withNoiseAndDC = random.NextDouble () + DC + s;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
+            }            
+            
+            for (int i=0; i<Level; i++, time+=1/SampleRate)
+            {
+                double win = 1;
+                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double withNoiseAndDC = random.NextDouble () + DC + s;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
+            }            
+            
+            for (int i=0; i<Ramp; i++, time+=1/SampleRate)
+            {
+                double win = 1 - (double) i / Ramp;
+                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double withNoiseAndDC = random.NextDouble () + DC + s;
+                Samples.Add (Math.Truncate (withNoiseAndDC));
+            }            
+
+            int rem = BatchSize - Samples.Count;
+            
+            for (int i=0; i<rem; i++, time+=1/SampleRate)
+            {
+                double withNoiseAndDC = random.NextDouble () + DC;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
@@ -162,12 +187,12 @@ namespace ArduinoSimulator
             if (remaining < 0)
                 remaining = 0;
 
-            short thisMsgCount = (short) (remaining < SampleDataMsg_Auto.Data.MaxCount ? remaining : SampleDataMsg_Auto.Data.MaxCount);
+            short thisMsgCount = (short) (remaining < PingReturnDataMsg_Auto.Data.MaxCount ? remaining : PingReturnDataMsg_Auto.Data.MaxCount);
 
             if (Verbose)
                 PrintToLog ("Sending " + thisMsgCount + " samples");
 
-            SampleDataMsg_Auto msg = new SampleDataMsg_Auto ();
+            PingReturnDataMsg_Auto msg = new PingReturnDataMsg_Auto ();
             msg.data.Count = thisMsgCount;
 
             try

@@ -260,7 +260,7 @@ namespace Sonar1Chan
             }
 
             ZoomX_Button.IsChecked = true;
-            InputSamples_Button.IsChecked = true;
+            //InputSamples_Button.IsChecked = true;
         }
 
         //*******************************************************************************************************
@@ -303,39 +303,39 @@ namespace Sonar1Chan
 
         //**************************************************************************************
 
-        enum DisplayOptions {InputSamples, AbsInputSamples, MedianFiltered};
+        //enum DisplayOptions {InputSamples, AbsInputSamples, MedianFiltered};
 
-        private DisplayOptions SelectedDisplay;// = DisplayOptions.InputSamples;
+        //private DisplayOptions SelectedDisplay;// = DisplayOptions.InputSamples;
 
-        private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
-        {
-            EventLog.WriteLine ("DisplayOptionButton_Checked");
+        //private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
+        //{
+        //    EventLog.WriteLine ("DisplayOptionButton_Checked");
 
-            if (sender is RadioButton rb)
-            {
-                string tag = rb.Tag as string;
+        //    if (sender is RadioButton rb)
+        //    {
+        //        string tag = rb.Tag as string;
 
-                if (WindowIsLoaded)
-                {
-                    switch (tag)
-                    {
-                        case "Input_Samples": SelectedDisplay = DisplayOptions.InputSamples;  break;
-                        case "Input_Abs":     SelectedDisplay = DisplayOptions.AbsInputSamples; break;
-                        case "Input_Med":     SelectedDisplay = DisplayOptions.MedianFiltered; break;
-                        default: throw new Exception ("Invalid display option");
-                    }
-                }
-            }
+        //        if (WindowIsLoaded)
+        //        {
+        //            switch (tag)
+        //            {
+        //                case "Input_Samples": SelectedDisplay = DisplayOptions.InputSamples;  break;
+        //                case "Input_Abs":     SelectedDisplay = DisplayOptions.AbsInputSamples; break;
+        //                case "Input_Med":     SelectedDisplay = DisplayOptions.MedianFiltered; break;
+        //                default: throw new Exception ("Invalid display option");
+        //            }
+        //        }
+        //    }
 
-            if (signalProcessor != null)
-            {
-                PlotArea.Clear ();
-                if (SelectedDisplay == DisplayOptions.InputSamples) PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
-                if (SelectedDisplay == DisplayOptions.MedianFiltered) PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
-                PlotArea.RectangularGridOn = true;
-            }
-        }
+        //    if (signalProcessor != null)
+        //    {
+        //        PlotArea.Clear ();
+        //        if (SelectedDisplay == DisplayOptions.InputSamples) PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+        //        if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
+        //        if (SelectedDisplay == DisplayOptions.MedianFiltered) PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
+        //        PlotArea.RectangularGridOn = true;
+        //    }
+        //}
 
         //**************************************************************************
         //
@@ -494,7 +494,7 @@ namespace Sonar1Chan
             Print ("Saving samples to file " + fileName);
             StreamWriter samplesFile = new StreamWriter (fileName);
 
-       //     samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
+            samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
 
             samplesFile.WriteLine ("z = [...");
                     
@@ -509,22 +509,9 @@ namespace Sonar1Chan
         //*****************************************************************************************
         //*****************************************************************************************
 
-        private void PeaksButton_Click (object sender, RoutedEventArgs e)
+        private void ClearPlotButton_Click (object sender, RoutedEventArgs e)
         {
-            //double thresh;            
-            //bool success = Double.TryParse (ThreshBox.Text, out thresh);
-
-            //if (success == true)
-            //{ 
-            //    List<Point> peaks = signalProcessor.FindPeaks (thresh);
-            //    Print ("Peaks:");
-
-            //    foreach (Point pk in peaks)
-            //        if (pk.X > 0)
-            //            Print (pk.X.ToString ());
-            //}
-            //else
-            //    Print ("Error: peak threshold invalid");
+            PlotArea.Clear ();
         }
 
         //*****************************************************************************************
