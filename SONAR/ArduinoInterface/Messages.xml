@@ -105,13 +105,13 @@
   
     <Message Name="SonarParametersMsg_Auto">
         <Variables>
-            int SampleClockDivisor;
-            int RampStartingLevel;
-            int RampStoppingLevel;
-            int BlankingLevel;
-            int RampRateClockDivisor;
-            int PingFrequency;
-            int PingDuration;
+            unsigned int SampleClockDivisor;
+            unsigned int RampStartingLevel;
+            unsigned int RampStoppingLevel;
+            unsigned int BlankingLevel;
+            unsigned int RampRateClockDivisor;
+            unsigned int PingFrequency;
+            unsigned int PingDuration;
         </Variables>
     </Message>
   

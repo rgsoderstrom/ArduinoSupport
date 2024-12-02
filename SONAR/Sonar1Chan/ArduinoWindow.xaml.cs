@@ -31,7 +31,6 @@ namespace Sonar1Chan
 
         readonly string clientName = "Unknown"; // only used for error reporting
 
-       // public static double SampleRate = 100000;
         private int Verbosity = 3;//1;
 
         //*******************************************************************************
@@ -342,39 +341,65 @@ namespace Sonar1Chan
         // Button-press handlers
         //
 
-        double SampleRate = 100000;
+        double SampleRate = 100000; // these are written to Matlab "save" file
         double PingDuration = 1;
+        double PingFrequency = 1;
 
         private void SendParamsButton_Click (object sender, RoutedEventArgs e)
         { 
             try
             { 
+                // hardware characteristics
                 const double CountsPerVolt = 1024 / 2.048;  // Mercury 2 DAC
                 const double ClockFreq     = 50e6;          // FPGA Clock
                 const double FreqScale     = 1 / 190.0;     // Mercury 2 CORDIC
 
+                // convert user entered data
                        SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
                 double RampStart     = double.Parse (RampStartTB.Text);     // volts
                 double RampStop      = double.Parse (RampStopTB.Text);      // "
                 double BlankingLevel = double.Parse (BlankingLevelTB.Text); // "
                 double RampTime      = double.Parse (RampTimeTB.Text);      // milliseconds
-                double PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
+                       PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
                        PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
 
+                // convert to format required by outgoing message. check for overflow or underflow
+                double _sampleClockDiv = ClockFreq / SampleRate;
+                ushort  sampleClockDiv = (ushort) _sampleClockDiv;
+                SampleRateTB.Foreground = _sampleClockDiv == sampleClockDiv ? Brushes.Black : Brushes.Red;
 
-                short sampleClockDiv = (short) (ClockFreq / SampleRate);
-                short rampStart      = (short) (RampStart * CountsPerVolt);
-                short rampStop       = (short) (RampStop  * CountsPerVolt);
-                short blankingLevel  = (short) (BlankingLevel * CountsPerVolt);
+                double _rampStart = (int) (RampStart * CountsPerVolt);
+                ushort rampStart  = (ushort) _rampStart;
+                RampStartTB.Foreground = _rampStart == rampStart ? Brushes.Black : Brushes.Red;
 
-                double rampRate = (rampStop - rampStart) / (RampTime / 1000); // counts per second
-                short  rampDivisor = (short) (ClockFreq / rampRate);
+                double _rampStop = (int) (RampStop  * CountsPerVolt);
+                ushort rampStop  = (ushort) _rampStop;
+                RampStopTB.Foreground = _rampStop == rampStop ? Brushes.Black : Brushes.Red;
 
-                short  frequency = (short) (PingFrequency * FreqScale);
-                short  duration  = (short) ((PingDuration / 1000) * ClockFreq);
+                double _blankingLevel  = (int) (BlankingLevel * CountsPerVolt);
+                ushort  blankingLevel  = (ushort) _blankingLevel;
+                BlankingLevelTB.Foreground = _blankingLevel == blankingLevel ? Brushes.Black : Brushes.Red;
+
+                double  rampRate = (rampStop - rampStart) / (RampTime / 1000); // counts per second
+                double _rampDivisor = (int) (ClockFreq / rampRate);
+                ushort  rampDivisor = (ushort) _rampDivisor;
+                RampTimeTB.Foreground = _rampDivisor == rampDivisor ? Brushes.Black : Brushes.Red;
+
+                double _frequency = (int) (PingFrequency * FreqScale);
+                ushort  frequency = (ushort) _frequency;
+                PingFrequencyTB.Foreground = _frequency == frequency ? Brushes.Black : Brushes.Red;
+
+
+                //Print (_frequency.ToString ());
+                //Print (frequency.ToString ());
+
+
+
+                double _duration = (int) ((PingDuration / 1000) * ClockFreq);
+                ushort  duration = (ushort) _duration;
+                PingDurationTB.Foreground = _duration == duration ? Brushes.Black : Brushes.Red;
 
                 SonarParametersMsg_Auto msg = new SonarParametersMsg_Auto ();
-
                 msg.data.SampleClockDivisor   = sampleClockDiv;
                 msg.data.RampStartingLevel    = rampStart;
                 msg.data.RampStoppingLevel    = rampStop;
@@ -383,7 +408,7 @@ namespace Sonar1Chan
                 msg.data.PingFrequency        = frequency;
                 msg.data.PingDuration         = duration;
                 
-                Print (msg.ToString ());
+                //Print (msg.ToString ());
 
                 messageQueue.AddMessage (msg);
             }
@@ -440,10 +465,7 @@ namespace Sonar1Chan
         {
             if (Verbosity > 0) Print ("Send button clicked");
 
-            double BlankingTime = (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
-
             Samples.Clear ();
-            TimeTag = BlankingTime;
             sendMsgCounter = 1;
             RequestSamples ();
         }
@@ -495,6 +517,7 @@ namespace Sonar1Chan
             StreamWriter samplesFile = new StreamWriter (fileName);
 
             samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
+            samplesFile.WriteLine ("PingDuration = " + PingDuration + "; % ping duration, milliseconds");
 
             samplesFile.WriteLine ("z = [...");
                     
