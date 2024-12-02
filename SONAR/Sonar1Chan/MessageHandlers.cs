@@ -82,9 +82,7 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-        const double SoundSpeed = 1125; // feet per second
-
-        List<Point> Samples = new List<Point> ();
+        List<double> Samples = new List<double> ();
 
         double TimeTag = 0; // initialized to BlankingTime when user requests sample
 
@@ -103,9 +101,10 @@ namespace Sonar1Chan
 
                 for (int i=0; i<samplesThisMsg; i++)
                 {
-                    double range = TimeTag * SoundSpeed / 2;
-                    Samples.Add (new Point (range, msg.data.Sample [i]));
-                    TimeTag += SampleTime;
+                    //double range = TimeTag * SoundSpeed / 2;
+                    //Samples.Add (new Point (range, msg.data.Sample [i]));
+                    //TimeTag += SampleTime;
+                    Samples.Add (msg.data.Sample [i]);
                 }
 
                 if (Verbosity > 2)      Print ("Sample msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
@@ -136,13 +135,20 @@ namespace Sonar1Chan
         {
             try
             {
-                signalProcessor = new SignalProcessing (Samples);
+                signalProcessor = new SignalProcessing (Samples, PingFrequency, SampleRate, PingDuration);
+
+
                 SaveButton.IsEnabled = true;
 
                 //PlotArea.Clear ();
 
                 PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
+
+                LineView lv = new LineView (signalProcessor.Magnitude);
+                lv.Color = Brushes.Red;
+                PlotArea.Plot (lv);
+
+                //PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
 
                 //if (SelectedDisplay == DisplayOptions.InputSamples)    PlotArea.Plot (new LineView (signalProcessor.InputSamples));
                 //if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
@@ -153,7 +159,7 @@ namespace Sonar1Chan
 
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in AllSentMsg handler: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in DisplaySamples handler: {0}", ex.Message));
             }
         }
 
