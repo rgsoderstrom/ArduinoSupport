@@ -12,9 +12,7 @@ namespace ArduinoSimulator
 {
     public class ArduinoSim_Sonar1Chan : ArduinoSim
     {
-        private double SampleRate = 100000;
         private readonly int BatchSize = 4096;
-        private double Frequency = 40000;
 
         public ArduinoSim_Sonar1Chan (string name, SocketLibrary.TcpClient sock, PrintCallback ptl) : base (name, sock, ptl)
         {    
@@ -63,7 +61,7 @@ namespace ArduinoSimulator
                         
                     case (ushort) ArduinoMessageIDs.BeginPingCycleMsgId:
                         if (Verbose) PrintToLog ("Collect message received");
-                        CollectMessageHandler (msgBytes);
+                        PingMessageHandler (msgBytes);
                         break;
                         
                     case (ushort) ArduinoMessageIDs.SendSamplesMsgId:
@@ -92,9 +90,22 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
+        //***************************************************************************************************************
+
+        // Processing parameters
+
+        double SampleRate = 1; // these are written to Matlab "save" file
+        double PingDuration = 1;
+        double PingFrequency = 1;
+
+
         private void SonarParametersMessageHandler (byte [] msgBytes)
         {
             SonarParametersMsg_Auto msg = new SonarParametersMsg_Auto (msgBytes);
+
+            SampleRate    = 50e6 / msg.data.SampleClockDivisor;
+            PingDuration  = msg.data.PingDuration / 50e6; // seconds
+            PingFrequency = msg.data.PingFrequency * 190;
 
             PrintToLog ("Parameters: " + msg.ToString ());
         }
@@ -118,24 +129,29 @@ namespace ArduinoSimulator
 
         //***************************************************************************************************************
 
-        // Create a batch of simulated samples
+        // Ping - Create a batch of simulated samples
 
         static Random random = new Random ();
 
-        int LeadingZero = 1000;
-        int Ramp        = 100;
-        int Level       = 500;
+        double Range = 6; // feet
 
+        int    Ramp = 20;
         double ampl = 200;
         int    DC = 512;
 
-        private void CollectMessageHandler (byte [] msgBytes)
+        private void PingMessageHandler (byte [] msgBytes)
         {
             Samples.Clear ();
             samplesGetIndex = 0;
 
+            int PingSamples = (int) (PingDuration * 100000); // seconds * Samples / second
+
+            double BlankingTime = PingDuration + 0.003; // seconds from ping command to first sample        
+            double travelTime   = 2 * Range / 1125;
+            int LeadingZero     = (int) ((travelTime - BlankingTime) * SampleRate);
+
             double time = 0;
-            
+
             for (int i=0; i<LeadingZero; i++, time+=1/SampleRate)
             {
                 double withNoiseAndDC = random.NextDouble () + DC;
@@ -145,15 +161,15 @@ namespace ArduinoSimulator
             for (int i=0; i<Ramp; i++, time+=1/SampleRate)
             {
                 double win = (double) i / Ramp;
-                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
                 double withNoiseAndDC = random.NextDouble () + DC + s;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }            
             
-            for (int i=0; i<Level; i++, time+=1/SampleRate)
+            for (int i=0; i<PingSamples; i++, time+=1/SampleRate)
             {
                 double win = 1;
-                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
                 double withNoiseAndDC = random.NextDouble () + DC + s;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }            
@@ -161,7 +177,7 @@ namespace ArduinoSimulator
             for (int i=0; i<Ramp; i++, time+=1/SampleRate)
             {
                 double win = 1 - (double) i / Ramp;
-                double s = win * ampl * Math.Sin (2 * Math.PI * 40000 * time);
+                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
                 double withNoiseAndDC = random.NextDouble () + DC + s;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }            
