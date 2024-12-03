@@ -364,28 +364,28 @@ namespace Sonar1Chan
                        PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
 
                 // convert to format required by outgoing message. check for overflow or underflow
-                double _sampleClockDiv = ClockFreq / SampleRate;
+                double _sampleClockDiv = (uint) (0.5 + ClockFreq / SampleRate);
                 ushort  sampleClockDiv = (ushort) _sampleClockDiv;
                 SampleRateTB.Foreground = _sampleClockDiv == sampleClockDiv ? Brushes.Black : Brushes.Red;
 
-                double _rampStart = (int) (RampStart * CountsPerVolt);
+                double _rampStart = (uint) (0.5 + RampStart * CountsPerVolt);
                 ushort rampStart  = (ushort) _rampStart;
                 RampStartTB.Foreground = _rampStart == rampStart ? Brushes.Black : Brushes.Red;
 
-                double _rampStop = (int) (RampStop  * CountsPerVolt);
+                double _rampStop = (uint) (0.5 + RampStop  * CountsPerVolt);
                 ushort rampStop  = (ushort) _rampStop;
                 RampStopTB.Foreground = _rampStop == rampStop ? Brushes.Black : Brushes.Red;
 
-                double _blankingLevel  = (int) (BlankingLevel * CountsPerVolt);
+                double _blankingLevel  = (uint) (0.5 + BlankingLevel * CountsPerVolt);
                 ushort  blankingLevel  = (ushort) _blankingLevel;
                 BlankingLevelTB.Foreground = _blankingLevel == blankingLevel ? Brushes.Black : Brushes.Red;
 
                 double  rampRate = (rampStop - rampStart) / (RampTime / 1000); // counts per second
-                double _rampDivisor = (int) (ClockFreq / rampRate);
+                double _rampDivisor = (uint) (0.5 + ClockFreq / rampRate);
                 ushort  rampDivisor = (ushort) _rampDivisor;
                 RampTimeTB.Foreground = _rampDivisor == rampDivisor ? Brushes.Black : Brushes.Red;
 
-                double _frequency = (int) (PingFrequency * FreqScale);
+                double _frequency = (uint) (0.5 + PingFrequency * FreqScale);
                 ushort  frequency = (ushort) _frequency;
                 PingFrequencyTB.Foreground = _frequency == frequency ? Brushes.Black : Brushes.Red;
 
@@ -395,7 +395,7 @@ namespace Sonar1Chan
 
 
 
-                double _duration = (int) ((PingDuration / 1000) * ClockFreq);
+                double _duration = (uint) (8.5 + (PingDuration / 1000) * ClockFreq);
                 ushort  duration = (ushort) _duration;
                 PingDurationTB.Foreground = _duration == duration ? Brushes.Black : Brushes.Red;
 
