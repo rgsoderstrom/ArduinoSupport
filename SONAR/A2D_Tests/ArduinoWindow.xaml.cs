@@ -275,19 +275,16 @@ namespace A2D_Tests
                     switch (tag)
                     {
                         case "Zoom_Both":
-                            PlotArea.ZoomX = true;
-                            PlotArea.ZoomY = true;
+                            PlotArea.ZoomBoth = true;
                             break;
 
                         case "Zoom_X":
-                            PlotArea.AxesEqual = false;
+                          //PlotArea.AxesEqual = false;
                             PlotArea.ZoomX = true;
-                            PlotArea.ZoomY = false;
                             break;
 
                         case "Zoom_Y":
-                            PlotArea.AxesEqual = false;
-                            PlotArea.ZoomX = false;
+                          //PlotArea.AxesEqual = false;
                             PlotArea.ZoomY = true;
                             break;
 

@@ -94,9 +94,9 @@ namespace ArduinoSimulator
 
         // Processing parameters
 
-        double SampleRate = 1; // these are written to Matlab "save" file
-        double PingDuration = 1;
-        double PingFrequency = 1;
+        double SampleRate = 100000; // these are written to Matlab "save" file
+        double PingDuration = 0.0005;
+        double PingFrequency = 40200;
 
 
         private void SonarParametersMessageHandler (byte [] msgBytes)
@@ -133,7 +133,7 @@ namespace ArduinoSimulator
 
         static Random random = new Random ();
 
-        double Range = 6; // feet
+        double Range = 5; // feet
 
         int    Ramp = 20;
         double ampl = 200;

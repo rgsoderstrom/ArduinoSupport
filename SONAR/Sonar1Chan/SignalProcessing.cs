@@ -104,23 +104,23 @@ namespace Sonar1Chan
 
                 // Low-pass filter
                 int dec = 16;
-                double cutoff = InputSampleRate / dec;
+                double cutoff = InputSampleRate / (1 * dec); // s/b 2?
                 BasebandSampleRate = InputSampleRate / dec;
 
                 double [] filterCoefs = MathNet.Filtering.FIR.FirCoefficients.LowPass (InputSampleRate, cutoff);
                 OnlineFirFilter filter = new OnlineFirFilter (filterCoefs);
 
-                int transient = filterCoefs.Length / 2; // length of startup transients
+                int delay = filterCoefs.Length / 2; // filter delay
 
                 // run filter
                 double [] filteredI = filter.ProcessSamples (MixerOutI.ToArray ());
                 double [] filteredQ = filter.ProcessSamples (MixerOutQ.ToArray ());
 
                 // decimate, calc magnitude
-                for (int i = 0; i<N-transient; i+=dec)
+                for (int i = 0; i<N-delay; i+=dec)
                 {
-                    double mag2 = Math.Pow (filteredI [i + transient], 2)  // "+ transient" for time alignment
-                                + Math.Pow (filteredQ [i + transient], 2);
+                    double mag2 = Math.Pow (filteredI [i + delay], 2)  // "+ transient" for time alignment
+                                + Math.Pow (filteredQ [i + delay], 2);
 
                     magnitude.Add (new Point (InputSamples [i].X, Math.Sqrt (mag2)));
                 }
