@@ -110,6 +110,8 @@ namespace Sonar1Chan
                 double [] filterCoefs = MathNet.Filtering.FIR.FirCoefficients.LowPass (InputSampleRate, cutoff);
                 OnlineFirFilter filter = new OnlineFirFilter (filterCoefs);
 
+                Common.EventLog.WriteLine ("Filter Length = " + filterCoefs.Length.ToString ());
+
                 int delay = filterCoefs.Length / 2; // filter delay
 
                 // run filter
