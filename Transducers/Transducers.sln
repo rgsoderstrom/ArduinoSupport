@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PioneerSensors", "PioneerSensors\PioneerSensors.csproj", "{F1B42194-48BC-4849-8076-9DBB84C273DA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{415A05AC-4736-4D22-BCE7-A58CCA87FA10} = {415A05AC-4736-4D22-BCE7-A58CCA87FA10}
+		{E5B76F0A-57A4-430F-A95F-4B2454ED256D} = {E5B76F0A-57A4-430F-A95F-4B2454ED256D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoSimulator", "ArduinoSimulator\ArduinoSimulator.csproj", "{E5B76F0A-57A4-430F-A95F-4B2454ED256D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArduinoInterface", "ArduinoInterface\ArduinoInterface.csproj", "{415A05AC-4736-4D22-BCE7-A58CCA87FA10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1B42194-48BC-4849-8076-9DBB84C273DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B42194-48BC-4849-8076-9DBB84C273DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B42194-48BC-4849-8076-9DBB84C273DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B42194-48BC-4849-8076-9DBB84C273DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5B76F0A-57A4-430F-A95F-4B2454ED256D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5B76F0A-57A4-430F-A95F-4B2454ED256D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5B76F0A-57A4-430F-A95F-4B2454ED256D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5B76F0A-57A4-430F-A95F-4B2454ED256D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{415A05AC-4736-4D22-BCE7-A58CCA87FA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{415A05AC-4736-4D22-BCE7-A58CCA87FA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{415A05AC-4736-4D22-BCE7-A58CCA87FA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{415A05AC-4736-4D22-BCE7-A58CCA87FA10}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

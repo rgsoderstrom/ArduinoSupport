@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+    Messages.xml
+      - Messages Pioneer transducers
+-->
+
+<Messages>
+
+	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Transducers\ArduinoInterface"/>
+
+  <!-- ****************************************************** -->
+	<!-- PC <-> Arduino                                         -->
+  <!-- ****************************************************** -->
+
+    <Message Name="KeepAliveMsg_Auto">
+    </Message>
+     
+  <!-- ******************* -->
+
+    <Message Name="TextMsg_Auto">
+  		<Constants>      
+           int TextBufferSize = 40;
+  		</Constants>
+
+ 		  <Variables>
+          char text [Data.TextBufferSize];  
+		  </Variables>      
+    </Message>
+  
+  <!-- ******************* -->
+
+    <Message Name="AcknowledgeMsg_Auto">
+        <Variables>
+              unsigned short MsgSequenceNumber;
+        </Variables>
+    </Message>
+</Messages>
+
+
