@@ -1,4 +1,9 @@
-﻿using System;
+﻿
+//
+// ArduinoSimBase - abstract base class for application specific simulator
+//
+
+using System;
 using System.Threading;
 
 using SocketLibrary;
@@ -6,7 +11,7 @@ using ArduinoInterface;
 
 namespace ArduinoSimulator
 {
-    public abstract class ArduinoSim
+    public abstract class ArduinoSimBase
     {
         protected bool Verbose = true;
 
@@ -16,10 +21,12 @@ namespace ArduinoSimulator
         protected readonly string ThisArduinoName;
 
         //****************************************************************************
-
-        protected ArduinoSim (string name, 
-                           SocketLibrary.TcpClient sock,
-                           PrintCallback ptl)
+        //
+        // protected ctor, invoked by derived class
+        //
+        protected ArduinoSimBase (string name, 
+                                  SocketLibrary.TcpClient sock,
+                                  PrintCallback ptl)
         {            
             ThisArduinoName  = name;
             thisClientSocket = sock;
@@ -34,9 +41,9 @@ namespace ArduinoSimulator
         {
             try
             {
-                string str = Environment.CurrentDirectory;
-                Console.WriteLine ("cwd " + str);
-
+                ReadyMsg_Auto readyMsg = new ReadyMsg_Auto ();
+                thisClientSocket.Send (readyMsg.ToBytes ());
+                
                 TextMessage msg2 = new TextMessage ("Arduino sim ready");
                 thisClientSocket.Send (msg2.ToBytes ());
 
@@ -46,7 +53,6 @@ namespace ArduinoSimulator
                 }
 
                 PrintToLog (ThisArduinoName + " closing socket");
-
                 thisClientSocket.Close ();
 
                 while (true)

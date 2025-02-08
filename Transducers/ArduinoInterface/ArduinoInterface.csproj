@@ -39,11 +39,23 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcknowledgeMsg_Auto_Format.cs" />
+    <Compile Include="AcknowledgeMsg_Auto_Methods.cs" />
+    <Compile Include="DoneSamplingMsg_Auto_Format.cs" />
+    <Compile Include="DoneSamplingMsg_Auto_Methods.cs" />
     <Compile Include="IMessage_Auto.cs" />
     <Compile Include="KeepAliveMsg_Auto_Format.cs" />
     <Compile Include="KeepAliveMsg_Auto_Methods.cs" />
     <Compile Include="MessageIDs.cs" />
     <Compile Include="MessageQueue.cs" />
+    <Compile Include="ReadyMsg_Auto_Format.cs" />
+    <Compile Include="ReadyMsg_Auto_Methods.cs" />
+    <Compile Include="SendSamplesMsg_Auto_Format.cs" />
+    <Compile Include="SendSamplesMsg_Auto_Methods.cs" />
+    <Compile Include="SensorDataMsg_Auto_Format.cs" />
+    <Compile Include="SensorDataMsg_Auto_Methods.cs" />
+    <Compile Include="StartSamplingMsg_Auto_Format.cs" />
+    <Compile Include="StartSamplingMsg_Auto_Methods.cs" />
     <Compile Include="TextMessage.cs" />
     <Compile Include="TextMsg_Auto_Format.cs" />
     <Compile Include="TextMsg_Auto_Methods.cs" />

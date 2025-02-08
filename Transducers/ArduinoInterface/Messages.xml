@@ -7,13 +7,45 @@
 
 <Messages>
 
-	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Transducers\ArduinoInterface"/>
+	<Option  CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Transducers\ArduinoInterface"/>
+	<Option CppDir="C:\Users\rgsod\Documents\Arduino\Play\PioneerSensors\src"/>
 
   <!-- ****************************************************** -->
-	<!-- PC <-> Arduino                                         -->
+  <!--       PC <-> Arduino                                   -->
   <!-- ****************************************************** -->
+
+    <Message Name="SensorDataMsg_Auto">
+  		<Constants>      
+           int MaxCount = 100;
+  		</Constants>
+		
+ 		  <Variables>
+			  int Count
+        int Pressure [Data.MaxCount]
+        int Angle    [Data.MaxCount]
+		    int Time     [Data.MaxCount]
+ 		  </Variables>      
+    </Message>
+  
+    <Message Name="StartSamplingMsg_Auto">
+    </Message>
+     
+    <Message Name="SendSamplesMsg_Auto">
+    </Message>
+     
+    <Message Name="DoneSamplingMsg_Auto">
+    </Message>
+     
+  <!-- **************************************************************** -->
+  <!-- **************************************************************** -->
+  <!-- **************************************************************** -->
 
     <Message Name="KeepAliveMsg_Auto">
+    </Message>
+     
+  <!-- ******************* -->
+
+    <Message Name="ReadyMsg_Auto">
     </Message>
      
   <!-- ******************* -->
@@ -24,7 +56,7 @@
   		</Constants>
 
  		  <Variables>
-          char text [Data.TextBufferSize];  
+			  char text [Data.TextBufferSize];  
 		  </Variables>      
     </Message>
   

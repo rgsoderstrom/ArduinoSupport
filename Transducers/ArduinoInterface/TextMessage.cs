@@ -1,4 +1,9 @@
-﻿using System;
+﻿
+//
+// TextMessage - derived from auto-generated base class
+//
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;

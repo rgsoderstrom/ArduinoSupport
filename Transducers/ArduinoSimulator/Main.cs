@@ -1,8 +1,11 @@
-﻿//
+﻿
+//
 // ArduinoSimulator - emulate the socket traffic from an Arduino. 
 //
 
-// started as "Empty Project (.Net Framework)"
+// Start with:
+// Empty Project (.NET Framework)
+// this file manually added with "Add New Item -> class"
 
 using System;
 using System.Net;
@@ -11,31 +14,31 @@ using System.Threading.Tasks;
 
 using Common;
 
-
 namespace ArduinoSimulator
 {
     internal class MainClass
     {
-
         static string ServerName;
         static string SimulatorName;
 
         private static void PrintToLog (string str)
         {
-            EventLog.WriteLine (str);
+            Common.EventLog.WriteLine (str);
             Console.WriteLine (str);
         }
 
         public static int Main (string [] args)
         {
-            EventLog.Open (@"..\..\Log.txt", true);
-            PrintToLog ("Arduino Simulator");
+            //
+            // Parse command line arguments
+            //
+            int InstanceCount = 1;
 
             try
             { 
                 for (int i=0; i<args.Length; i+=2)
                 {
-                    if (i + 1 == args.Length) // odd number of args passed in. require (name, value) pairs
+                    if (i + 1 == args.Length) // error if odd number of args passed in. Must be (name, value) pairs
                         break;
 
                     switch (args [i])
@@ -46,6 +49,10 @@ namespace ArduinoSimulator
 
                         case "ServerName":
                             ServerName = args [i+1];
+                            break;
+
+                        case "Instance":
+                            InstanceCount = Convert.ToInt32 (args [i+1]);
                             break;
 
                         default:
@@ -60,6 +67,24 @@ namespace ArduinoSimulator
                 Console.WriteLine ("Exception parsing input arguments: " + ex.Message);
             }
 
+            //
+            // Open log file
+            //
+            try
+            { 
+                string fname = @"..\..\LogSimulator" + InstanceCount.ToString () + ".txt";
+                EventLog.Open (fname, true);
+                PrintToLog ("Arduino simulator started");
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine ("Exception opening log file: " + ex.Message);
+            }
+
+            //
+            // Connect to server and create specified simulator
+            //
             try
             {
                 PrintToLog (SimulatorName + " connecting to server " + ServerName);
@@ -78,14 +103,13 @@ namespace ArduinoSimulator
 
                 //**********************************************************************************************
 
-                ArduinoSim arduino1;
+                ArduinoSimBase arduino1;
 
                 arduino1 = new ArduinoSim_Transducers  ("ard1", thisClientSocket, PrintToLog);
 
                 //if      (SimulatorName == "A2D_Tests")  arduino1 = new ArduinoSim_A2D_Tests  ("ard1", thisClientSocket, PrintToLog);
                 //else if (SimulatorName == "Sonar1Chan") arduino1 = new ArduinoSim_Sonar1Chan ("ard1", thisClientSocket, PrintToLog);
                 //else throw new Exception ("Unrecognized simulator type requested");
-
 
                 Task [] allTasks =
                 {

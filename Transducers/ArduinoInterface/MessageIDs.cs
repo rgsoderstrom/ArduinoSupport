@@ -18,17 +18,11 @@ namespace ArduinoInterface
         TextMsgId        = 8,
         AcknowledgeMsgId = 10,
 
-        //********************************************************
+        StartSamplingMsgId = 20, // PC -> Arduino
+        SendSamplesMsgId   = 21,
 
-        //
-        // Common to all
-        //
-
-        // FPGA->Arduino->PC  
-
-        // PC->Arduino->FPGA
-
-        //********************************************************
-
+        DoneSamplingMsgId  = 30, // Arduino -> PC 
+        SensorDataMsgId    = 31,
+        ReadyMsgId         = 32,
     };
 }

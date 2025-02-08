@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ArduinoInterface">
+      <HintPath>..\ArduinoInterface\bin\Debug\ArduinoInterface.dll</HintPath>
+    </Reference>
     <Reference Include="Common">
       <HintPath>..\..\..\Common\bin\Debug\Common.dll</HintPath>
     </Reference>
@@ -85,6 +88,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessageHandlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
