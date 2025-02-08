@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- 
+    Messages.xml
+      - example for Template project
+-->
+
+<Messages>
+
+	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Template\ArduinoInterface"/>
+
+  <!-- ****************************************************** -->
+  <!-- PC <-> Arduino                                         -->
+  <!-- ****************************************************** -->
+
+  <!-- ********** Application specific messages ***** -->
+  
+    <Message Name="Button1Msg_Auto">
+    </Message>
+
+    <Message Name="Button2Msg_Auto">
+        <Constants>
+            unsigned int MaxCount = 256
+       </Constants>
+
+        <Variables>
+            int Count
+            int Sample [Data.MaxCount]
+        </Variables>
+    </Message>
+  
+     <Message Name="Button3Msg_Auto">
+        <Variables>
+            unsigned int Param1;
+            unsigned int Param2;
+            float    Param3;
+        </Variables>
+    </Message>
+  
+  
+  <!-- ********** Below here are standard messages used by most ***** -->
+  
+    <Message Name="KeepAliveMsg_Auto">
+    </Message>
+     
+  <!-- ******************* -->
+
+    <Message Name="TextMsg_Auto">
+  		<Constants>      
+           int TextBufferSize = 40;
+  		</Constants>
+
+ 		  <Variables>
+          char text [Data.TextBufferSize];  
+		  </Variables>      
+    </Message>
+  
+  <!-- ******************* -->
+
+    <Message Name="AcknowledgeMsg_Auto">
+        <Variables>
+              unsigned short MsgSequenceNumber;
+        </Variables>
+    </Message>
+	
+    <Message Name="ReadyMsg_Auto">
+    </Message>
+    
+</Messages>
+
+

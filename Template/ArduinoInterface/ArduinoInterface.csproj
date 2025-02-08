@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3263838C-811F-4FD3-84F0-350247E71A8A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ArduinoInterface</RootNamespace>
+    <AssemblyName>ArduinoInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Messages.xml" />
+    <Content Include="_ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AcknowledgeMsg_Auto_Format.cs" />
+    <Compile Include="AcknowledgeMsg_Auto_Methods.cs" />
+    <Compile Include="Button1Msg_Auto_Format.cs" />
+    <Compile Include="Button1Msg_Auto_Methods.cs" />
+    <Compile Include="Button2Msg_Auto_Format.cs" />
+    <Compile Include="Button2Msg_Auto_Methods.cs" />
+    <Compile Include="Button3Msg_Auto_Format.cs" />
+    <Compile Include="Button3Msg_Auto_Methods.cs" />
+    <Compile Include="IMessage_Auto.cs" />
+    <Compile Include="KeepAliveMsg_Auto_Format.cs" />
+    <Compile Include="KeepAliveMsg_Auto_Methods.cs" />
+    <Compile Include="MessageIDs.cs" />
+    <Compile Include="MessageQueue.cs" />
+    <Compile Include="ReadyMsg_Auto_Format.cs" />
+    <Compile Include="ReadyMsg_Auto_Methods.cs" />
+    <Compile Include="TextMessage.cs" />
+    <Compile Include="TextMsg_Auto_Format.cs" />
+    <Compile Include="TextMsg_Auto_Methods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Common">
+      <HintPath>..\..\..\Common\bin\Debug\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="SocketLibrary">
+      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
