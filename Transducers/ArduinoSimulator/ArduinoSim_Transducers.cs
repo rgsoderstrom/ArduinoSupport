@@ -89,7 +89,8 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        const double SampleTime = 50; // milliseconds between samples
+     // const double SampleTime = 50; // milliseconds between samples
+        const double SampleTime = 5;  // sped-up
 
         const short Count = 234;
         short put = 0;
