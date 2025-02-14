@@ -64,21 +64,25 @@ namespace PioneerSensors
 
         private void DoneSamplingMessageHandler (byte [] msgBytes)
         {
-            SendButton.IsEnabled = true;
             DataAvailableEllipse.Fill = Brushes.Green;
             Print ("Sensor sampling complete");
+
+            ReceivedTime.Clear ();   
+            ReceivedPressure.Clear ();
+            ReceivedAngle.Clear ();
+
+            SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
+            messageQueue.AddMessage (msg);
         }
 
         private void SensorDataMessageHandler (byte [] msgBytes)
         {
             Print ("Sensor data message received");
-            SensorDataMsg_Auto msg = new SensorDataMsg_Auto (msgBytes);
 
-            //for (int i=0; i<msg.data.Count && i<3; i++)
-            //{ 
-            //    string str1 = String.Format ("T = {0:x} P = {1:x} A = {2:x} ", msg.data.Time [i], msg.data.Pressure [i], msg.data.Angle [i]);
-            //    Print (str1);
-            //}
+            //
+            // Extract received data
+            //
+            SensorDataMsg_Auto msg = new SensorDataMsg_Auto (msgBytes);
 
             for (int i=0; i<msg.data.Count; i++)
             { 
@@ -87,30 +91,44 @@ namespace PioneerSensors
                 ReceivedAngle   .Add (msg.data.Angle [i]);
             }
 
+            //
+            // if (this message was full) request more
+            //
             if (msg.data.Count == SensorDataMsg_Auto.Data.MaxCount)
             { 
                 SendSamplesMsg_Auto msg2 = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg2);
             }
-            else
+            else // plot all received data
             {
+                SaveButton.IsEnabled = true;
+                ClearButton.IsEnabled = true;
+
                 List<Point> pts = new List<Point> ();
 
                 for (int i=0; i<ReceivedAngle.Count; i++)
                 {
-                    Point pt = new Point (ReceivedAngle [i], ReceivedPressure [i]);
+                    Point pt = new Point (ReceivedAngle [i], ReceivedPressure [i]); // pressure as function of angle
                     pts.Add (pt);
                 }
 
                 PlotArea.Clear ();
                 PlotArea.RectangularGridOn = true;
 
+                //
+                // plot pressure vs angle
+                //
                 if (pts.Count > 1)
                 { 
                     LineView lv = new LineView (pts);
                     PlotArea.Plot (lv);
+                    PlotArea.XAxisLabel = "Angle, degrees";
+                    PlotArea.YAxisLabel = "Pressure";
                 }
 
+                //
+                // Mark the plot with 1-second time marks
+                //
                 List<Point> timeTics = new List<Point> ();
                 double t0 = ReceivedTime [0];
 
@@ -123,10 +141,10 @@ namespace PioneerSensors
                     }
                 }
 
-                if (timeTics.Count > 1)
+                if (timeTics.Count > 1) // should always be true
                 { 
                     PointView pv = new PointView (timeTics);
-                    pv.Size = 3;
+                    pv.Size = 2;
                     PlotArea.Plot (pv);
                 }
             }

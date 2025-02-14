@@ -9,6 +9,10 @@ using ArduinoInterface;
 using SocketLibrary;
 using System.Net;
 using System.Windows.Controls;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Security.Policy;
 
 // This created with Add -> new item -> Window (WPF)
 
@@ -259,6 +263,7 @@ namespace PioneerSensors
         {
             try
             {
+                PlotArea.Clear ();
             }
 
             catch (Exception ex)
@@ -270,24 +275,108 @@ namespace PioneerSensors
         private void BeginButton_Click (object sender, RoutedEventArgs e)
         {
             DataAvailableEllipse.Fill = Brushes.White;
+            PlotArea.Clear ();
 
             StartSamplingMsg_Auto msg = new StartSamplingMsg_Auto ();
             messageQueue.AddMessage (msg);
         }
 
-        private void SendButton_Click (object sender, RoutedEventArgs e)
-        {
-            ReceivedTime.Clear ();   
-            ReceivedPressure.Clear ();
-            ReceivedAngle.Clear ();
+        //******************************************************************************
+        //******************************************************************************
+        //******************************************************************************
 
-            SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
-            messageQueue.AddMessage (msg);
-        }
+        const string defaultDescr = "Optional data description here";
+        private string previousComment = defaultDescr;
+
+        const string SavePath = @"..\..";
+        const string SaveBaseName = "samples";
+        const string SaveSearchName = SaveBaseName + "*.m";
 
         private void SaveButton_Click (object sender, RoutedEventArgs e)
         {
+            int lastNumber = 0;
+            string[] existingFiles = Directory.GetFiles(SavePath, SaveSearchName);
 
+            foreach (string fname in existingFiles)
+            {
+                string numStr = new string (fname.SkipWhile (c=>!char.IsDigit (c))
+                                                 .TakeWhile (c=>char.IsDigit(c))
+                                                 .ToArray ());
+                
+                if (numStr != null && numStr.Length > 0)
+                { 
+                    int number = Convert.ToInt32 (numStr);
+                    if (lastNumber < number) lastNumber = number;
+                }
+            }
+
+            string fileName = SavePath + "\\" + SaveBaseName + ++lastNumber + ".m";
+
+            SaveDialogBox dlg = new SaveDialogBox ();
+
+            dlg.FileName = fileName;
+            dlg.FileComments = previousComment;
+
+            bool? accept = dlg.ShowDialog ();
+
+            if (accept == true)
+            { 
+                previousComment = dlg.FileComments;
+                SaveSampleData (dlg.FileName, dlg.FileComments, lastNumber);
+            }
+        }
+
+        private void SaveSampleData (string fileName, string comment, int number)
+        {
+            StreamWriter samplesFile = new StreamWriter (fileName);
+            int Count = ReceivedTime.Count;
+
+            //
+            // if a comment present, write it to file
+            //
+            if (comment != defaultDescr)
+            {
+                // split into words
+                string [] tokens = comment.Split (new char [] {' '});
+
+                samplesFile.WriteLine (" ");
+                string commentLine = "%";
+
+                for (int i=0; i<tokens.Length; i++)
+                {
+                    commentLine += " " + tokens [i];
+                    
+                    bool lastToken = i == tokens.Length - 1;
+
+                    if (commentLine.Length > 80 || lastToken == true)
+                    {
+                        samplesFile.WriteLine (commentLine);
+                        commentLine = "%";
+                    }
+                }
+
+                samplesFile.WriteLine (" ");
+            }
+
+            //
+            // Write samples to file
+            //
+            samplesFile.WriteLine ("z" + number + " = [...");
+
+            int j;
+            
+            for (j=0; j<Count-1; j++)
+            { 
+                samplesFile.Write     (ReceivedTime     [j].ToString () + "  ");
+                samplesFile.Write     (ReceivedPressure [j].ToString () + " ");
+                samplesFile.WriteLine (ReceivedAngle    [j].ToString () + " ; ...");
+            }
+
+            samplesFile.Write     (ReceivedTime     [j].ToString () + "  ");
+            samplesFile.Write     (ReceivedPressure [j].ToString () + " ");
+            samplesFile.WriteLine (ReceivedAngle    [j].ToString () + "];");
+
+            samplesFile.Close ();
         }
     }
 }
