@@ -300,42 +300,6 @@ namespace Sonar1Chan
             }
         }
 
-        //**************************************************************************************
-
-        //enum DisplayOptions {InputSamples, AbsInputSamples, MedianFiltered};
-
-        //private DisplayOptions SelectedDisplay;// = DisplayOptions.InputSamples;
-
-        //private void DisplayOptionButton_Checked (object sender, RoutedEventArgs args)
-        //{
-        //    EventLog.WriteLine ("DisplayOptionButton_Checked");
-
-        //    if (sender is RadioButton rb)
-        //    {
-        //        string tag = rb.Tag as string;
-
-        //        if (WindowIsLoaded)
-        //        {
-        //            switch (tag)
-        //            {
-        //                case "Input_Samples": SelectedDisplay = DisplayOptions.InputSamples;  break;
-        //                case "Input_Abs":     SelectedDisplay = DisplayOptions.AbsInputSamples; break;
-        //                case "Input_Med":     SelectedDisplay = DisplayOptions.MedianFiltered; break;
-        //                default: throw new Exception ("Invalid display option");
-        //            }
-        //        }
-        //    }
-
-        //    if (signalProcessor != null)
-        //    {
-        //        PlotArea.Clear ();
-        //        if (SelectedDisplay == DisplayOptions.InputSamples) PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-        //        if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
-        //        if (SelectedDisplay == DisplayOptions.MedianFiltered) PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
-        //        PlotArea.RectangularGridOn = true;
-        //    }
-        //}
-
         //**************************************************************************
         //
         // Button-press handlers
@@ -444,11 +408,16 @@ namespace Sonar1Chan
         {
             try
             { 
+                ClearButton_Click (null, null);
+                SendParamsButton_Click (null, null);
+
                 BeginPingCycleMsg_Auto msg = new BeginPingCycleMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (Verbosity > 1)      Print ("Sending Collect msg, seq numb " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending Collect msg");
+            //  SendSamplesButton_Click (null, null);
+
+                if (Verbosity > 999)    Print ("Sending Ping Cycle messages, seq numb " + msg.header.SequenceNumber);
+                else if (Verbosity > 0) Print ("Sending all Ping Cycle messages");
             }
         
             catch (Exception ex)

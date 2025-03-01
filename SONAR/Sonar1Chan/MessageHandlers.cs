@@ -61,7 +61,7 @@ namespace Sonar1Chan
         {
             try
             {
-                ClearButton.IsEnabled = true;
+                //ClearButton.IsEnabled = true;
                 PingButton.IsEnabled = true;
                 SendButton.IsEnabled = true;
 

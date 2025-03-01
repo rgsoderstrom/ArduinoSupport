@@ -109,8 +109,13 @@ namespace Sonar1Chan
 
                 double [] filterCoefs = MathNet.Filtering.FIR.FirCoefficients.LowPass (InputSampleRate, cutoff);
                 OnlineFirFilter filter = new OnlineFirFilter (filterCoefs);
-
+                
                 Common.EventLog.WriteLine ("Filter Length = " + filterCoefs.Length.ToString ());
+
+                /****
+                for (int i=0; i<filterCoefs.Length; i++)
+                    Common.EventLog.WriteLine (filterCoefs [i].ToString ());
+                ****/
 
                 int delay = filterCoefs.Length / 2; // filter delay
 
@@ -121,7 +126,7 @@ namespace Sonar1Chan
                 // decimate, calc magnitude
                 for (int i = 0; i<N-delay; i+=dec)
                 {
-                    double mag2 = Math.Pow (filteredI [i + delay], 2)  // "+ transient" for time alignment
+                    double mag2 = Math.Pow (filteredI [i + delay], 2)  // "+ delay" for time alignment
                                 + Math.Pow (filteredQ [i + delay], 2);
 
                     magnitude.Add (new Point (InputSamples [i].X, Math.Sqrt (mag2)));
