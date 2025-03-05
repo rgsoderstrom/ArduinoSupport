@@ -15,7 +15,7 @@ namespace MessageGenerator
     public partial class MessageCodeGenerator
     {
         // message description file
-        static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Transducers\ArduinoInterface\";
+        static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Template\ArduinoInterface\";
         static string inputFileName = @"Messages.xml";
         //static string inputFileDir  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\MessageGenerator\MessageGen2\";
         //static string inputFileName = @"ExampleMessages.xml";
@@ -191,6 +191,9 @@ namespace MessageGenerator
 
                 try
                 {
+                    if (File.Exists (cppFile)) File.SetAttributes (cppFile, FileAttributes.Normal);
+                    if (File.Exists (hFile))   File.SetAttributes (hFile, FileAttributes.Normal);
+
                     using (StreamWriter sw = new StreamWriter (hFile))
                     {
                         Cpp_Include include = new Cpp_Include (sw, messageName, constantsAsTokens, variablesAsTokens);
@@ -200,6 +203,9 @@ namespace MessageGenerator
                     {
                         Cpp_Code code = new Cpp_Code (sw, messageName, variablesAsTokens);
                     }
+
+                    File.SetAttributes (cppFile, FileAttributes.ReadOnly);
+                    File.SetAttributes (hFile, FileAttributes.ReadOnly);
                 }
 
                 catch (Exception ex)
@@ -216,6 +222,10 @@ namespace MessageGenerator
 
                 try
                 {
+                    if (File.Exists (formatFileName))    File.SetAttributes (formatFileName,    FileAttributes.Normal);
+                    if (File.Exists (methodsFileName))   File.SetAttributes (methodsFileName,   FileAttributes.Normal);
+                    if (File.Exists (interfaceFileName)) File.SetAttributes (interfaceFileName, FileAttributes.Normal);
+
                     using (StreamWriter sw = new StreamWriter (formatFileName))
                     {
                         Cs_FormatFile f1 = new Cs_FormatFile (sw, messageNameSpace, messageName, constantsAsTokens, variablesAsTokens);
@@ -230,6 +240,10 @@ namespace MessageGenerator
                     {
                         Cs_InterfaceFile f1 = new Cs_InterfaceFile (sw);
                     }
+
+                    File.SetAttributes (formatFileName, FileAttributes.ReadOnly);
+                    File.SetAttributes (methodsFileName, FileAttributes.ReadOnly);
+                    File.SetAttributes (interfaceFileName, FileAttributes.ReadOnly);
                 }
 
                 catch (Exception ex)
