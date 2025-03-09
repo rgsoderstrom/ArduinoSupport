@@ -57,36 +57,11 @@ namespace Sonar1Chan
         // Handlers for application-specific messages
         //
 
-        private void ReadyMessageHandler (byte [] msgBytes)
-        {
-            try
-            {
-                //ClearButton.IsEnabled = true;
-                PingButton.IsEnabled = true;
-                SendButton.IsEnabled = true;
-
-                ReadyEllipse.Fill = Brushes.Green;
-                messageQueue.ArduinoReady ();
-
-                SocketLibrary.MessageHeader hdr = new MessageHeader (msgBytes);
-
-                if (Verbosity > 1) Print ("FPGA Ready message received, seq number " + hdr.SequenceNumber);
-                else if (Verbosity > 0) Print ("FPGA Ready message received");
-            }
-
-            catch (Exception ex)
-            {
-                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
-            }
-        }
-
-        //*******************************************************************************************************
-
         List<double> Samples = new List<double> ();
 
-        double TimeTag = 0; // initialized to BlankingTime when user requests sample
+        //double TimeTag = 0; // initialized to BlankingTime when user requests sample
 
-        int sendMsgCounter = 0; // number of sample request messages sent, just for status display
+        //int sendMsgCounter = 0; // number of sample request messages sent, just for status display
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
@@ -114,11 +89,14 @@ namespace Sonar1Chan
                 if (lastSamples)
                 {
                     DisplaySamples ();
+                 //   PingButton.IsEnabled = true;
                 }
                 else
                 {
                     RequestSamples ();
                 }
+
+                messageQueue.ArduinoReady = true; // tells message queue to send next message
             }
 
             catch (Exception ex)
@@ -129,7 +107,7 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-      SignalProcessing signalProcessor;
+        SignalProcessing signalProcessor;
 
         private void DisplaySamples ()
         {
@@ -176,8 +154,6 @@ namespace Sonar1Chan
             { 
                 TextMessage msg = new TextMessage (msgBytes);
                 Print ("Text received: " + msg.Text.TrimEnd (new char [] {'\0'}));
-
-                //Print ("Text " + msg.header.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -204,6 +180,23 @@ namespace Sonar1Chan
             catch (Exception ex)
             {
                 EventLog.WriteLine (string.Format ("Exception in AckMsg handler: {0}", ex.Message));
+            }
+        }
+
+        private void ReadyMessageHandler (byte [] msgBytes)
+        {
+            try
+            {
+                //PingButton.IsEnabled = true;
+                messageQueue.ArduinoReady = true;
+
+                if (Verbosity > 1)
+                    Print ("Arduino reports ready");
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
             }
         }
 

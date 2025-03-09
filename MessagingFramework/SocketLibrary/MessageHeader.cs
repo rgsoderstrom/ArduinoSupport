@@ -35,7 +35,9 @@ namespace SocketLibrary
     // 
     public partial class MessageHeader
     {
-        static ushort NextSequenceNumber = 1;
+        // public is temp for debug
+        public static ushort NextSequenceNumber = 1000; // start with a large number to dierentiate from
+                                                 // messages received from Arduino
 
         public MessageHeader ()
         {

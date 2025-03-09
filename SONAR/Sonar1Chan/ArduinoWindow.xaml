@@ -16,15 +16,14 @@
                     <StackPanel Orientation="Vertical">
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
                             <StackPanel Orientation="Vertical">
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingSequenceButton_Click"/>
+
                                 <!--
-                                <Button Width="190" Margin="3, 1, 3, 2" Content="Clear Buffer" Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Clear Buffer" Click="ClearButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Params"       Click="ParamsButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Ping"         Click="PingButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Send Samples" Click="SendSamplesButton_Click"/>
                                 -->
-                                
-                                <Button Width="190" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingButton_Click"/>
-                                
-                                <!-- -->
-                                <Button Width="190" Margin="3, 1, 3, 2" Content="Send Samples" Name="SendButton"    IsEnabled="True"  Click="SendSamplesButton_Click"/>
-                                <!-- -->
                                 
                                 <Expander Width="190" BorderBrush="Black" BorderThickness="1" Background="Gainsboro" Margin="3,1,3,2" Header="Parameters" IsExpanded="False">
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
@@ -83,8 +82,6 @@
                                     </StackPanel>
                                 </GroupBox>
 
-                                <Button MinWidth="60" Name="ResendBtn" Margin="3, 2, 3, 3" ToolTip="Resend unacknowledged message" Content="Resend Last"      IsEnabled="False"  Click="Resend_Click"/>
-
                                 <ComboBox Margin="3,1,3,3" Name="Verbosity_ComboBox" ToolTip="Choose verbosity" SelectionChanged="Verbosity_ComboBox_SelectionChanged">
                                     <!-- Default set in code -->
                                     <ComboBoxItem Content="Quiet"      Name="Verbose_Quiet"      ToolTip="Errors Only"         Tag="0"></ComboBoxItem>
@@ -106,16 +103,6 @@
                             </StackPanel>
                         </GroupBox>
 
-                        <!--
-                        <GroupBox Header="Display" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
-                            <StackPanel Orientation="Vertical">
-                                <!** Default set in code **>
-                                <RadioButton Margin="8,4,8,0" Name="InputSamples_Button" Tag="Input_Samples" Checked="DisplayOptionButton_Checked">Input Samples</RadioButton>
-                                <RadioButton Margin="8,2,8,0" Name="InputAbs_Button"     Tag="Input_Abs"     Checked="DisplayOptionButton_Checked">Abs Input Samples</RadioButton>
-                                <RadioButton Margin="8,4,8,0" Name="InputMedian_Button"  Tag="Input_Med"     Checked="DisplayOptionButton_Checked">Median Filtered</RadioButton>
-                            </StackPanel>
-                        </GroupBox>
-                        -->
 
 
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="5" Header="Arduino Status" HorizontalAlignment="Left" FontSize="16">

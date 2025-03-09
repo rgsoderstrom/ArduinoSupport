@@ -16,6 +16,7 @@ namespace ArduinoSimulator
 
         public ArduinoSim_Sonar1Chan (string name, SocketLibrary.TcpClient sock, PrintCallback ptl) : base (name, sock, ptl)
         {    
+            MessageHeader.NextSequenceNumber = 1;
             thisClientSocket.MessageHandler += MessageHandler;
         }
 
@@ -46,6 +47,9 @@ namespace ArduinoSimulator
                 ackMsg.data.MsgSequenceNumber = header.SequenceNumber;
                 thisClientSocket.Send (ackMsg.ToBytes ());
 
+                bool SendReadyMessage = true; // a "ready" message ends most exchanges but for some a
+                                              // different reply message serves its purpose
+
                 //**************************************************************************
 
                 switch (header.MessageId)
@@ -67,6 +71,7 @@ namespace ArduinoSimulator
                     case (ushort) ArduinoMessageIDs.SendSamplesMsgId:
                         if (Verbose) PrintToLog ("Send message received");
                         SendSamplesMessageHandler (msgBytes);
+                        SendReadyMessage = false;
                         break;
                         
                     case (ushort) ArduinoMessageIDs.SonarParametersMsgId:
@@ -77,6 +82,16 @@ namespace ArduinoSimulator
                     default:
                         PrintToLog ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
+                }
+
+                //**************************************************************************
+                //
+                // Report ready for next message
+                //
+                if (SendReadyMessage == true)
+                { 
+                    ReadyMsg_Auto msg = new ReadyMsg_Auto ();
+                    thisClientSocket.Send (msg.ToBytes ());
                 }
             }
 
@@ -90,14 +105,11 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        //***************************************************************************************************************
-
         // Processing parameters
 
         double SampleRate = 100000; // these are written to Matlab "save" file
         double PingDuration = 0.0005;
         double PingFrequency = 40200;
-
 
         private void SonarParametersMessageHandler (byte [] msgBytes)
         {
@@ -122,15 +134,12 @@ namespace ArduinoSimulator
 
             for (int i=0; i<BatchSize; i++) // Write a test pattern. Will be overwritten by "Collect"
                 Samples.Add (i);
-
-            ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
-            thisClientSocket.Send (rdyMsg.ToBytes ());
         }
 
         //***************************************************************************************************************
-
+        //
         // Ping - Create a batch of simulated samples
-
+        //
         static Random random = new Random ();
 
         readonly double Range = 5; // feet
@@ -195,13 +204,12 @@ namespace ArduinoSimulator
                 double withNoiseAndDC = noise * random.NextDouble () + DC;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
-
-            ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
-            thisClientSocket.Send (rdyMsg.ToBytes ());
         }
 
         //***************************************************************************************************************
-
+        //
+        // SendSamplesMessageHandler
+        //
         private void SendSamplesMessageHandler (byte [] msgBytes)
         {
             int remaining = Samples.Count - samplesGetIndex;

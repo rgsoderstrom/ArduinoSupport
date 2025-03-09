@@ -33,21 +33,8 @@ namespace Sonar1Chan
 
         private int Verbosity = 3;//1;
 
-        //*******************************************************************************
-
-        //
-        // Message re-send
-        //
-        void EnableReSendButton () // this runs in the thread that can access WPF objects
-        {
-          ResendBtn.IsEnabled = true;
-        }
-
-        void ResendTimerCallback ()
-        {
-            Print ("Message to Arduino not acknowledged");
-            Dispatcher.BeginInvoke ((Callback) EnableReSendButton);
-        }
+        private void ArduinoStuckCallback  () {Print              ("Arduino message queue stuck"); 
+                                               EventLog.WriteLine ("Arduino message queue stuck");}
 
         //*******************************************************************************
 
@@ -56,9 +43,13 @@ namespace Sonar1Chan
             try
             {
                 InitializeComponent ();
+                ConnectedEllipse.Fill = Brushes.Green; // only get here when there is a connection
 
                 // queue to hold and send msgs to Arduino
-                messageQueue = new MessageQueue (ResendTimerCallback, Print, socket);
+                messageQueue = new MessageQueue (ArduinoStuckCallback, 
+                                                 ArduinoBusyCallback, 
+                                                 ArduinoReadyCallback, 
+                                                 Print, socket);
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -145,15 +136,10 @@ namespace Sonar1Chan
 
         void ShowSocketError ()
         {
-            //ReadyCommunicateEllipse.Fill = Brushes.Red;
-            //InputRcvdEllipse.Fill        = Brushes.White;
-            //ResultsReadyEllipse.Fill     = Brushes.White;
+            ConnectedEllipse.Fill = Brushes.White;
+            ReadyEllipse.Fill     = Brushes.White;
 
-            //SendButton.IsEnabled = false;
-            //RunButton.IsEnabled = false;
-            //GetButton.IsEnabled = false;
-
-            messageQueue.ArduinoNotReady ();
+            messageQueue.ArduinoReady = false;
             Print ("Socket error");
         }
 
@@ -189,8 +175,8 @@ namespace Sonar1Chan
         {
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
 
-            if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
-            else if (Verbosity > 1) Print ("Sending KeepAlive msg");
+            if (Verbosity > 2)      Print ("Queueing KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+            else if (Verbosity > 1) Print ("Queueing KeepAlive msg");
 
             messageQueue.AddMessage (msg);
         }
@@ -304,12 +290,14 @@ namespace Sonar1Chan
         //
         // Button-press handlers
         //
+        private void ArduinoReadyCallback () {ReadyEllipse.Fill = Brushes.Green;}
+        private void ArduinoBusyCallback  () {ReadyEllipse.Fill = Brushes.White;}
 
         double SampleRate = 100000; // these are written to Matlab "save" file
         double PingDuration = 1;
         double PingFrequency = 1;
 
-        private void SendParamsButton_Click (object sender, RoutedEventArgs e)
+        private void SendParamsMessage ()
         { 
             try
             { 
@@ -353,12 +341,6 @@ namespace Sonar1Chan
                 ushort  frequency = (ushort) _frequency;
                 PingFrequencyTB.Foreground = _frequency == frequency ? Brushes.Black : Brushes.Red;
 
-
-                //Print (_frequency.ToString ());
-                //Print (frequency.ToString ());
-
-
-
                 double _duration = (uint) (8.5 + (PingDuration / 1000) * ClockFreq);
                 ushort  duration = (ushort) _duration;
                 PingDurationTB.Foreground = _duration == duration ? Brushes.Black : Brushes.Red;
@@ -375,6 +357,9 @@ namespace Sonar1Chan
                 //Print (msg.ToString ());
 
                 messageQueue.AddMessage (msg);
+
+                if (Verbosity > 1)
+                    Print ("Queueing Params msg " + msg.SequenceNumber);
             }
         
             catch (Exception ex)
@@ -383,19 +368,18 @@ namespace Sonar1Chan
             }
         }
         
-        private void ClearButton_Click (object sender, RoutedEventArgs e)
+        private void SendClearMessage ()
         { 
             try
             {
                 Samples.Clear ();
                 SaveButton.IsEnabled = false;
-              //  PeaksButton.IsEnabled = false;
 
                 ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (Verbosity > 1) Print ("Sending Clear msg, seq numb " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending Clear msg");
+                if (Verbosity > 1)
+                    Print ("Queueing Clear msg " + msg.SequenceNumber);
             }
 
             catch (Exception ex)
@@ -404,40 +388,52 @@ namespace Sonar1Chan
             }
         }
 
-        private void PingButton_Click (object sender, RoutedEventArgs e)
-        {
+        private void SendPingMessage ()
+        { 
             try
-            { 
-                ClearButton_Click (null, null);
-                SendParamsButton_Click (null, null);
-
-                BeginPingCycleMsg_Auto msg = new BeginPingCycleMsg_Auto ();
+            {
+                BeginPingCycleMsg_Auto msg = new BeginPingCycleMsg_Auto (); 
                 messageQueue.AddMessage (msg);
 
-            //  SendSamplesButton_Click (null, null);
-
-                if (Verbosity > 999)    Print ("Sending Ping Cycle messages, seq numb " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending all Ping Cycle messages");
+                if (Verbosity > 1)
+                    Print ("Queueing Ping msg " + msg.SequenceNumber);
             }
-        
+
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in CollectButton click: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in Send Ping click: {0}", ex.Message));
+            }
+        }
+
+        /** used for debugging
+        private void ClearButton_Click       (object sender, RoutedEventArgs e) {SendClearMessage (); }
+        private void ParamsButton_Click      (object sender, RoutedEventArgs e) {SendParamsMessage ();}
+        private void PingButton_Click        (object sender, RoutedEventArgs e) {SendPingMessage ();}
+        private void SendSamplesButton_Click (object sender, RoutedEventArgs e) {RequestSamples ();}
+        **/
+
+        private void PingSequenceButton_Click (object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (Verbosity > 0)
+                    Print ("Queueing all Ping Cycle messages");
+
+                SendClearMessage ();
+                SendParamsMessage ();
+                SendPingMessage ();
+                RequestSamples ();
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in Ping Sequence Button click: {0}", ex.Message));
             }
         }
 
         //*****************************************************************************************
         //*****************************************************************************************
         //*****************************************************************************************
-
-        private void SendSamplesButton_Click (object sender, RoutedEventArgs e)
-        {
-            if (Verbosity > 0) Print ("Send button clicked");
-
-            Samples.Clear ();
-            sendMsgCounter = 1;
-            RequestSamples ();
-        }
 
         // send the request message. Invoked after button click and after a sample message is received if there are more 
         // samples expected
@@ -448,13 +444,13 @@ namespace Sonar1Chan
                 SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
-                if (Verbosity > 1)      Print ("Sending Send msg " + sendMsgCounter + " seq number " + msg.header.SequenceNumber);
-                else if (Verbosity > 0) Print ("Sending Send msg");
+                if (Verbosity > 1) 
+                    Print ("Queueing Sample Request msg " + msg.SequenceNumber);
             }
         
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in SendButton click: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in RequestSamples: {0}", ex.Message));
             }
         }
 
@@ -504,17 +500,6 @@ namespace Sonar1Chan
         private void ClearPlotButton_Click (object sender, RoutedEventArgs e)
         {
             PlotArea.Clear ();
-        }
-
-        //*****************************************************************************************
-        //*****************************************************************************************
-        //*****************************************************************************************
-
-        private void Resend_Click (object sender, RoutedEventArgs e)
-        {
-            Print ("Resending last message");
-            messageQueue.ResendLastMsg ();
-            ResendBtn.IsEnabled = false;
         }
 
         private void Verbosity_ComboBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
