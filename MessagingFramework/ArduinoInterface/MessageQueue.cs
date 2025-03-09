@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using SocketLibrary;
 
@@ -12,95 +8,171 @@ using SocketLibrary;
 // MessageQueue used to throttle messages to Arduino.
 //
 
+//
+// This version:
+//   - a sent messaged being acknowledged just cancels a possible re-send
+//   - receiving a "ready" message causes next queued message to be sent
+//
+
 namespace ArduinoInterface
 {
     public class MessageQueue
     {
         // list of messages waiting to be sent
-        private Queue<byte []> pendingMessages = new Queue<byte []> (10);
+        private readonly Queue<IMessage_Auto> pendingMessages = new Queue<IMessage_Auto> (10);
+        private bool QueueEmpty {get {return pendingMessages.Count == 0;}}
+        readonly object LocalMsgQueueLock = new object ();
 
-        // if this is true, passed-in messages are immediately sent
-        private bool arduinoReady { get; set; } = false;
+        //
+        // message reference put here to be sent and left here until acknowledged
+        //
+        private IMessage_Auto currentMessage = null;
+        private bool NoCurrentMsg     {get {return currentMessage == null;}}
+        public  bool IsUnackedMessage {get {return currentMessage != null;}} 
 
         // socket to Arduino
-        //TcpServer socket;
-        Socket socket;
+        private readonly Socket socket;
 
-        List<ushort> sentSeqNumbers = new List<ushort> ();
+        //
+        // if a message is not acknowledged it will be resent
+        //
+        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (500); // milliseconds. must be unacknowledged for this 
+                                                                                           // long before the Resend button is enabled
+
+        // send status back to host object
+        readonly Callback QueueStuckCB   = null;
+        readonly Callback ArduinoBusyCB  = null;
+        readonly Callback ArduinoReadyCB = null;
+        readonly PrintCallback PrintCB   = null;
 
         //**********************************************************************
-
-        public MessageQueue (Socket _socket)
+        //
+        // ctor
+        //
+        public MessageQueue (Callback      queueStuckCallback, // callbacks can be null
+                             Callback      ardBusyCallback,
+                             Callback      ardReadyCallback,
+                             PrintCallback printCallback, 
+                             Socket        _socket)
         {
             socket = _socket;
+
+            QueueStuckCB   = queueStuckCallback;
+            ArduinoBusyCB  = ardBusyCallback;
+            ArduinoReadyCB = ardReadyCallback;
+            PrintCB        = printCallback;
+
+            AcknowledgeWaitTimer.AutoReset = false; 
+            AcknowledgeWaitTimer.Elapsed += QueueStuckTimerElapsed;
         }
 
         //**********************************************************************
+        //
+        // Arduino is ready to accept the next message
+        //
+        private bool arduinoReady = false;
 
-        public void AddMessage (byte [] msgBytes)
+        public bool ArduinoReady 
         {
-            if (arduinoReady == false)
+            get {return arduinoReady;}
+            
+            set 
             {
-                pendingMessages.Enqueue (msgBytes);
-            }
+                arduinoReady = value;
 
-            else
+                if (arduinoReady == true)
+                {
+                    ArduinoReadyCB?.Invoke ();
+
+                    // if a message is waiting to go out, then send it
+                    if (QueueEmpty == false && socket.Connected == true)
+                    {
+                        lock (LocalMsgQueueLock)
+                        { 
+                            currentMessage = pendingMessages.Dequeue ();
+                        }
+
+                        AcknowledgeWaitTimer.Enabled = true;
+                        socket.Send (currentMessage.ToBytes ());
+                    }
+                }
+                else
+                {
+                    ArduinoBusyCB?.Invoke ();
+                }
+            }
+        }
+
+        private void QueueStuckTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
+        {
+            AcknowledgeWaitTimer.Enabled = false;
+            QueueStuckCB?.Invoke ();
+
+            if (currentMessage != null)
             {
-                MessageHeader header = new MessageHeader (msgBytes);
-                sentSeqNumbers.Add (header.SequenceNumber);
-
-                if (socket.Connected) socket.Send (msgBytes);
-                arduinoReady = false;
+                PrintCB ("Resending message ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
+                socket.Send (currentMessage.ToBytes ());
             }
+        }
+
+        public void Close ()
+        {
+            socket.Close ();
+            ArduinoReady = false;
         }
 
         //**********************************************************************
 
-        // called when an acknowledge message is received from Arduino
+        public void AddMessage (IMessage_Auto msg)
+        {
+            lock (LocalMsgQueueLock)
+            {
+                if (ArduinoReady == false || socket.Connected == false)
+                {                
+                    pendingMessages.Enqueue (msg);
+                }
 
+                else
+                {
+                    if (QueueEmpty == false)
+                    { 
+                        pendingMessages.Enqueue (msg);
+                    }
+                    else
+                    {
+                        if (NoCurrentMsg && ArduinoReady)
+                        {
+                            currentMessage = msg;
+                            AcknowledgeWaitTimer.Enabled = true;
+                            socket.Send (currentMessage.ToBytes ());
+                            ArduinoReady = false;
+                        }
+                        else
+                            pendingMessages.Enqueue (msg);
+                    }
+                }
+            }
+        }
+
+        //**********************************************************************
+        //
+        // called when an acknowledge message is received from Arduino
+        //
         public bool MessageAcknowledged (ushort seqNumber)
         {
-            bool flag = sentSeqNumbers.Contains (seqNumber);
+            bool flag = seqNumber == currentMessage.SequenceNumber;
 
             if (flag)
             {
-                sentSeqNumbers.Remove (seqNumber);
-                ArduinoReady ();
-            }
-
-            return flag;
-        }
-
-        //**********************************************************************
-
-        // set status to "not ready"
-
-        public void ArduinoNotReady ()
-        {
-            arduinoReady = false;
-        }
-
-        //**********************************************************************
-
-        // called when Arduino ready to accept a message
-
-        public void ArduinoReady ()
-        {
-            // if a message is waiting to go out, then send it
-            if (pendingMessages.Count > 0)
-            {
-                Byte [] nextMessage = pendingMessages.Dequeue ();
-                MessageHeader header = new MessageHeader (nextMessage);
-                sentSeqNumbers.Add (header.SequenceNumber);
-
-                if (socket.Connected) socket.Send (nextMessage);
-                arduinoReady = false;
-            }
+                currentMessage = null;
+                AcknowledgeWaitTimer.Enabled = false;
+                ArduinoReady = false; // Arduino will send "ready" message when done processing
+            }                         // whatever was just ack'd
 
             else
-            {
-                arduinoReady = true;
-            }
+                throw new Exception ("Ack not for msg just sent. Expected " + currentMessage.SequenceNumber + ", got " + seqNumber);
+
+            return flag;
         }
     }
 }

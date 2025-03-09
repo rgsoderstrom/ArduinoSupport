@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Net;
 using System.Net.Sockets;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 
 using SocketLibrary;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using Common;
 
 //
 // MessageQueue used to throttle messages to Arduino.
