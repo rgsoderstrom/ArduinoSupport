@@ -8,6 +8,7 @@
 <Messages>
 
 	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\Template\ArduinoInterface"/>
+	<Option CppDir="C:\Users\rgsod\Documents\Arduino\Play\Template\src"/>
 
   <!-- ****************************************************** -->
   <!-- PC <-> Arduino                                         -->
@@ -20,7 +21,7 @@
 
     <Message Name="Button2Msg_Auto">
         <Constants>
-            unsigned int MaxCount = 256
+            unsigned int MaxCount = 32
        </Constants>
 
         <Variables>

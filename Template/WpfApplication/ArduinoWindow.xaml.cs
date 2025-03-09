@@ -35,10 +35,15 @@ namespace WpfApplication
             try
             {
                 InitializeComponent ();
+                ConnectedEllipse.Fill = Brushes.Green; // only get here when there is a connection
 
                 // queue to hold and send msgs to Arduino
-                messageQueue = new MessageQueue (null, Print, socket);
-            //  messageQueue = new MessageQueue (ResendTimerCallback, Print, socket);
+                messageQueue = new MessageQueue (null, 
+                                                 ArduinoBusyCallback, 
+                                                 ArduinoReadyCallback, 
+                                                 Print, socket);
+
+
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -87,8 +92,8 @@ namespace WpfApplication
               // Read data from the socket. 
                 int bytesRead = handler.EndReceive (ar);
 
-              //if (Verbosity > 2)
-              //    Print (string.Format ("Message received, {0} bytes", bytesRead));
+                //if (Verbosity > 2)
+                //    Print (string.Format ("Message received, {0} bytes", bytesRead));
 
                 if (bytesRead == 0)
                 {
@@ -128,7 +133,7 @@ namespace WpfApplication
             ConnectedEllipse.Fill = Brushes.White;
             ReadyEllipse.Fill     = Brushes.White;
 
-            messageQueue.ArduinoNotReady ();
+            messageQueue.ArduinoReady = false;
             Print ("Socket error");
         }
 
@@ -275,16 +280,9 @@ namespace WpfApplication
         //*****************************************************************************************
         //*****************************************************************************************
 
-        //*****************************************************************************************
-        //*****************************************************************************************
-        //*****************************************************************************************
+        private void ArduinoReadyCallback () {ReadyEllipse.Fill = Brushes.Green;}
+        private void ArduinoBusyCallback  () {ReadyEllipse.Fill = Brushes.White;}
 
-        private void Resend_Click (object sender, RoutedEventArgs e)
-        {
-            Print ("Resending last message");
-            messageQueue.ResendLastMsg ();
-      //      ResendBtn.IsEnabled = false;
-        }
 
         private void Button1_Click (object sender, RoutedEventArgs e)
         {
@@ -299,7 +297,6 @@ namespace WpfApplication
             msg.data.Sample [0] = 11;
             msg.data.Sample [1] = 22;
             msg.data.Sample [2] = 33;
-            
             messageQueue.AddMessage (msg);
         }
 
@@ -309,7 +306,6 @@ namespace WpfApplication
             msg.data.Param1 = 123;
             msg.data.Param2 = 456;
             msg.data.Param3 = 789;
-
             messageQueue.AddMessage (msg);
         }
 

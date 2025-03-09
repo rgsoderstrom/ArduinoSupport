@@ -86,7 +86,7 @@ namespace ArduinoSimulator
             }
 
             //
-            // Connect to server and create specified simulator
+            // Connect to server 
             //
             try
             {
@@ -105,7 +105,9 @@ namespace ArduinoSimulator
                 thisClientSocket.PrintHandler += PrintToLog;
 
                 //**********************************************************************************************
-
+                //
+                // Create specified simulator
+                //
                 ArduinoSimBase arduino1;
 
                 arduino1 = new ArduinoSim_AppSpecific  ("ard1", thisClientSocket, PrintToLog);

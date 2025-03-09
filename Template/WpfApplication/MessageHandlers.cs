@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 using ArduinoInterface;
-using Plot2D_Embedded;
 using SocketLibrary;
 using Common;
-using System.Windows.Media;
 
 namespace WpfApplication
 {
@@ -55,20 +48,6 @@ namespace WpfApplication
         // Handlers for application-specific messages
         //
 
-        private void ReadyMessageHandler (byte [] msgBytes)
-        {
-            try
-            { 
-                ReadyEllipse.Fill = Brushes.Green;
-                messageQueue.ArduinoReady ();
-            }
-
-            catch (Exception ex)
-            {
-                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
-            }
-        }
-
         //*******************************************************************************************************
         //*******************************************************************************************************
         //*******************************************************************************************************
@@ -111,6 +90,22 @@ namespace WpfApplication
             catch (Exception ex)
             {
                 EventLog.WriteLine (string.Format ("Exception in AckMsg handler: {0}", ex.Message));
+            }
+        }
+
+        private void ReadyMessageHandler (byte [] msgBytes)
+        {
+            try
+            { 
+                messageQueue.ArduinoReady = true;
+
+                if (Verbosity > 1)
+                    Print ("Arduino reports ready");
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
             }
         }
     }

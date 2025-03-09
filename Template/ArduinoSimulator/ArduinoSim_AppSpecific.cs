@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 using ArduinoInterface;
 using SocketLibrary;
@@ -21,10 +22,18 @@ namespace ArduinoSimulator
 		//**********************************************************************************
 		//**********************************************************************************
 		
+        static uint messageCounter = 0;
+
         private void MessageHandler (Socket src, byte [] msgBytes)
         {
             try
             {
+                if (++messageCounter == 5) // cause an error to make sure it is handled correctly
+                {                                            
+                    Console.WriteLine ("ignoring message to test re-send");
+                    return;
+                }
+
                 MessageHeader header = new MessageHeader (msgBytes);
 
                 if (Verbose)
@@ -41,13 +50,17 @@ namespace ArduinoSimulator
                 //
                 // Acknowledge before handling
                 //
-
                 AcknowledgeMsg_Auto ackMsg = new AcknowledgeMsg_Auto ();
                 ackMsg.data.MsgSequenceNumber = header.SequenceNumber;
                 thisClientSocket.Send (ackMsg.ToBytes ());
 
+                bool SendReadyMessage = true; // a "ready" message ends most exchanges but for some a
+                                              // different reply message serves its purpose
+											  
                 //**************************************************************************
-
+                //
+                // Do what the message requested
+                //
                 switch (header.MessageId)
                 {
                     case (ushort)ArduinoMessageIDs.Button1MsgId:
@@ -73,11 +86,23 @@ namespace ArduinoSimulator
                         PrintToLog ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
                 }
+
+                //**************************************************************************
+                //
+                // Report ready for next message
+                //
+                if (SendReadyMessage == true)
+                { 
+					ReadyMsg_Auto msg = new ReadyMsg_Auto ();
+					thisClientSocket.Send (msg.ToBytes ());
+				}
             }
 
             catch (Exception ex)
             {
                 PrintToLog ("Exception: " + ThisArduinoName + ", " + ex.Message);
+                TextMessage msg = new TextMessage ("Exception: " + ThisArduinoName + ", " + ex.Message);
+                thisClientSocket.Send (msg.ToBytes ());
             }
         }
 		
@@ -108,6 +133,11 @@ namespace ArduinoSimulator
             PrintToLog ("param1 = " + msg.data.Param1);
             PrintToLog ("param2 = " + msg.data.Param2);
             PrintToLog ("param3 = " + msg.data.Param3);
+
+            TextMessage msg2 = new TextMessage ("Pausing");
+            thisClientSocket.Send (msg2.ToBytes ());
+
+            Thread.Sleep (1000);
         }
     }
 }
