@@ -39,6 +39,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IMessage_Auto.cs" />
     <Compile Include="Messages\AcknowledgeMessage.cs" />
     <Compile Include="Messages\AcknowledgeMsg_Auto_Format.cs" />
     <Compile Include="Messages\AcknowledgeMsg_Auto_Methods.cs" />
