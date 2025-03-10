@@ -55,6 +55,8 @@ namespace ArduinoSimulator
                 ackMsg.data.MsgSequenceNumber = header.SequenceNumber;
                 thisClientSocket.Send (ackMsg.ToBytes ());
 
+                bool SendReady = true;
+
                 //**************************************************************************
 
                 switch (header.MessageId)
@@ -62,11 +64,13 @@ namespace ArduinoSimulator
                     case (ushort)ArduinoMessageIDs.StartSamplingMsgId:
                         if (Verbose) PrintToLog ("Start Sampling message received");
                         StartSamplingMessageHandler (msgBytes);
+                        SendReady = false;
                         break;
 
                     case (ushort)ArduinoMessageIDs.SendSamplesMsgId:
                         if (Verbose) PrintToLog ("Send Samples message received");
                         SendSamplesMessageHandler (msgBytes);
+                        SendReady = false;
                         break;
 
                     case (ushort) ArduinoMessageIDs.KeepAliveMsgId:
@@ -76,6 +80,12 @@ namespace ArduinoSimulator
                     default:
                         PrintToLog ("Received unrecognized message, Id: " + header.MessageId.ToString ());
                         break;
+                }
+
+                if (SendReady == true)
+                {
+                    ReadyMsg_Auto rdyMsg = new ReadyMsg_Auto ();
+                    thisClientSocket.Send (rdyMsg.ToBytes ());
                 }
             }
 
@@ -89,8 +99,7 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-     // const double SampleTime = 50; // milliseconds between samples
-        const double SampleTime = 5;  // sped-up
+        const double SampleTime = 50; // milliseconds between samples
 
         const short Count = 234;
         short put = 0;

@@ -71,13 +71,18 @@ namespace PioneerSensors
             ReceivedPressure.Clear ();
             ReceivedAngle.Clear ();
 
+            messageQueue.ArduinoReady = true;
+
             SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
             messageQueue.AddMessage (msg);
+
+            Print ("Queueing SendSamples msg " + msg.SequenceNumber);
         }
 
         private void SensorDataMessageHandler (byte [] msgBytes)
         {
             Print ("Sensor data message received");
+            messageQueue.ArduinoReady = true;
 
             //
             // Extract received data
@@ -98,9 +103,12 @@ namespace PioneerSensors
             { 
                 SendSamplesMsg_Auto msg2 = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg2);
+
+                Print ("Queueing SendSamples msg " + msg2.SequenceNumber);
             }
             else // plot all received data
             {
+                BeginButton.IsEnabled = true;                
                 SaveButton.IsEnabled = true;
                 ClearButton.IsEnabled = true;
 
@@ -160,9 +168,8 @@ namespace PioneerSensors
         {
             try
             { 
-                BeginButton.IsEnabled = true;
-                ReadyEllipse.Fill = Brushes.Green;
-                messageQueue.ArduinoReady ();
+                BeginButton.IsEnabled = true;                
+                messageQueue.ArduinoReady = true;
             }
 
             catch (Exception ex)

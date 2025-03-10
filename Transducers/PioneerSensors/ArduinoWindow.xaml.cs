@@ -34,15 +34,19 @@ namespace PioneerSensors
 
         //*******************************************************************************
 
+        void ReadyCallback () {ReadyEllipse.Fill = Brushes.Green;}
+        void BusyCallback  () {ReadyEllipse.Fill = Brushes.White;}
+        void StuckCallback () {Print ("Queue stuck");}
+
         public ArduinoWindow (Socket socket)
         {
             try
             {
                 InitializeComponent ();
+                ConnectedEllipse.Fill = Brushes.Green; // don't get here until there is a connection
 
                 // queue to hold and send msgs to Arduino
-                messageQueue = new MessageQueue (null, Print, socket);
-            //  messageQueue = new MessageQueue (ResendTimerCallback, Print, socket);
+                messageQueue = new MessageQueue (StuckCallback, BusyCallback, ReadyCallback, Print, socket);
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -129,7 +133,7 @@ namespace PioneerSensors
             ConnectedEllipse.Fill = Brushes.White;
             ReadyEllipse.Fill     = Brushes.White;
 
-            messageQueue.ArduinoNotReady ();
+            messageQueue.ArduinoReady = false;
             Print ("Socket error");
         }
 
@@ -275,10 +279,13 @@ namespace PioneerSensors
         private void BeginButton_Click (object sender, RoutedEventArgs e)
         {
             DataAvailableEllipse.Fill = Brushes.White;
+            BeginButton.IsEnabled = false;                
             PlotArea.Clear ();
 
             StartSamplingMsg_Auto msg = new StartSamplingMsg_Auto ();
             messageQueue.AddMessage (msg);
+
+            Print ("Queueing StartSampling msg " + msg.SequenceNumber);
         }
 
         //******************************************************************************
