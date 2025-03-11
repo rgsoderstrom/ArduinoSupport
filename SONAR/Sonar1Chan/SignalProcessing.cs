@@ -19,27 +19,26 @@ namespace Sonar1Chan
         //
         // Parameters
         //
-        public readonly double CenterFrequency;
-        public readonly double InputSampleRate;
-        public readonly double BasebandSampleRate;
+        private readonly double CenterFrequency;
+        private readonly double InputSampleRate;
+        private readonly double BasebandSampleRate;
 
         //
         // Samples as received
         //
         private readonly List<Point> inputSamples = new List<Point> (); // x = range, y = amplitude
-        public List<Point> InputSamples {get {return inputSamples;}}
+        public           List<Point> InputSamples {get {return inputSamples;}}
 
         //
         // Signed samples, DC removed
         //
         private readonly List<Point> signedSamples = new List<Point> ();
-        public List<Point> SignedSamples {get {return signedSamples;}}
 
         //
         // Baseband, magnitude
         //
         private readonly List<Point> magnitude = new List<Point> ();
-        public List<Point> Magnitude {get {return magnitude;}}
+        public           List<Point> Magnitude {get {return magnitude;}}
 
         //*******************************************************************************
         //
@@ -129,7 +128,7 @@ namespace Sonar1Chan
                     double mag2 = Math.Pow (filteredI [i + delay], 2)  // "+ delay" for time alignment
                                 + Math.Pow (filteredQ [i + delay], 2);
 
-                    magnitude.Add (new Point (InputSamples [i].X, Math.Sqrt (mag2)));
+                    magnitude.Add (new Point (inputSamples [i].X, Math.Sqrt (mag2)));
                 }
             }
 
