@@ -172,14 +172,14 @@ namespace ArduinoSimulator
             // before the target return begins
             for (int i=0; i<LeadingZero; i++, time+=1/SampleRate)
             {
-                double withNoiseAndDC = noise * random.NextDouble () + DC;
+                double withNoiseAndDC = noise * (random.NextDouble () - 0.5) + DC;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
             // copy target return
             for (int i = 0; i<transmitWave.Samples.Count; i++, time+=1/SampleRate)
             {
-                Samples.Add (transmitWave.Samples [i] + DC);
+                Samples.Add (transmitWave.Samples [i] + (random.NextDouble () - 0.5) + DC);
             }
 
             // after target return ends
@@ -187,7 +187,7 @@ namespace ArduinoSimulator
             
             for (int i=0; i<rem; i++, time+=1/SampleRate)
             {
-                double withNoiseAndDC = noise * random.NextDouble () + DC;
+                double withNoiseAndDC = noise * (random.NextDouble () - 0.5) + DC;
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
         }
