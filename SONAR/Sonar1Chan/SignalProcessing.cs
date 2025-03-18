@@ -1,16 +1,15 @@
-﻿using System;
+﻿
+/*
+    SignalProcessing 
+        - mix to baseband
+        - filter & decimate
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-using MathNet.Filtering;
 using MathNet.Filtering.FIR;
-
-using Common;
 
 namespace Sonar1Chan
 {
@@ -21,7 +20,6 @@ namespace Sonar1Chan
         //
         private readonly double CenterFrequency;
         private readonly double InputSampleRate;
-        private readonly double BasebandSampleRate;
 
         //
         // Samples as received
@@ -103,8 +101,7 @@ namespace Sonar1Chan
 
                 // Low-pass filter
                 int dec = 16;
-                double cutoff = InputSampleRate / (1 * dec); // s/b 2?
-                BasebandSampleRate = InputSampleRate / dec;
+                double cutoff = 3125;// InputSampleRate / (1 * dec); // s/b 2?
 
                 double [] filterCoefs = MathNet.Filtering.FIR.FirCoefficients.LowPass (InputSampleRate, cutoff);
                 OnlineFirFilter filter = new OnlineFirFilter (filterCoefs);
