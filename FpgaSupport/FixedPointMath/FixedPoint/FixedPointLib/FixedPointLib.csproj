@@ -1,13 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DBA95659-12B7-432A-8C3E-19372AB7F88D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>ArduinoSimulator</RootNamespace>
-    <AssemblyName>ArduinoSimulator</AssemblyName>
+    <ProjectGuid>{0587ED96-F352-4A4E-955B-0FFDD1A35A83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>FixedPointLib</RootNamespace>
+    <AssemblyName>FixedPointLib</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,30 +32,31 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArduinoSim.cs" />
-    <Compile Include="ArduinoSim_A2D_Tests.cs" />
-    <Compile Include="ArduinoSim_Sonar1Chan.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="firFilter.cs" />
+    <Compile Include="FixedPoint16.cs" />
+    <Compile Include="FixedPoint32.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ArduinoInterface">
-      <HintPath>..\ArduinoInterface\bin\Debug\ArduinoInterface.dll</HintPath>
+    <Reference Include="MathNet.Filtering, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Filtering.0.7.0\lib\net461\MathNet.Filtering.dll</HintPath>
     </Reference>
-    <Reference Include="Common">
-      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\Common.dll</HintPath>
-    </Reference>
-    <Reference Include="SocketLibrary">
-      <HintPath>..\..\MessagingFramework\SocketLibrary\bin\Debug\SocketLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="SonarCommon">
-      <HintPath>..\SonarCommon\bin\Debug\SonarCommon.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=4.9.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.9.1\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

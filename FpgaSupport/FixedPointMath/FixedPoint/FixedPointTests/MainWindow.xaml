@@ -1,0 +1,28 @@
+﻿<Window x:Class="FixedPointTests.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
+        xmlns:local="clr-namespace:FixedPointTests"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="750" Width="1100" Loaded="Window_Loaded" Name="Main_Window">
+    <DockPanel>
+
+        <Border DockPanel.Dock="Left" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="1">
+            <StackPanel MinWidth="80" Name="ButtonArea" DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="2 1 2 1" Loaded="ButtonArea_Loaded">
+                <Button Margin="2,3,2,0">Button 1</Button>
+                <Button Margin="2,3,2,0">Button 2</Button>
+                <Button Margin="2,3,2,0">Button 3</Button>
+                <Button Margin="2,3,2,0">Button 4</Button>
+            </StackPanel>
+        </Border>
+        
+        <Border DockPanel.Dock="Bottom" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="1" Height="130">
+            <TextBox Name="TextArea"  VerticalScrollBarVisibility="Visible" Loaded="TextArea_Loaded"/>
+        </Border>
+
+        <Plot2D_Embedded:Bare2DPlot Name="PlotArea" Loaded="PlotArea_Loaded"/>
+
+    </DockPanel>
+</Window>

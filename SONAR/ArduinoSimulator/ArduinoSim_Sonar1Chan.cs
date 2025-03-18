@@ -1,12 +1,13 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 using ArduinoInterface;
-
 using SocketLibrary;
+using SonarCommon;
 
 namespace ArduinoSimulator
 {
@@ -108,18 +109,19 @@ namespace ArduinoSimulator
         // Processing parameters
 
         double SampleRate = 100000; // these are written to Matlab "save" file
-        double PingDuration = 0.0005;
+        double PingDurationSecs = 0.0005;
         double PingFrequency = 40200;
 
         private void SonarParametersMessageHandler (byte [] msgBytes)
         {
             SonarParametersMsg_Auto msg = new SonarParametersMsg_Auto (msgBytes);
 
-            SampleRate    = 50e6 / msg.data.SampleClockDivisor;
-            PingDuration  = msg.data.PingDuration / 50e6; // seconds
-            PingFrequency = msg.data.PingFrequency * 190;
+            SampleRate       = 50e6 / msg.data.SampleClockDivisor;
+            PingDurationSecs = msg.data.PingDuration / 50e6; // seconds
+            PingFrequency    = msg.data.PingFrequency * 190;
 
-            PrintToLog ("Parameters: " + msg.ToString ());
+
+            //PrintToLog ("Parameters: " + msg.ToString ());
         }
 
         //***************************************************************************************************************
@@ -142,9 +144,8 @@ namespace ArduinoSimulator
         //
         static Random random = new Random ();
 
-        readonly double Range = 5; // feet
+        readonly double Range = 10; // feet
 
-        readonly int    Ramp  = 20;
         readonly double ampl  = 200;
         readonly double noise = 10;
         readonly int    DC    = 512;
@@ -154,12 +155,18 @@ namespace ArduinoSimulator
             Samples.Clear ();
             samplesGetIndex = 0;
 
-            int PingSamples = (int) (PingDuration * 100000); // seconds * Samples / second
+            int PingSamples = (int) (PingDurationSecs * SampleRate); // seconds * Samples / second
 
-            double BlankingTime = PingDuration + 0.003; // seconds from ping command to first sample        
+            Common.EventLog.WriteLine (SampleRate + " sample rate");
+            Common.EventLog.WriteLine (PingDurationSecs + " ping duration, seconds");
+            Common.EventLog.WriteLine (PingSamples + " ping samples at max");
+
+            double BlankingTime = PingDurationSecs + 0.003; // seconds from ping command to first sample        
             double travelTime   = 2 * Range / 1125;
             int LeadingZero     = (int) ((travelTime - BlankingTime) * SampleRate);
 
+            // samples for transmitted waveform
+            SonarCommon.TxWaveGen.CW transmitWave = new TxWaveGen.CW (ampl, SampleRate, PingFrequency, PingDurationSecs * 1000);
             double time = 0;
 
             // before the target return begins
@@ -169,32 +176,11 @@ namespace ArduinoSimulator
                 Samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
-            // returns from time the xmit waveform is ramping up
-            for (int i=0; i<Ramp; i++, time+=1/SampleRate)
+            // copy target return
+            for (int i = 0; i<transmitWave.Samples.Count; i++, time+=1/SampleRate)
             {
-                double win = (double) i / Ramp;
-                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
-                double withNoiseAndDC = noise * random.NextDouble () + DC + s;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
-            }            
-            
-            // from time at max level
-            for (int i=0; i<PingSamples; i++, time+=1/SampleRate)
-            {
-                double win = 1;
-                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
-                double withNoiseAndDC = noise * random.NextDouble () + DC + s;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
-            }            
-            
-            // while ramping down
-            for (int i=0; i<Ramp; i++, time+=1/SampleRate)
-            {
-                double win = 1 - (double) i / Ramp;
-                double s = win * ampl * Math.Sin (2 * Math.PI * PingFrequency * time);
-                double withNoiseAndDC = noise * random.NextDouble () + DC + s;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
-            }            
+                Samples.Add (transmitWave.Samples [i] + DC);
+            }
 
             // after target return ends
             int rem = BatchSize - Samples.Count;

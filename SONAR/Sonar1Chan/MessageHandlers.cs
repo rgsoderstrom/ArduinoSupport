@@ -107,31 +107,30 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-        SignalProcessing signalProcessor;
+        SignalProcessing2 signalProcessor;
+      //SignalProcessing  signalProcessor;
 
         private void DisplaySamples ()
         {
             try
             {
-                signalProcessor = new SignalProcessing (Samples, PingFrequency, SampleRate, PingDuration);
-
+                signalProcessor = new SignalProcessing2 (Samples, PingFrequency, SampleRate, PingDuration);
+              //signalProcessor = new SignalProcessing  (Samples, PingFrequency, SampleRate, PingDuration);
 
                 SaveButton.IsEnabled = true;
 
-                //PlotArea.Clear ();
-
                 PlotArea.Plot (new LineView (signalProcessor.InputSamples));
+
+                //PointView pv = new PointView (signalProcessor.Magnitude);//, PointView.DrawingStyle.Star);
+                //pv.Size = 0.1;
+                //pv.Color = Brushes.Red;
+
+
 
                 LineView lv = new LineView (signalProcessor.Magnitude);
                 lv.Color = Brushes.Red;
+
                 PlotArea.Plot (lv);
-
-                //PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
-
-                //if (SelectedDisplay == DisplayOptions.InputSamples)    PlotArea.Plot (new LineView (signalProcessor.InputSamples));
-                //if (SelectedDisplay == DisplayOptions.AbsInputSamples) PlotArea.Plot (new LineView (signalProcessor.AbsoluteValue));
-                //if (SelectedDisplay == DisplayOptions.MedianFiltered)  PlotArea.Plot (new LineView (signalProcessor.MedianFiltered));
-
                 PlotArea.RectangularGridOn = true;
             }
 

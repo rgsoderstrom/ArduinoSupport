@@ -1,0 +1,17 @@
+        SineTable [0] = 32'h00000000;  SineTable [1] = 32'h0031f170;  SineTable [2] = 32'h0061f78a;  SineTable [3] = 32'h008e39d9;  
+        SineTable [4] = 32'h00b504f3;  SineTable [5] = 32'h00d4db31;  SineTable [6] = 32'h00ec835e;  SineTable [7] = 32'h00fb14be;  
+        SineTable [8] = 32'h01000000;  SineTable [9] = 32'h00fb14be;  SineTable [10] = 32'h00ec835e;  SineTable [11] = 32'h00d4db31;  
+        SineTable [12] = 32'h00b504f3;  SineTable [13] = 32'h008e39d9;  SineTable [14] = 32'h0061f78a;  SineTable [15] = 32'h0031f170;  
+        SineTable [16] = 32'h00000000;  SineTable [17] = 32'hffce0e90;  SineTable [18] = 32'hff9e0876;  SineTable [19] = 32'hff71c627;  
+        SineTable [20] = 32'hff4afb0d;  SineTable [21] = 32'hff2b24cf;  SineTable [22] = 32'hff137ca2;  SineTable [23] = 32'hff04eb42;  
+        SineTable [24] = 32'hff000000;  SineTable [25] = 32'hff04eb42;  SineTable [26] = 32'hff137ca2;  SineTable [27] = 32'hff2b24cf;  
+        SineTable [28] = 32'hff4afb0d;  SineTable [29] = 32'hff71c627;  SineTable [30] = 32'hff9e0876;  SineTable [31] = 32'hffce0e90;  
+
+        StepTable [0] = 32'h0031f170;  StepTable [1] = 32'h0030061a;  StepTable [2] = 32'h002c424f;  StepTable [3] = 32'h0026cb1a;  
+        StepTable [4] = 32'h001fd63e;  StepTable [5] = 32'h0017a82d;  StepTable [6] = 32'h000e9160;  StepTable [7] = 32'h0004eb42;  
+        StepTable [8] = 32'hfffb14be;  StepTable [9] = 32'hfff16ea0;  StepTable [10] = 32'hffe857d3;  StepTable [11] = 32'hffe029c2;  
+        StepTable [12] = 32'hffd934e6;  StepTable [13] = 32'hffd3bdb1;  StepTable [14] = 32'hffcff9e6;  StepTable [15] = 32'hffce0e90;  
+        StepTable [16] = 32'hffce0e90;  StepTable [17] = 32'hffcff9e6;  StepTable [18] = 32'hffd3bdb1;  StepTable [19] = 32'hffd934e6;  
+        StepTable [20] = 32'hffe029c2;  StepTable [21] = 32'hffe857d3;  StepTable [22] = 32'hfff16ea0;  StepTable [23] = 32'hfffb14be;  
+        StepTable [24] = 32'h0004eb42;  StepTable [25] = 32'h000e9160;  StepTable [26] = 32'h0017a82d;  StepTable [27] = 32'h001fd63e;  
+        StepTable [28] = 32'h0026cb1a;  StepTable [29] = 32'h002c424f;  StepTable [30] = 32'h0030061a;  StepTable [31] = 32'h0031f170;  
