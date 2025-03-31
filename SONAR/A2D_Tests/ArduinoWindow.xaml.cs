@@ -56,7 +56,7 @@ namespace A2D_Tests
                 InitializeComponent ();
 
                 // queue to hold and send msgs to Arduino
-                messageQueue = new MessageQueue (ResendTimerCallback, Print, socket);
+                messageQueue = new MessageQueue (ResendTimerCallback, null, null, Print, socket);
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
