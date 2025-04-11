@@ -117,6 +117,7 @@ namespace PioneerSensors
                 for (int i=0; i<ReceivedAngle.Count; i++)
                 {
                     Point pt = new Point (ReceivedAngle [i], ReceivedPressure [i]); // pressure as function of angle
+                    //Point pt = new Point (ReceivedTime [i], ReceivedAngle [i]); // angle as function of time
                     pts.Add (pt);
                 }
 
@@ -127,7 +128,7 @@ namespace PioneerSensors
                 // plot pressure vs angle
                 //
                 if (pts.Count > 1)
-                { 
+                {
                     LineView lv = new LineView (pts);
                     PlotArea.Plot (lv);
                     PlotArea.XAxisLabel = "Angle, degrees";
