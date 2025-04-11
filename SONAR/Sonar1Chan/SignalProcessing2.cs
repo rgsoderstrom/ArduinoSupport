@@ -110,12 +110,12 @@ namespace Sonar1Chan
                 //
                 // Remove DC
                 //
-                double sum = 0;
+                //double sum = 0;
 
-                for (int i = 0; i<N; i++)
-                    sum += inputSamples [i].Y;
+                //for (int i = 0; i<N; i++)
+                //    sum += inputSamples [i].Y;
 
-                Int16 dc = (Int16) (sum / N);
+                Int16 dc = 511; // (Int16) (sum / N);
 
                 for (int i = 0; i<N; i++)
                 {

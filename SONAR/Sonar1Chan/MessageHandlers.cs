@@ -107,8 +107,8 @@ namespace Sonar1Chan
 
         //*******************************************************************************************************
 
-        SignalProcessing2 signalProcessor;
-      //SignalProcessing  signalProcessor;
+       SignalProcessing2 signalProcessor;
+       //SignalProcessing  signalProcessor;
 
         private void DisplaySamples ()
         {
