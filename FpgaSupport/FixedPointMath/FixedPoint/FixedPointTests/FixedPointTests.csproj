@@ -40,7 +40,7 @@
   <ItemGroup>
     <Reference Include="Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ArduinoSupport\MessagingFramework\SocketLibrary\bin\Debug\Common.dll</HintPath>
+      <HintPath>..\..\..\..\..\Common\bin\Debug\Common.dll</HintPath>
     </Reference>
     <Reference Include="FixedPointLib">
       <HintPath>..\FixedPointLib\bin\Debug\FixedPointLib.dll</HintPath>
@@ -52,7 +52,7 @@
       <HintPath>..\packages\MathNet.Numerics.4.9.1\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="Plot2D_Embedded">
-      <HintPath>..\..\..\..\Plotting\Plot2D_Embedded\bin\Debug\Plot2D_Embedded.dll</HintPath>
+      <HintPath>..\..\..\..\..\Plotting\Plot2D_Embedded\bin\Debug\Plot2D_Embedded.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -79,6 +79,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="WindowedSineTest.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -87,6 +88,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FirFilterTest.cs" />
+    <Compile Include="IFixedPtTest.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -118,6 +121,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="log.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

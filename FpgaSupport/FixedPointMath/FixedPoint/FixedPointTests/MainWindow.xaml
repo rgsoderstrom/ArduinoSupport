@@ -9,17 +9,29 @@
         Title="MainWindow" Height="750" Width="1100" Loaded="Window_Loaded" Name="Main_Window">
     <DockPanel>
 
-        <Border DockPanel.Dock="Left" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="1">
-            <StackPanel MinWidth="80" Name="ButtonArea" DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Left" Margin="2 1 2 1" Loaded="ButtonArea_Loaded">
-                <Button Margin="2,3,2,0">Button 1</Button>
-                <Button Margin="2,3,2,0">Button 2</Button>
-                <Button Margin="2,3,2,0">Button 3</Button>
-                <Button Margin="2,3,2,0">Button 4</Button>
-            </StackPanel>
-        </Border>
-        
+        <StackPanel Name="ButtonPanel" IsEnabled="False" DockPanel.Dock="Left" Orientation="Vertical" Loaded="ButtonArea_Loaded">
+            <Border Margin="3,3,3,3" BorderBrush="Black" BorderThickness="1">
+                <StackPanel MinWidth="80" Name="ButtonArea" DockPanel.Dock="Left" Orientation="Vertical" HorizontalAlignment="Stretch" Margin="2 1 2 1">
+                    <Button Margin="2,3,2,0">Button 1</Button>
+                    <Button Margin="2,3,2,0">Button 2</Button>
+                    <Button Margin="2,3,2,0">Button 3</Button>
+                    <Button Margin="2,3,2,0">Button 4</Button>
+                </StackPanel>
+            </Border>
+
+
+            <GroupBox Header="Mouse Wheel" BorderThickness="1" FontSize="16" BorderBrush="Black" Margin="8,2,8,0">
+                <StackPanel Orientation="Vertical">
+                    <!-- Default set in code -->
+                    <RadioButton Margin="8,4,8,0" Name="ZoomBoth_Button" Tag="Zoom_Both" Checked="ZoomOptionButton_Checked">Zoom Both</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomX_Button"    Tag="Zoom_X"    Checked="ZoomOptionButton_Checked">Zoom X Only</RadioButton>
+                    <RadioButton Margin="8,2,8,0" Name="ZoomY_Button"    Tag="Zoom_Y"    Checked="ZoomOptionButton_Checked">Zoom Y Only</RadioButton>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+
         <Border DockPanel.Dock="Bottom" Margin="3,3,3,3" BorderBrush="Black" BorderThickness="1" Height="130">
-            <TextBox Name="TextArea"  VerticalScrollBarVisibility="Visible" Loaded="TextArea_Loaded"/>
+            <TextBox Name="TextDisplay"  VerticalScrollBarVisibility="Visible" Loaded="TextArea_Loaded"/>
         </Border>
 
         <Plot2D_Embedded:Bare2DPlot Name="PlotArea" Loaded="PlotArea_Loaded"/>

@@ -12,8 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using FixedPt = FixedPointLib.FixedPoint_1_7_24;
-//using FixedPt = FixedPointLib.FixedPoint_1_5_10;
+//using FixedPt = FixedPointLib.FixedPoint_1_7_24;
+using FixedPt = FixedPointLib.FixedPoint_1_5_10;
 
 using MathNet.Filtering.FIR;
 
@@ -44,7 +44,7 @@ namespace FixedPointLib
         //
         // Constructor - from a list of coefficients
         //
-        public FirFilter (List<double> floatingPtCoefs)
+        public FirFilter (IList<double> floatingPtCoefs)
         { 
             foreach (double d in floatingPtCoefs)
                 FixedPointCoefs.Add (new FixedPt (d));
@@ -52,9 +52,9 @@ namespace FixedPointLib
 
         //*********************************************************************
         //
-        // filtered = filter.Run (input);
+        // filtered = filter.ProcessSample (input);
         //
-        public List<FixedPt> Run (List<FixedPt> input)
+        public List<FixedPt> ProcessSample (List<FixedPt> input)
         {
             List<FixedPt> filtered = new List<FixedPt> ();
 
