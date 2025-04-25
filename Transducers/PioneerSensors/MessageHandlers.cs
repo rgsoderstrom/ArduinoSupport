@@ -66,28 +66,20 @@ namespace PioneerSensors
         {
             DataAvailableEllipse.Fill = Brushes.Green;
             Print ("Sensor sampling complete");
-
-            ReceivedTime.Clear ();   
-            ReceivedPressure.Clear ();
-            ReceivedAngle.Clear ();
-
-            messageQueue.ArduinoReady = true;
-
-            SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
-            messageQueue.AddMessage (msg);
-
-            Print ("Queueing SendSamples msg " + msg.SequenceNumber);
+            SendButton.IsEnabled = true;
         }
+
+
 
         private void SensorDataMessageHandler (byte [] msgBytes)
         {
-            Print ("Sensor data message received");
-            messageQueue.ArduinoReady = true;
-
             //
             // Extract received data
             //
             SensorDataMsg_Auto msg = new SensorDataMsg_Auto (msgBytes);
+
+            Print ("Sensor data message received, " + msg.data.Count + " samples");
+       //     messageQueue.ArduinoReady = true;
 
             for (int i=0; i<msg.data.Count; i++)
             { 
@@ -104,13 +96,13 @@ namespace PioneerSensors
                 SendSamplesMsg_Auto msg2 = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg2);
 
-                Print ("Queueing SendSamples msg " + msg2.SequenceNumber);
+                Print ("Queueing another SendSamples msg " + msg2.SequenceNumber);
             }
             else // plot all received data
             {
-                BeginButton.IsEnabled = true;                
-                SaveButton.IsEnabled = true;
-                ClearButton.IsEnabled = true;
+            //    CollectButton.IsEnabled = true;                
+             //   SaveButton.IsEnabled = true;
+             //   ClearButton.IsEnabled = true;
 
                 List<Point> pts = new List<Point> ();
 
@@ -169,13 +161,14 @@ namespace PioneerSensors
         {
             try
             { 
-                BeginButton.IsEnabled = true;                
+                Print ("Ready message received");
+             //   CollectButton.IsEnabled = true;                
                 messageQueue.ArduinoReady = true;
             }
 
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in ReadyMsg handler: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in ReadyMessageHandler: {0}", ex.Message));
             }
         }
 
@@ -189,7 +182,7 @@ namespace PioneerSensors
         
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in TextMsg handler: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in TextMessageHandler: {0}", ex.Message));
             }
         }
 
@@ -210,7 +203,7 @@ namespace PioneerSensors
         
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in AckMsg handler: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in AcknowledgeMessageHandler: {0}", ex.Message));
             }
         }
     }

@@ -13,9 +13,11 @@
 
             <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
                 <StackPanel Orientation="Vertical">
-                    <Button Margin="3, 1, 3, 0" Content="Sample &#038; Send" Name="BeginButton" IsEnabled="False" Click="BeginButton_Click"/>
-                    <Button Margin="3, 1, 3, 0" Content="Save Samples"       Name="SaveButton"  IsEnabled="False" Click="SaveButton_Click"/>
-                    <Button Margin="3, 1, 3, 3" Content="Clear Plot"         Name="ClearButton" IsEnabled="False" Click="ClearButton_Click"/>
+                    <Button Margin="3, 1, 3, 0" Content="Collect Samples" Name="CollectButton" IsEnabled="True" Click="CollectButton_Click"/>
+                    <Button Margin="3, 1, 3, 0" Content="Send Samples"    Name="SendButton"    IsEnabled="True" Click="SendButton_Click"/>
+                    <Button Margin="3, 1, 3, 0" Content="Save Samples"    Name="SaveButton"    IsEnabled="True" Click="SaveButton_Click"/>
+                    <Button Margin="3, 1, 3, 3" Content="Clear Plot"      Name="ClearButton"   IsEnabled="True"  Click="ClearButton_Click"/>
+                    <!-- Button Margin="3, 9, 3, 3" Content="Reset"           Name="ResetButton"   IsEnabled="True"  Click="ResetButton_Click"/ -->
                 </StackPanel>
             </GroupBox>
 

@@ -36,7 +36,7 @@ namespace ArduinoInterface
         //
         // if a message is not acknowledged it will be resent
         //
-        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (500); // milliseconds. must be unacknowledged for this 
+        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (5000); // (500); // milliseconds. must be unacknowledged for this 
                                                                                            // long before the Resend button is enabled
 
         // send status back to host object
@@ -125,33 +125,36 @@ namespace ArduinoInterface
 
         public void AddMessage (IMessage_Auto msg)
         {
-            lock (LocalMsgQueueLock)
-            {
-                if (ArduinoReady == false || socket.Connected == false)
-                {                
-                    pendingMessages.Enqueue (msg);
-                }
+            currentMessage = msg;
+            socket.Send (msg.ToBytes ());
 
-                else
-                {
-                    if (QueueEmpty == false)
-                    { 
-                        pendingMessages.Enqueue (msg);
-                    }
-                    else
-                    {
-                        if (NoCurrentMsg && ArduinoReady)
-                        {
-                            currentMessage = msg;
-                            AcknowledgeWaitTimer.Enabled = true;
-                            socket.Send (currentMessage.ToBytes ());
-                            ArduinoReady = false;
-                        }
-                        else
-                            pendingMessages.Enqueue (msg);
-                    }
-                }
-            }
+            //lock (LocalMsgQueueLock)
+            //{
+            //    if (ArduinoReady == false || socket.Connected == false)
+            //    {                
+            //        pendingMessages.Enqueue (msg);
+            //    }
+
+            //    else
+            //    {
+            //        if (QueueEmpty == false)
+            //        { 
+            //            pendingMessages.Enqueue (msg);
+            //        }
+            //        else
+            //        {
+            //            if (NoCurrentMsg && ArduinoReady)
+            //            {
+            //                currentMessage = msg;
+            //                AcknowledgeWaitTimer.Enabled = true;
+            //                socket.Send (currentMessage.ToBytes ());
+            //                ArduinoReady = false;
+            //            }
+            //            else
+            //                pendingMessages.Enqueue (msg);
+            //        }
+            //    }
+            //}
         }
 
         //**********************************************************************

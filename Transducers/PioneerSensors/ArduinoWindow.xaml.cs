@@ -133,7 +133,7 @@ namespace PioneerSensors
             ConnectedEllipse.Fill = Brushes.White;
             ReadyEllipse.Fill     = Brushes.White;
 
-            messageQueue.ArduinoReady = false;
+          //  messageQueue.ArduinoReady = false;
             Print ("Socket error");
         }
 
@@ -276,16 +276,35 @@ namespace PioneerSensors
             }
         }
 
-        private void BeginButton_Click (object sender, RoutedEventArgs e)
+        private void ResetButton_Click (object sender, RoutedEventArgs e)
+        {
+        //    CollectButton.IsEnabled = true;                
+        }
+
+        private void CollectButton_Click (object sender, RoutedEventArgs e)
         {
             DataAvailableEllipse.Fill = Brushes.White;
-            BeginButton.IsEnabled = false;                
+        //    CollectButton.IsEnabled = false;                
             PlotArea.Clear ();
 
             StartSamplingMsg_Auto msg = new StartSamplingMsg_Auto ();
             messageQueue.AddMessage (msg);
 
             Print ("Queueing StartSampling msg " + msg.SequenceNumber);
+        }
+
+
+        private void SendButton_Click (object sender, RoutedEventArgs e)
+        {
+          //  SendButton.IsEnabled = false;
+            ReceivedTime.Clear ();   
+            ReceivedPressure.Clear ();
+            ReceivedAngle.Clear ();
+
+            SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
+            messageQueue.AddMessage (msg);
+
+            Print ("Queueing first SendSamples msg " + msg.SequenceNumber);
         }
 
         //******************************************************************************
@@ -344,7 +363,7 @@ namespace PioneerSensors
             if (comment != defaultDescr)
             {
                 // split into words
-                string [] tokens = comment.Split (new char [] {' '});
+                string [] tokens = comment.Split (new char [] {' ', '\n', '\r'});
 
                 samplesFile.WriteLine (" ");
                 string commentLine = "%";
@@ -366,9 +385,16 @@ namespace PioneerSensors
             }
 
             //
+            // label the columns
+            //
+            samplesFile.WriteLine (" ");
+            samplesFile.WriteLine ("% time, pressure, angle");
+            samplesFile.WriteLine (" ");
+
+            //
             // Write samples to file
             //
-            samplesFile.WriteLine ("z" + number + " = [...");
+            samplesFile.WriteLine ("z = [...");
 
             int j;
             
