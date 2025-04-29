@@ -31,7 +31,7 @@ namespace ArduinoInterface
         public  bool IsUnackedMessage {get {return currentMessage != null;}} 
 
         // socket to Arduino
-        private readonly Socket socket;
+        private Socket socket;
 
         //
         // if a message is not acknowledged it will be resent
@@ -64,6 +64,11 @@ namespace ArduinoInterface
 
             AcknowledgeWaitTimer.AutoReset = false; 
             AcknowledgeWaitTimer.Elapsed += QueueStuckTimerElapsed;
+        }
+
+        public void NewSocket (Socket _socket)
+        {
+            socket = _socket;
         }
 
         //**********************************************************************

@@ -79,7 +79,9 @@ namespace PioneerSensors
             SensorDataMsg_Auto msg = new SensorDataMsg_Auto (msgBytes);
 
             Print ("Sensor data message received, " + msg.data.Count + " samples");
-       //     messageQueue.ArduinoReady = true;
+
+            if (msg.data.Count < 2 && ReceivedTime.Count == 0)
+                return;
 
             for (int i=0; i<msg.data.Count; i++)
             { 
@@ -103,6 +105,8 @@ namespace PioneerSensors
             //    CollectButton.IsEnabled = true;                
              //   SaveButton.IsEnabled = true;
              //   ClearButton.IsEnabled = true;
+
+                DataAvailableEllipse.Fill = Brushes.White;
 
                 List<Point> pts = new List<Point> ();
 

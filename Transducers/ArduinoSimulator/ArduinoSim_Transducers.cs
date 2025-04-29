@@ -92,15 +92,15 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        const double SampleTime = 20; // 50; // milliseconds between samples
+        const double SampleTime = 10; // 50; // milliseconds between samples
 
-        const short Count = 234;
+        const short SampleBatchSize = 234;
         short put = 0;
         short get = 0;
 
-        readonly short [] Pressure = new short  [Count];
-        readonly short [] Angle    = new short  [Count];
-        readonly short [] Time     = new short  [Count];
+        readonly short [] Pressure = new short  [SampleBatchSize];
+        readonly short [] Angle    = new short  [SampleBatchSize];
+        readonly short [] Time     = new short  [SampleBatchSize];
 
         private void SamplingTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -112,20 +112,25 @@ namespace ArduinoSimulator
             PrintToLog ("Sampling complete");
         }
 
+        short pressure = 100;
+        short angle    = 200;
+        double time    = 300;
+
         private void StartSamplingMessageHandler (byte [] msgBytes)
         {
             PrintToLog ("Received StartSampling message");
 
-            SamplingDelayTimer.Interval = SampleTime * Count;
+            SamplingDelayTimer.Interval = SampleTime * SampleBatchSize;
             SamplingDelayTimer.Enabled = true;
 
             get = 0;
 
-            for (put=0; put<Count; put++)
+            for (put=0; put<SampleBatchSize; put++)
             {
-                Pressure [put] = (short) (100 + put); 
-                Angle    [put] = (short) (200 + put); 
-                Time     [put] = (short) (put * SampleTime); 
+                Pressure [put] = pressure++;
+                Angle    [put] = angle++;
+                Time     [put] = (short) time; 
+                time += SampleTime;
             }
         }
 

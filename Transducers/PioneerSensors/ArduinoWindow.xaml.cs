@@ -22,7 +22,7 @@ namespace PioneerSensors
     {
         readonly MessageQueue messageQueue; // messages to Arduino pass through here
 
-        readonly System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (20000); // milliseconds
+        readonly System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (5000); //(20000); // milliseconds
 
         // only the thread that created WPF objects can access them. others must use Invoke () to
         // run a task on that thread. Its ID stored here
@@ -77,6 +77,44 @@ namespace PioneerSensors
             }
         }
 
+
+        public void NewSocket (Socket socket)
+        {
+            try
+            {
+                ConnectedEllipse.Fill = Brushes.Green; // don't get here until there is a connection
+
+                // queue to hold and send msgs to Arduino
+                messageQueue.NewSocket (socket);
+
+                // Create the state object.
+                SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
+                state.workSocket = socket;
+
+                socket.BeginReceive (state.buffer, 0, SocketLibrary.StateObject.BufferSize, 0, new AsyncCallback (ReceiveCallback), state);
+
+                KeepAliveTimer.Enabled = false;    //-------------------------------------------------------
+                KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
+
+                //try
+                //{                
+                //    var hostEntry = Dns.GetHostEntry (((IPEndPoint) socket.RemoteEndPoint).Address);
+                // //   clientName = hostEntry.HostName;
+                //}
+                //catch (Exception )
+                //{
+                //    Print ("Failed to find client's name");
+                //}            
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in ArduinoWindow ctor: {0}", ex.Message));
+            }
+        }
+
+
+
         //*********************************************************************************************************
         //
         // ReceiveCallback - 
@@ -97,8 +135,7 @@ namespace PioneerSensors
 
                 if (bytesRead == 0)
                 {
-                   // allClients.Remove (state.workSocket);
-                    state.workSocket.Close ();
+               //     state.workSocket.Close ();
                     Print ("bytesRead == 0"); // this is an error, so always print
                 }
 

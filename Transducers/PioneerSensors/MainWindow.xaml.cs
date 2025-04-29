@@ -42,13 +42,31 @@ namespace PioneerSensors
             Dispatcher.BeginInvoke ((SocketLibrary.Callback2) GainedClient, sock);
         }
 
+        ArduinoWindow ard = null;
+
         private void GainedClient (Socket sock)
         {
-            ArduinoWindow ard = new ArduinoWindow (sock);
-            ard.Owner = this;
-            ard.Show ();
-            ard.Activate ();
-            Print ("Gained Client");
+            try
+            { 
+                if (ard == null)
+                { 
+                    ard = new ArduinoWindow (sock);
+                    ard.Owner = this;
+                    ard.Show ();
+                    ard.Activate ();
+                    Print ("Gained Client");
+                }
+                else
+                {
+                    ard.NewSocket (sock);
+                    Print ("Re-connect");
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Common.EventLog.WriteLine (string.Format ("Exception in GainedClient: {0}", ex.Message));
+            }
         }
 
         //*******************************************************************************************************
