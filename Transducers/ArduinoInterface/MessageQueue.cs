@@ -98,6 +98,8 @@ namespace ArduinoInterface
                         }
 
                         AcknowledgeWaitTimer.Enabled = true;
+
+                        PrintCB ("Sending de-queued msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                         socket.Send (currentMessage.ToBytes ());
                     }
                 }
@@ -130,36 +132,39 @@ namespace ArduinoInterface
 
         public void AddMessage (IMessage_Auto msg)
         {
-            currentMessage = msg;
-            socket.Send (msg.ToBytes ());
+            //currentMessage = msg;
+            //socket.Send (msg.ToBytes ());
 
-            //lock (LocalMsgQueueLock)
-            //{
-            //    if (ArduinoReady == false || socket.Connected == false)
-            //    {                
-            //        pendingMessages.Enqueue (msg);
-            //    }
+            lock (LocalMsgQueueLock)
+            {
+                if (ArduinoReady == false || socket.Connected == false)
+                {
+                    pendingMessages.Enqueue (msg);
+                }
 
-            //    else
-            //    {
-            //        if (QueueEmpty == false)
-            //        { 
-            //            pendingMessages.Enqueue (msg);
-            //        }
-            //        else
-            //        {
-            //            if (NoCurrentMsg && ArduinoReady)
-            //            {
-            //                currentMessage = msg;
-            //                AcknowledgeWaitTimer.Enabled = true;
-            //                socket.Send (currentMessage.ToBytes ());
-            //                ArduinoReady = false;
-            //            }
-            //            else
-            //                pendingMessages.Enqueue (msg);
-            //        }
-            //    }
-            //}
+                else
+                {
+                    if (QueueEmpty == false)
+                    {
+                        pendingMessages.Enqueue (msg);
+                    }
+                    else
+                    {
+                        if (NoCurrentMsg && ArduinoReady)
+                        {
+                            currentMessage = msg;
+                            AcknowledgeWaitTimer.Enabled = true;
+
+                            PrintCB ("Sending msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
+                            socket.Send (currentMessage.ToBytes ());
+
+                            ArduinoReady = false;
+                        }
+                        else
+                            pendingMessages.Enqueue (msg);
+                    }
+                }
+            }
         }
 
         //**********************************************************************
