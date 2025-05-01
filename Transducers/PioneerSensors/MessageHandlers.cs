@@ -66,10 +66,17 @@ namespace PioneerSensors
         {
             DataAvailableEllipse.Fill = Brushes.Green;
             Print ("Sensor sampling complete");
-            SendButton.IsEnabled = true;
+            //SendButton.IsEnabled = true;
+            //CollectButton.IsEnabled = true; 
+            SendButton_Click (null, new RoutedEventArgs ());
         }
 
 
+        private void LeftClick (object sender, Point pt)
+        {
+           // Print (string.Format ("Pointer at {0:0.00}", pt));
+            Print (string.Format ("Angle {0:0.0}, Pressure {1:0.0}", pt.X, pt.Y));
+        }
 
         private void SensorDataMessageHandler (byte [] msgBytes)
         {
@@ -102,9 +109,9 @@ namespace PioneerSensors
             }
             else // plot all received data
             {
-            //    CollectButton.IsEnabled = true;                
-             //   SaveButton.IsEnabled = true;
-             //   ClearButton.IsEnabled = true;
+                CollectButton.IsEnabled = true;                
+                SaveButton.IsEnabled = true;
+                ClearButton.IsEnabled = true;
 
                 DataAvailableEllipse.Fill = Brushes.White;
 
@@ -129,6 +136,8 @@ namespace PioneerSensors
                     PlotArea.Plot (lv);
                     PlotArea.XAxisLabel = "Angle, degrees";
                     PlotArea.YAxisLabel = "Pressure";
+
+                    lv.RegisterForMouseLeftClick (LeftClick);
                 }
 
                 //
