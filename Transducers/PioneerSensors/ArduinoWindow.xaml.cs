@@ -22,7 +22,7 @@ namespace PioneerSensors
     {
         readonly MessageQueue messageQueue; // messages to Arduino pass through here
 
-        readonly System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (5000); //(20000); // milliseconds
+        //readonly System.Timers.Timer KeepAliveTimer = new System.Timers.Timer (5000); //(20000); // milliseconds
 
         // only the thread that created WPF objects can access them. others must use Invoke () to
         // run a task on that thread. Its ID stored here
@@ -57,8 +57,8 @@ namespace PioneerSensors
                 // only this thread can access WPF objects
                 WpfThread = Thread.CurrentThread.ManagedThreadId;
 
-                KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
-                KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
+             //   KeepAliveTimer.Elapsed += KeepAliveTimer_Elapsed;
+            //    KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
 
                 try
                 {                
@@ -93,8 +93,8 @@ namespace PioneerSensors
 
                 socket.BeginReceive (state.buffer, 0, SocketLibrary.StateObject.BufferSize, 0, new AsyncCallback (ReceiveCallback), state);
 
-                KeepAliveTimer.Enabled = false;    //-------------------------------------------------------
-                KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
+             //   KeepAliveTimer.Enabled = false;    //-------------------------------------------------------
+             //   KeepAliveTimer.Enabled = true;    //-------------------------------------------------------
 
                 //try
                 //{                
@@ -202,15 +202,15 @@ namespace PioneerSensors
         //*******************************************************************************************************
         //*******************************************************************************************************
 
-        private void KeepAliveTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
-        {
-            KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
+        //private void KeepAliveTimer_Elapsed (object sender, System.Timers.ElapsedEventArgs e)
+        //{
+        //    KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
 
-            if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
-            else if (Verbosity > 1) Print ("Sending KeepAlive msg");
+        //    if (Verbosity > 2)      Print ("Sending KeepAlive msg, seq numb " + msg.header.SequenceNumber);
+        //    else if (Verbosity > 1) Print ("Sending KeepAlive msg");
 
-            messageQueue.AddMessage (msg);
-        }
+        //    messageQueue.AddMessage (msg);
+        //}
 
         //*******************************************************************************************************
 
@@ -321,13 +321,12 @@ namespace PioneerSensors
         private void CollectButton_Click (object sender, RoutedEventArgs e)
         {
             DataAvailableEllipse.Fill = Brushes.White;
-        //    CollectButton.IsEnabled = false;                
+            CollectButton.IsEnabled = false;                
             PlotArea.Clear ();
 
             StartSamplingMsg_Auto msg = new StartSamplingMsg_Auto ();
-            messageQueue.AddMessage (msg);
-
             Print ("Queueing StartSampling msg " + msg.SequenceNumber);
+            messageQueue.AddMessage (msg);
         }
 
 
@@ -339,9 +338,8 @@ namespace PioneerSensors
             ReceivedAngle.Clear ();
 
             SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
-            messageQueue.AddMessage (msg);
-
             Print ("Queueing first SendSamples msg " + msg.SequenceNumber);
+            messageQueue.AddMessage (msg);
         }
 
         //******************************************************************************
