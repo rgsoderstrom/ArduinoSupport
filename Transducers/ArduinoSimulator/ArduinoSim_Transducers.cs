@@ -9,6 +9,7 @@ using SocketLibrary;
 
 #pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable IDE0052 // Remove unread private members
+#pragma warning disable CS0219  // variable not used
 
 namespace ArduinoSimulator
 {
@@ -30,10 +31,24 @@ namespace ArduinoSimulator
 		//**********************************************************************************
 		//**********************************************************************************
 		
+        int MessageCounter = 0; // used to inject errors
+        bool InjectError = false;
+
         private void MessageHandler (Socket src, byte [] msgBytes)
         {
             try
             {
+                MessageCounter++;
+                InjectError  = false;
+                InjectError |= MessageCounter == 7;
+                InjectError |= MessageCounter == 8;
+
+                if (InjectError == true)
+                { 
+                    PrintToLog ("Ignoring message");
+                    return;
+                }
+
                 MessageHeader header = new MessageHeader (msgBytes);
 
                 if (Verbose)
@@ -92,9 +107,9 @@ namespace ArduinoSimulator
         //***************************************************************************************************************
         //***************************************************************************************************************
 
-        const double SampleTime = 10; // 50; // milliseconds between samples
+        const double SampleTime = 5; // 50; // milliseconds between samples
 
-        const short SampleBatchSize = 234;
+        const short SampleBatchSize = 800;
         short put = 0;
         short get = 0;
 

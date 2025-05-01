@@ -112,7 +112,7 @@ namespace ArduinoInterface
 
         private void QueueStuckTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
-            AcknowledgeWaitTimer.Enabled = false;
+            AcknowledgeWaitTimer.Enabled = true;
             QueueStuckCB?.Invoke ();
 
             if (currentMessage != null)
@@ -173,12 +173,13 @@ namespace ArduinoInterface
         //
         public bool MessageAcknowledged (ushort seqNumber)
         {
+            AcknowledgeWaitTimer.Enabled = false;
             bool flag = seqNumber == currentMessage.SequenceNumber;
 
             if (flag)
             {
                 currentMessage = null;
-                AcknowledgeWaitTimer.Enabled = false;
+                //AcknowledgeWaitTimer.Enabled = false;
                 ArduinoReady = false; // Arduino will send "ready" message when done processing
             }                         // whatever was just ack'd
 
