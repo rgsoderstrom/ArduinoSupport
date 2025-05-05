@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using ArduinoInterface;
 using SocketLibrary;
 
+#pragma warning disable IDE0044 // Make Field Readonly
 #pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable IDE0052 // Remove unread private members
 #pragma warning disable CS0219  // variable not used
@@ -38,10 +39,10 @@ namespace ArduinoSimulator
         {
             try
             {
-                MessageCounter++;
-                InjectError  = false;
-                InjectError |= MessageCounter == 7;
-                InjectError |= MessageCounter == 8;
+                //MessageCounter++;
+                //InjectError  = false;
+                //InjectError |= MessageCounter == 7;
+                //InjectError |= MessageCounter == 8;
 
                 if (InjectError == true)
                 { 

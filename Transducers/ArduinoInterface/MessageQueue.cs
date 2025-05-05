@@ -34,10 +34,15 @@ namespace ArduinoInterface
         private Socket socket;
 
         //
+        // heartbeat timer. 
+        //
+        readonly System.Timers.Timer HeartbeatTimer = new System.Timers.Timer (5000); // milliseconds
+
+        //
         // if a message is not acknowledged it will be resent
         //
-        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (5000); // (500); // milliseconds. must be unacknowledged for this 
-                                                                                           // long before the Resend button is enabled
+        readonly System.Timers.Timer AcknowledgeWaitTimer = new System.Timers.Timer (500); // milliseconds. if msg unacknowledged for this 
+                                                                                           // long a Resend attempted
 
         // send status back to host object
         readonly Callback QueueStuckCB   = null;
@@ -64,6 +69,10 @@ namespace ArduinoInterface
 
             AcknowledgeWaitTimer.AutoReset = false; 
             AcknowledgeWaitTimer.Elapsed += QueueStuckTimerElapsed;
+
+            HeartbeatTimer.Elapsed += HeartbeatTimerElapsed;
+            HeartbeatTimer.Enabled = true;  
+            HeartbeatTimer.AutoReset = true;  
         }
 
         public void NewSocket (Socket _socket)
@@ -101,7 +110,8 @@ namespace ArduinoInterface
 
                         PrintCB ("Sending de-queued msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                         socket.Send (currentMessage.ToBytes ());
-                    }
+                        HeartbeatTimer.Enabled = false; 
+                        HeartbeatTimer.Enabled = true;                     }
                 }
                 else
                 {
@@ -109,6 +119,16 @@ namespace ArduinoInterface
                 }
             }
         }
+
+
+
+        private void HeartbeatTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
+        {
+            PrintCB ("Heartbeat");
+            KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
+            AddMessage (msg);
+        }
+
 
         private void QueueStuckTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -119,6 +139,8 @@ namespace ArduinoInterface
             {
                 PrintCB ("Resending message ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                 socket.Send (currentMessage.ToBytes ());
+                HeartbeatTimer.Enabled = false; 
+                HeartbeatTimer.Enabled = true;  
             }
         }
 
@@ -132,9 +154,6 @@ namespace ArduinoInterface
 
         public void AddMessage (IMessage_Auto msg)
         {
-            //currentMessage = msg;
-            //socket.Send (msg.ToBytes ());
-
             lock (LocalMsgQueueLock)
             {
                 if (ArduinoReady == false || socket.Connected == false)
@@ -157,6 +176,8 @@ namespace ArduinoInterface
 
                             PrintCB ("Sending msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                             socket.Send (currentMessage.ToBytes ());
+                            HeartbeatTimer.Enabled = false;
+                            HeartbeatTimer.Enabled = true;
 
                             ArduinoReady = false;
                         }
