@@ -65,7 +65,7 @@ namespace PioneerSensors
         private void DoneSamplingMessageHandler (byte [] msgBytes)
         {
             DataAvailableEllipse.Fill = Brushes.Green;
-            Print ("Sensor sampling complete");
+            if (Verbosity > 2) Print ("Sensor sampling complete");
             //SendButton.IsEnabled = true;
             //CollectButton.IsEnabled = true; 
             SendButton_Click (null, new RoutedEventArgs ());
@@ -85,7 +85,7 @@ namespace PioneerSensors
             //
             SensorDataMsg_Auto msg = new SensorDataMsg_Auto (msgBytes);
 
-            Print ("Sensor data message received, " + msg.data.Count + " samples");
+            if (Verbosity > 2) Print ("Sensor data message received, " + msg.data.Count + " samples");
 
             if (msg.data.Count < 2 && ReceivedTime.Count == 0)
                 return;
@@ -94,7 +94,7 @@ namespace PioneerSensors
             { 
                 ReceivedTime    .Add (msg.data.Time [i]);
                 ReceivedPressure.Add (msg.data.Pressure [i]);
-                ReceivedAngle   .Add (msg.data.Angle [i]);
+                ReceivedAngle   .Add (msg.data.Angle [i] / 2.0); // 2 counts per degree
             }
 
             //
@@ -105,7 +105,7 @@ namespace PioneerSensors
                 SendSamplesMsg_Auto msg2 = new SendSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg2);
 
-                Print ("Queueing another SendSamples msg " + msg2.SequenceNumber);
+                if (Verbosity > 2) Print ("Queueing another SendSamples msg " + msg2.SequenceNumber);
             }
             else // plot all received data
             {
@@ -174,7 +174,7 @@ namespace PioneerSensors
         {
             try
             { 
-                Print ("Ready message received");
+                if (Verbosity > 2) Print ("Ready message received");
              //   CollectButton.IsEnabled = true;                
                 messageQueue.ArduinoReady = true;
             }
@@ -210,7 +210,7 @@ namespace PioneerSensors
                 if (found == false)
                     Print ("Ack'd message not found: " + msg.data.MsgSequenceNumber.ToString ());
 
-                if (Verbosity > 1)
+                if (Verbosity > 2)
                     Print ("Arduino Acknowledged " + msg.data.MsgSequenceNumber);
             }
         

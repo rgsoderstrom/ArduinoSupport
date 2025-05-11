@@ -28,7 +28,7 @@ namespace PioneerSensors
 
         readonly string clientName = "Unknown"; // only used for error reporting
 
-        private int Verbosity = 3;//1;
+        private int Verbosity = 1;
 
         //*******************************************************************************
 
@@ -45,6 +45,7 @@ namespace PioneerSensors
 
                 // queue to hold and send msgs to Arduino
                 messageQueue = new MessageQueue (StuckCallback, BusyCallback, ReadyCallback, Print, socket);
+                messageQueue.Verbosity = Verbosity;
 
                 // Create the state object.
                 SocketLibrary.StateObject state = new SocketLibrary.StateObject ();
@@ -295,7 +296,7 @@ namespace PioneerSensors
             PlotArea.Clear ();
 
             StartSamplingMsg_Auto msg = new StartSamplingMsg_Auto ();
-            Print ("Queueing StartSampling msg " + msg.SequenceNumber);
+            if (Verbosity > 2) Print ("Queueing StartSampling msg " + msg.SequenceNumber);
             messageQueue.AddMessage (msg);
         }
 
@@ -308,7 +309,7 @@ namespace PioneerSensors
             ReceivedAngle.Clear ();
 
             SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
-            Print ("Queueing first SendSamples msg " + msg.SequenceNumber);
+            if (Verbosity > 2) Print ("Queueing first SendSamples msg " + msg.SequenceNumber);
             messageQueue.AddMessage (msg);
         }
 

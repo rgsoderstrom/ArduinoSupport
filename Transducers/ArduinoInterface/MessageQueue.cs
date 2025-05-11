@@ -50,6 +50,8 @@ namespace ArduinoInterface
         readonly Callback ArduinoReadyCB = null;
         readonly PrintCallback PrintCB   = null;
 
+        public int Verbosity {get; set;} = 1;
+
         //**********************************************************************
         //
         // ctor
@@ -108,7 +110,7 @@ namespace ArduinoInterface
 
                         AcknowledgeWaitTimer.Enabled = true;
 
-                        PrintCB ("Sending de-queued msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
+                        if (Verbosity > 2) PrintCB ("Sending de-queued msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                         socket.Send (currentMessage.ToBytes ());
                         HeartbeatTimer.Enabled = false; 
                         HeartbeatTimer.Enabled = true;                     }
@@ -124,7 +126,7 @@ namespace ArduinoInterface
 
         private void HeartbeatTimerElapsed (object sender, System.Timers.ElapsedEventArgs e)
         {
-            PrintCB ("Heartbeat");
+            if (Verbosity > 2) PrintCB ("Heartbeat");
             KeepAliveMsg_Auto msg = new KeepAliveMsg_Auto ();
             AddMessage (msg);
         }
@@ -137,7 +139,7 @@ namespace ArduinoInterface
 
             if (currentMessage != null)
             {
-                PrintCB ("Resending message ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
+                if (Verbosity > 1) PrintCB ("Resending message ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                 socket.Send (currentMessage.ToBytes ());
                 HeartbeatTimer.Enabled = false; 
                 HeartbeatTimer.Enabled = true;  
@@ -174,7 +176,7 @@ namespace ArduinoInterface
                             currentMessage = msg;
                             AcknowledgeWaitTimer.Enabled = true;
 
-                            PrintCB ("Sending msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
+                            if (Verbosity > 2) PrintCB ("Sending msg ID " + currentMessage.MessageId + ", Seq = " + currentMessage.SequenceNumber);
                             socket.Send (currentMessage.ToBytes ());
                             HeartbeatTimer.Enabled = false;
                             HeartbeatTimer.Enabled = true;
