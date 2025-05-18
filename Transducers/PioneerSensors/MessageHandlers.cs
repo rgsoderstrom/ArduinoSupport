@@ -94,7 +94,7 @@ namespace PioneerSensors
             { 
                 ReceivedTime    .Add (msg.data.Time [i]);
                 ReceivedPressure.Add (msg.data.Pressure [i]);
-                ReceivedAngle   .Add (msg.data.Angle [i] / 2.0); // 2 counts per degree
+                ReceivedAngle   .Add (msg.data.Angle [i] / 4.0); // 4 counts per degree ************************
             }
 
             //
