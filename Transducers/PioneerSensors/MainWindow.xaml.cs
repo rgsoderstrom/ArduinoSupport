@@ -48,19 +48,19 @@ namespace PioneerSensors
         {
             try
             { 
-                if (ard == null)
-                { 
+                //if (ard == null)
+                //{ 
                     ard = new ArduinoWindow (sock);
                     ard.Owner = this;
                     ard.Show ();
                     ard.Activate ();
                     Print ("Gained Client");
-                }
-                else
-                {
-                    ard.NewSocket (sock);
-                    Print ("Re-connect");
-                }
+                //}
+                //else
+                //{
+                //    ard.NewSocket (sock);
+                //    Print ("Re-connect");
+                //}
             }
 
             catch (Exception ex)
