@@ -148,7 +148,7 @@ namespace ArduinoSimulator
 
         readonly double ampl  = 200;
         readonly double noise = 10;
-        readonly int    DC    = 512;
+        readonly int    DC    = 0;
 
         private void PingMessageHandler (byte [] msgBytes)
         {

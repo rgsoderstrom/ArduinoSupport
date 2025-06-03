@@ -127,8 +127,8 @@ namespace Sonar1Chan
                 // filter
                 //
                 OnlineFirFilter filter = new OnlineFirFilter (Replica);
-                int delay = Replica.Count; // shift filter output to line up with
-                                           // leading edge of echo
+                int delay = Replica.Count / 2; // shift filter output to line up with
+                                               // leading edge of echo
 
                 // run filter
                 double [] filtered = filter.ProcessSamples (signedSamples.ToArray ());
