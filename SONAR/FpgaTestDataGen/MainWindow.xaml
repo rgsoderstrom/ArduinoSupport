@@ -1,0 +1,15 @@
+﻿<Window x:Class="FpgaTestDataGen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
+        xmlns:local="clr-namespace:FpgaTestDataGen"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" Top="600">
+    <DockPanel>
+
+        <Plot2D_Embedded:Bare2DPlot Name="PlotArea" PlotWindowReady="PlotArea_PlotWindowReady"/>
+
+    </DockPanel>
+</Window>

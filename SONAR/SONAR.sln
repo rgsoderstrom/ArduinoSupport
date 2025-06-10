@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sonar1Chan", "Sonar1Chan\So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonarCommon", "SonarCommon\SonarCommon.csproj", "{60228AAE-4FC9-4A17-BB4D-40DCE7335CD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FpgaTestDataGen", "FpgaTestDataGen\FpgaTestDataGen.csproj", "{34F0EF40-1446-312E-F302-333269F02CE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{60228AAE-4FC9-4A17-BB4D-40DCE7335CD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60228AAE-4FC9-4A17-BB4D-40DCE7335CD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60228AAE-4FC9-4A17-BB4D-40DCE7335CD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34F0EF40-1446-312E-F302-333269F02CE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34F0EF40-1446-312E-F302-333269F02CE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34F0EF40-1446-312E-F302-333269F02CE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34F0EF40-1446-312E-F302-333269F02CE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
