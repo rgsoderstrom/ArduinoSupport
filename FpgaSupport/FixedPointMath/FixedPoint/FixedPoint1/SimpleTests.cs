@@ -23,12 +23,18 @@ namespace FixedPoint1
             //
             // sinusoid
             //
-            //int N = 15;
+            //int N = 16;
+            //Random rand = new Random (3);
 
             //for (int i = 0; i<N; i++)
             //{
-            //    double m = Math.Cos (2 * Math.PI * i / N);
+            //    //double m = Math.Sin (2 * Math.PI * i / N);
+            //    double m = (rand.NextDouble () - 0.5) * 1;
             //    FixedPoint fp = new FixedPoint (m);
+
+            //    //Int16 offsetBinary = (Int16) (512 + m * 500);
+            //    //Console.WriteLine (offsetBinary);
+
             //    Console.WriteLine (fp.ToString ());
 
             //    //Console.WriteLine (string.Format ("0x{0:x8}", fp.AsInt));
@@ -41,19 +47,32 @@ namespace FixedPoint1
             //
             // arithmetic operations
             //
-            FixedPoint i1 = new FixedPoint (1); // (1.125);
-            FixedPoint i2 = new FixedPoint (-1); // (2.250);
+            FixedPoint i1 = new FixedPoint (1.2);
+            FixedPoint i2 = new FixedPoint (2.3);
 
             FixedPoint i3 = i1 * i2;
-            // FixedPoint i4 = i1 / i2;
-            FixedPoint i5 = i1 + i2;
-            FixedPoint i6 = i1 - i2;
+
 
             Console.WriteLine (i1.ToString ());
             Console.WriteLine (i2.ToString ());
             Console.WriteLine (i3.ToString ());
-            Console.WriteLine (i5.ToString ());
-            Console.WriteLine (i6.ToString ());
+
+            double a = i1.AsDouble;
+            double b = i2.AsDouble;
+            double c = i3.AsDouble;
+
+            Console.WriteLine (a.ToString ());
+            Console.WriteLine (b.ToString ());
+            Console.WriteLine (c.ToString ());
+
+
+            FixedPoint oneHalf = new FixedPoint (0.5);
+            FixedPoint one     = new FixedPoint (1);
+
+            int aa = oneHalf.AsInt * one.AsInt;
+            Console.WriteLine (aa.ToString ("X"));
+            Console.WriteLine ((aa >> 10).ToString ("X"));
+
 
             return;
 

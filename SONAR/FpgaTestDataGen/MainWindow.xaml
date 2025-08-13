@@ -6,10 +6,11 @@
         xmlns:Plot2D_Embedded="clr-namespace:Plot2D_Embedded;assembly=Plot2D_Embedded"
         xmlns:local="clr-namespace:FpgaTestDataGen"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Top="600">
+        Title="MainWindow" Height="870" Width="900" Top="100">
     <DockPanel>
-
-        <Plot2D_Embedded:Bare2DPlot Name="PlotArea" PlotWindowReady="PlotArea_PlotWindowReady"/>
-
+        <StackPanel Orientation="Vertical">
+            <Plot2D_Embedded:Bare2DPlot Name="DoublePlots"  Margin="1,0,1,10" PlotWindowReady="Double_PlotWindowReady" MinHeight="400"/>
+            <Plot2D_Embedded:Bare2DPlot Name="IntegerPlots" Margin="1,0,1,0" PlotWindowReady="Integer_PlotWindowReady" MinHeight="400"/>
+        </StackPanel>
     </DockPanel>
 </Window>

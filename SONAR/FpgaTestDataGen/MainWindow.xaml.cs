@@ -1,21 +1,16 @@
-﻿using System.IO;
-using System.Security.Policy;
-using System.Text;
+﻿
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Plot2D_Embedded;
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable IDE0044 // readonly
 #pragma warning disable IDE0055 // formatting
+#pragma warning disable IDE0052 
+#pragma warning disable IDE0051
+
 
 namespace FpgaTestDataGen
 {
@@ -28,12 +23,17 @@ namespace FpgaTestDataGen
         private readonly List<short>  Signal16 = new List<short> ();  // signed integer, 1_5_10
 
         private readonly List<double> Replica   = new List<double> (); // -1 to +1
-        private readonly List<short>  Replica10 = new List<short> ();  // unsigned 10 bit integer
+        private readonly List<short>  Replica10 = new List<short> ();  // unsigned 10 bit integer, offset binary
         private readonly List<short>  Replica16 = new List<short> ();  // signed integer, 1_5_10
 
-        private int SignalLength = 128; // number of samples
-        private int SignalStart  = 0;
-        private int ReplicaLength {get {return Replica.Count;}} // specified as PingDuration
+        private readonly List<double> Correlation = new List<double> (); 
+        private readonly List<short>  Correlation16 = new List<short> (); 
+
+
+        private short  SignalLength = 128; // 256 is maximum allowd in Verilog Testbench
+        private short  ReplicaLength = 25; //  64 is max
+        private double ReplicaCycles = 1;//3;
+        private int    ReturnStarts = 50;//120;
 
         private readonly string FileDir     = @"C:\Users\rgsod\Documents\FPGA\Xilinx\projects\Sonar1Chan\Sonar1Chan.sim\sim_1\behav\xsim";
         private readonly string ReplicaFile = "replica.mem";
@@ -54,76 +54,67 @@ namespace FpgaTestDataGen
         {
             CalculateReplica ();
             CalculateSignal ();
-            ScaleSignal ();
 
-            CorrStepInDouble ();
-            CorrStepInFixed ();
+            for (int i=0; i<Signal.Count - Replica.Count; i++)
+            { 
+                CorrStepInDouble (i);
+                CorrStepInFixed (i);
+            }
         }
 
         //*************************************************************
 
-        private readonly double SampleRate = 1 * 100000;
-        private readonly double Frequency  = 40200;
-        private readonly double PingDuration = 0.2 * 1e-3; 
-        private readonly List<double> ReplicaTime = new List<double> ();
-        private readonly List<double> SignalTime = new List<double> ();
+        // Replica16 = short, signed integer, 1_5_10
+        // Replica10 = short,  offset binary 10 bit integer
+        // Replica   = double, -1 to +1
 
         private void CalculateReplica ()
         {
-            double RampUpDuration = 0.15 * PingDuration;
-            double RampDnDuration = RampUpDuration;
-            double LevelDuration  = PingDuration - RampUpDuration - RampDnDuration;
+            // Replica in doubles, -1 to 1
 
-            double A = 1; // amplitude. 1 == full scale
-            double t = 0;
-
-            while (t < RampUpDuration)
+            if (ReplicaCycles == 0)
             {
-                double r = (t / RampUpDuration) * A * Math.Sin (2 * Math.PI * Frequency * t);
-                Replica.Add (r);
-                ReplicaTime.Add (t);
-                t += 1 / SampleRate;
+                for (int i = 0; i<ReplicaLength; i++)
+                {
+                    Replica.Add (1);
+                }
             }
 
-            while (t < RampUpDuration + LevelDuration)
-            {
-                double r = A * Math.Sin (2 * Math.PI * Frequency * t);
-                Replica.Add (r);
-                ReplicaTime.Add (t);
-                t += 1 / SampleRate;
+            else
+            { 
+                for (int i = 0; i<ReplicaLength; i++)
+                {
+                    double x = Math.Sin (2 * Math.PI * ReplicaCycles * i / (ReplicaLength - 1));
+                    Replica.Add (x);
+                }
             }
 
-            while (t < PingDuration)
-            {   
-                double rt = t - RampUpDuration - LevelDuration;
-                double r = (1 - rt / RampDnDuration) * A * Math.Sin (2 * Math.PI * Frequency * t);
-                Replica.Add (r);
-                ReplicaTime.Add (t);
-                t += 1 / SampleRate;
-            }
+            //***************************************************************
 
-            //**********************************************************
+            // Convert to Replica10
+            //    - 10 bit offset binary (OB) used by ADC/DAC hardware
+            //    - OB 1024 ==  1 float (can't be stored in 10 bits)
+            //    -  OB 512 ==  0 float
+            //    -    OB 0 == -1 float
 
-            // convert to 10 bit unsigned. What ADC will read.
-            // -1 to 1 double => 0 to 1024 integer. NOTE: 1024 can't be stored
-            double m = 1024 / 2;
+            double Ampl = 511 / 512.0; // scale sine to amplitude that will fit
+            double m = (1024 - 0) / (1 - -1);
             double b = 512;
 
             foreach (double x in Replica)
             {
-                short a = (short) (m * x + b);
-                a &= 1023;
-                Replica10.Add (a);
+                double sx = Ampl * x;
+                short y = (short)(m * sx + b);
+                Replica10.Add (y);
             }
 
             //**********************************************************
 
-            // Replica16 from Replica10. As used in FPGA calculations
-            foreach (short x in Replica10)
+            // Convert to Replica16, as used in FPGA calculations
+            foreach (double x in Replica)
             {
-                double dr = 2 * (x - 512);
-                int fullProduct = (int)(dr * One);
-                Replica16.Add ((short)(fullProduct >> OneBit));
+                short s = (short)(x * One);
+                Replica16.Add (s);
             }
         }
 
@@ -131,138 +122,182 @@ namespace FpgaTestDataGen
 
         private void CalculateSignal ()
         {
-            double t = 0;
+            Random random = new Random (12); // provide seed so noise is same every run
 
-            Random random = new Random ();
+            double NA = 0.1; // noise amplitude
+            double SA = 0.9; // signal amplitude
 
             // initialize the signal with just noise ...
-            double NA = 0.1; // noise amplitude
-
             for (int i = 0; i<SignalLength; i++)
             {                
                 double noise = NA * 2 * (random.NextDouble () - 0.5);
                 Signal.Add (noise);
-                SignalTime.Add (t);
-                t += 1 / SampleRate;
             }
 
             // ... then add scaled replica
 
-            //for (int i = 0; i<ReplicaLength; i++)
-            //{
-            //    Signal [SignalStart + i] += 0.2 * Replica [i];
-            //}
-        }
-
-        //*************************************************************
-
-        private void CorrStepInDouble ()
-        { 
-            double Acc = 0;
-
-            for (int i=0; i<ReplicaLength; i++)
-                Acc += Replica [i] * Signal [SignalStart + i];
-
-            Console.WriteLine ("DP CorrStep = " + Acc.ToString ());
-
-            short Pos1 = 1 << 10;
-            short Neg1 = (short) (Pos1 * -1);
-
-            double m = (Pos1 - Neg1) / 2;
-            double b = 0;
-
-            short Acc16 = (short) (m * Acc + b);
-            Console.WriteLine ("DP CorrStep converted to 1_5_10: " + Acc16.ToString ("X"));
-        }
-
-        //*************************************************************
-
-        private void CorrStepInFixed ()
-        { 
-            int Acc32 = 0;
-            short Acc16 = 0;
-
-            for (int i=0; i<ReplicaLength; i++)
+            for (int i = 0; i<ReplicaLength; i++)
             {
-                short a = Replica16 [i];
-                short b = Signal16 [SignalStart + i];
-                int full = a * b; 
-
-
-                full += 1 << (OneBit - 1);
-                
-
-                Acc32 += full >> OneBit;
-                Acc16 += (short) (full >> OneBit);
+                Signal [ReturnStarts + i] += SA * Replica [i];
             }
 
-            Console.WriteLine ("Acc32 = " + Acc32.ToString ("X"));
-            Console.WriteLine ("Acc16 = " + Acc16.ToString ("X"));
-            Console.WriteLine ((double) Acc32 / One);
-        }
+            //******************************************************
 
-        //*************************************************************
+            // -1 to 1 double => 1_5_10 signed short
 
-        private void DoPlots ()
-        {
-
-            LineView sig1 = new LineView (SignalTime, Signal);
-            PlotArea.Plot (sig1);
-
-            LineView rep1 = new LineView (ReplicaTime, Replica);
-            rep1.Color = Brushes.Red;
-            PlotArea.Plot (rep1);
-
-            PlotArea.RectangularGridOn = true;
-        }
-
-        //*************************************************************
-
-
-
-        // -1 to 1 double => 1_5_10 signed short
-
-        private void ScaleSignal ()
-        {
             short Pos1 = 1 << 10;
-            short Neg1 = (short) (Pos1 * -1);
+            short Neg1 = (short)(Pos1 * -1);
 
             double m = (Pos1 - Neg1) / 2;
             double b = 0;
 
             foreach (double x in Signal)
-                Signal16.Add ((short) (m * x + b));
+                Signal16.Add ((short)(m * x + b));
+        }
+
+        //*************************************************************
+
+        private void CorrStepInDouble (int signalStart)
+        { 
+            double Acc = 0;
+
+            for (int i=0; i<ReplicaLength; i++)
+                Acc += Replica [i] * Signal [signalStart + i];
+
+            Correlation.Add (Acc);
+        }
+
+        //*************************************************************
+
+        private void CorrStepInFixed (int signalStart)
+        {
+            try
+            {
+                int Acc32 = 0;
+
+                for (int i = 0; i<ReplicaLength; i++)
+                {
+                    short a = Replica16 [i];
+                    short b = Signal16 [signalStart + i];
+                    int full = a * b;
+
+                    Acc32 += full;
+                }
+
+                short Acc16 = (short) (Acc32 >> OneBit);
+                Correlation16.Add (Acc16);
+
+                //Console.WriteLine ("Acc32 = " + Acc32.ToString ("X8"));
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine ("Exception in CorrStepInFixed: " + ex.Message);
+            }
+        }
+
+        //*************************************************************
+
+        private void DoDoublePlots ()
+        {
+            try
+            { 
+                LineView rep = new LineView (Replica);
+                rep.Color = Brushes.Red;
+                DoublePlots.Plot (rep);
+
+                LineView sig = new LineView (Signal);
+                sig.Color = Brushes.Green;
+                DoublePlots.Plot (sig);
+               
+                LineView corr = new LineView (Correlation);
+                corr.Color = Brushes.Blue;
+                DoublePlots.Plot (corr);
+
+                DoublePlots.RectangularGridOn = true;
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine ("Exception in DoDoublePlots:" + ex.Message);
+            }
+        }
+
+        private void DoIntegerPlots ()
+        {
+            try
+            { 
+                LineView rep = new LineView (Replica16, OneBit);
+                rep.Color = Brushes.Red;
+                IntegerPlots.Plot (rep);
+
+                //LineView rep10 = new LineView (Replica10, OneBit);
+                //rep10.Color = Brushes.Red;
+                //IntegerPlots.Plot (rep10);
+
+                LineView sig = new LineView (Signal16, OneBit);
+                sig.Color = Brushes.Green;
+                IntegerPlots.Plot (sig);
+
+                LineView corr = new LineView (Correlation16, OneBit);
+                corr.Color = Brushes.Blue;
+                IntegerPlots.Plot (corr);
+
+                IntegerPlots.RectangularGridOn = true;
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine ("Exception in DoIntegerPlots:" + ex.Message);
+            }
+
         }
 
         //*************************************************************
 
         private void WriteFiles ()
         {
-            int count = ReplicaLength;
+            short count = ReplicaLength;
 
             using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, ReplicaFile)))
             {
-                for (int i=0; i<count; i++)
+                outputFile.WriteLine (count.ToString ("X"));
+
+                for (int i = 0; i<count; i++)
                 {
                     short s = Replica10 [i];
                     outputFile.WriteLine (s.ToString ("X"));
+
+                    //short s = Replica16 [i];
+                    //double f = Replica [i];
+
+                    //string str = string.Format (@"{0:X4}  // {1:F}", s, f);
+                    //outputFile.WriteLine (str);
                 }
             }
-            
+
+            count = SignalLength;
+
             using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, SignalFile)))
             {
-                for (int i=0; i<count; i++)
+                outputFile.WriteLine (count.ToString ("X"));
+
+                for (int i = 0; i<count; i++)
                 {
                     short s = Signal16 [i];
                     outputFile.WriteLine (s.ToString ("X"));
                 }
             }
-            
         }
 
-        private void PlotArea_PlotWindowReady (object sender)
+        private void Double_PlotWindowReady (object sender)
         {
-            DoPlots ();
+            DoDoublePlots ();
+        }
+
+        private void Integer_PlotWindowReady (object sender)
+        {
+            DoIntegerPlots ();
         }
     }
 }
