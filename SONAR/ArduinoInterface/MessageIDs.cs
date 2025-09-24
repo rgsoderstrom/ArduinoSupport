@@ -53,6 +53,7 @@ namespace ArduinoInterface
 
         // FPGA->Arduino->PC  
 		PingReturnDataMsgId = 301,
+        PingReturnMfDataMsgId = 302,
 
         // PC->Arduino->FPGA
 		BeginPingCycleMsgId  = 351,

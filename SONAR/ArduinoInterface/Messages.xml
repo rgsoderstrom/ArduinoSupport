@@ -7,7 +7,7 @@
 
 <Messages>
 
-	<!-- Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface"/ -->
+	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface"/>
 	<Option CppDir="C:\Users\rgsod\Documents\Arduino\Play\PassThrough\src"/>
 
     <!-- ****************************************************** -->
@@ -85,18 +85,29 @@
   <!-- ****************************************************** -->
 	<!-- Sonar1Chan -->
   <!-- ****************************************************** -->
-  
-    <Message Name="PingReturnDataMsg_Auto">
-        <Constants>
-            unsigned int MaxCount = 256
-       </Constants>
 
-        <Variables>
-            int Count
-            int Sample [Data.MaxCount]
-        </Variables>
-    </Message>
-  
+  <Message Name="PingReturnDataMsg_Auto">
+    <Constants>
+      unsigned int MaxCount = 256
+    </Constants>
+
+    <Variables>
+      int Count
+      int Sample [Data.MaxCount]
+    </Variables>
+  </Message>
+
+  <Message Name="PingReturnMfDataMsg_Auto">
+    <Constants>
+      unsigned int MaxCount = 256
+    </Constants>
+
+    <Variables>
+      int  Count
+      byte Sample [Data.MaxCount]
+    </Variables>
+  </Message>
+
   <!-- ******************* -->
   
     <Message Name="BeginPingCycleMsg_Auto">

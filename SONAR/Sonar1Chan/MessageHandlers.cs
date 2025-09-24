@@ -32,9 +32,10 @@ namespace Sonar1Chan
                 ushort MsgId = BitConverter.ToUInt16 (msgBytes, (int)Marshal.OffsetOf<MessageHeader> ("MessageId"));
 
                 switch (MsgId)
-                {
-                    case (ushort)ArduinoMessageIDs.ReadyMsgId:      ReadyMessageHandler      (msgBytes); break;
-                    case (ushort)ArduinoMessageIDs.PingReturnDataMsgId: SampleDataMessageHandler (msgBytes); break;
+                { 
+                    case (ushort)ArduinoMessageIDs.ReadyMsgId:            ReadyMessageHandler        (msgBytes); break;
+                //  case (ushort)ArduinoMessageIDs.PingReturnDataMsgId:   SampleDataMessageHandler   (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.PingReturnMfDataMsgId: MfSampleDataMessageHandler (msgBytes); break;
 
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
@@ -57,11 +58,49 @@ namespace Sonar1Chan
         // Handlers for application-specific messages
         //
 
-        List<double> Samples = new List<double> ();
+        private List<double> Samples = new List<double> ();
+        private List<byte>   MatchedFilter = new List<byte> ();
+        private readonly int PeakPickWindow = 16;
 
-        //double TimeTag = 0; // initialized to BlankingTime when user requests sample
+        private void MfSampleDataMessageHandler (byte [] msgBytes)
+        {
+            try
+            { 
+                PingReturnMfDataMsg_Auto msg = new PingReturnMfDataMsg_Auto (msgBytes);
 
-        //int sendMsgCounter = 0; // number of sample request messages sent, just for status display
+                int samplesThisMsg = msg.data.Count;
+                bool lastSamples   = msg.data.Count < PingReturnMfDataMsg_Auto.Data.MaxCount;
+
+                for (int i=0; i<samplesThisMsg; i++)
+                {
+                    //double range = TimeTag * SoundSpeed / 2;
+                    //Samples.Add (new Point (range, msg.data.Sample [i]));
+                    //TimeTag += SampleTime;
+                    MatchedFilter.Add (msg.data.Sample [i]);
+                }
+
+                if (Verbosity > 2)      Print ("MF msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
+                else if (Verbosity > 1) Print ("MF msg received, " + msg.data.Count.ToString () + " samples this message");
+                else if (Verbosity > 0) Print ("MF msg received");
+
+                if (lastSamples)
+                {
+                    DisplayMatchedFilter ();
+                 //   PingButton.IsEnabled = true;
+                }
+                else
+                {
+                    RequestSamples ();
+                }
+
+                messageQueue.ArduinoReady = true; // tells message queue to send next message
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in SampleDataMsg handler: {0}", ex.Message));
+            }
+        }
 
         private void SampleDataMessageHandler (byte [] msgBytes)
         {
@@ -128,6 +167,40 @@ namespace Sonar1Chan
 
 
                 LineView lv = new LineView (signalProcessor.Magnitude);
+                lv.Color = Brushes.Red;
+
+                PlotArea.Plot (lv);
+                PlotArea.RectangularGridOn = true;
+            }
+
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in DisplaySamples handler: {0}", ex.Message));
+            }
+        }
+
+        private void DisplayMatchedFilter ()
+        {
+            const double SoundSpeed = 1125; // feet per second
+
+            double BlankingTime = (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
+
+            double SampleTime = 1 / SampleRate;
+            double MfTime     = SampleTime * PeakPickWindow;
+
+            double timeTag = BlankingTime + MfTime / 2;
+
+            try
+            {
+                List<Point> mfData = new List<Point> ();
+
+                foreach (byte b in MatchedFilter)
+                {
+                    mfData.Add (new Point (timeTag * SoundSpeed / 2, b));
+                    timeTag += MfTime;
+                }
+
+                LineView lv = new LineView (mfData);
                 lv.Color = Brushes.Red;
 
                 PlotArea.Plot (lv);

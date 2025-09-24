@@ -60,6 +60,8 @@
     <Compile Include="MessageQueue.cs" />
     <Compile Include="PingReturnDataMsg_Auto_Format.cs" />
     <Compile Include="PingReturnDataMsg_Auto_Methods.cs" />
+    <Compile Include="PingReturnMfDataMsg_Auto_Format.cs" />
+    <Compile Include="PingReturnMfDataMsg_Auto_Methods.cs" />
     <Compile Include="ReadyMsg_Auto_Format.cs" />
     <Compile Include="ReadyMsg_Auto_Methods.cs" />
     <Compile Include="SampleDataMsg_Auto_Format.cs" />

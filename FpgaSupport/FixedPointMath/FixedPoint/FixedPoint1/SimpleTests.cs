@@ -6,6 +6,7 @@
 
 #pragma warning disable  IDE0051
 
+using System;
 using System.Numerics;
 using System.Transactions;
 
@@ -47,11 +48,16 @@ namespace FixedPoint1
             //
             // arithmetic operations
             //
+
             FixedPoint i1 = new FixedPoint (1.2);
             FixedPoint i2 = new FixedPoint (2.3);
 
-            FixedPoint i3 = i1 * i2;
+            Int32 ii3 = i1.AsInt * i2.AsInt;
+            Console.WriteLine (string.Format ("0x{0:x8}", ii3));
 
+            return;
+
+            FixedPoint i3 = i1 * i2;
 
             Console.WriteLine (i1.ToString ());
             Console.WriteLine (i2.ToString ());
@@ -69,7 +75,7 @@ namespace FixedPoint1
             FixedPoint oneHalf = new FixedPoint (0.5);
             FixedPoint one     = new FixedPoint (1);
 
-            int aa = oneHalf.AsInt * one.AsInt;
+            int aa = one.AsInt * one.AsInt;
             Console.WriteLine (aa.ToString ("X"));
             Console.WriteLine ((aa >> 10).ToString ("X"));
 

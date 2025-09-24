@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using ArduinoInterface;
@@ -14,6 +15,7 @@ namespace ArduinoSimulator
     public class ArduinoSim_Sonar1Chan : ArduinoSim
     {
         private readonly int BatchSize = 4096;
+        private readonly int PeakPickWindow = 16;
 
         public ArduinoSim_Sonar1Chan (string name, SocketLibrary.TcpClient sock, PrintCallback ptl) : base (name, sock, ptl)
         {    
@@ -71,7 +73,8 @@ namespace ArduinoSimulator
                         
                     case (ushort) ArduinoMessageIDs.SendSamplesMsgId:
                         if (Verbose) PrintToLog ("Send message received");
-                        SendSamplesMessageHandler (msgBytes);
+                     // SendSamplesMessageHandler (msgBytes);
+                        SendCompressedMfMessageHandler (msgBytes);
                         SendReadyMessage = false;
                         break;
                         
@@ -129,13 +132,22 @@ namespace ArduinoSimulator
         private List<double> Samples = new List<double> ();
         private int samplesGetIndex = 0;
 
+        private List<byte> MatchedFilter = new List<byte> ();
+        private int mfGetIndex = 0;
+
         private void ClearMessageHandler (byte [] msgBytes)
         {
             Samples.Clear ();
             samplesGetIndex = 0;
 
+            MatchedFilter.Clear ();
+            mfGetIndex = 0;
+
             for (int i=0; i<BatchSize; i++) // Write a test pattern. Will be overwritten by "Collect"
                 Samples.Add (i);
+
+            for (int i=0; i<BatchSize/PeakPickWindow; i++)
+                MatchedFilter.Add (0);//(byte) i);
         }
 
         //***************************************************************************************************************
@@ -155,11 +167,33 @@ namespace ArduinoSimulator
             Samples.Clear ();
             samplesGetIndex = 0;
 
+            MatchedFilter.Clear ();
+            mfGetIndex = 0;
+
+            GeneratePingSamples (Samples);
+            GenerateMatchedFilter (Samples.Count / PeakPickWindow);
+            //MatchedFilter (Samples, Replica, MatchedFilterOut);
+            //CompressMatchedFilter (MatchedFilterOut, CompressedSamples, PeakPickWindow);
+        }
+
+        // just fill buffer with a counting pattern
+
+        private void GenerateMatchedFilter (int count)
+        {
+            MatchedFilter.Clear ();
+            mfGetIndex = 0;
+
+            for (int i=0; i<count; i++)
+                MatchedFilter.Add ((byte) (128+i+1));
+        }
+
+        private void GeneratePingSamples (List<double> samples)
+        { 
             int PingSamples = (int) (PingDurationSecs * SampleRate); // seconds * Samples / second
 
             Common.EventLog.WriteLine (SampleRate + " sample rate");
             Common.EventLog.WriteLine (PingDurationSecs + " ping duration, seconds");
-            Common.EventLog.WriteLine (PingSamples + " ping samples at max");
+            Common.EventLog.WriteLine (PingSamples + " ping samples at max amplitude");
 
             double BlankingTime = PingDurationSecs + 0.003; // seconds from ping command to first sample        
             double travelTime   = 2 * Range / 1125;
@@ -173,22 +207,22 @@ namespace ArduinoSimulator
             for (int i=0; i<LeadingZero; i++, time+=1/SampleRate)
             {
                 double withNoiseAndDC = noise * (random.NextDouble () - 0.5) + DC;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
+                samples.Add (Math.Truncate (withNoiseAndDC));
             }
 
             // copy target return
             for (int i = 0; i<transmitWave.Samples.Count; i++, time+=1/SampleRate)
             {
-                Samples.Add (transmitWave.Samples [i] + (random.NextDouble () - 0.5) + DC);
+                samples.Add (transmitWave.Samples [i] + (random.NextDouble () - 0.5) + DC);
             }
 
             // after target return ends
-            int rem = BatchSize - Samples.Count;
+            int rem = BatchSize - samples.Count;
             
             for (int i=0; i<rem; i++, time+=1/SampleRate)
             {
                 double withNoiseAndDC = noise * (random.NextDouble () - 0.5) + DC;
-                Samples.Add (Math.Truncate (withNoiseAndDC));
+                samples.Add (Math.Truncate (withNoiseAndDC));
             }
         }
 
@@ -226,5 +260,41 @@ namespace ArduinoSimulator
                 PrintToLog ("Exception: " + ex.Message);
             }
         }
+
+        //
+        // SendCompressedMfMessageHandler
+        //
+        private void SendCompressedMfMessageHandler (byte [] msgBytes)
+        {
+            int remaining = MatchedFilter.Count - mfGetIndex;
+
+            if (remaining < 0)
+                remaining = 0;
+
+            short thisMsgCount = (short) (remaining < PingReturnMfDataMsg_Auto.Data.MaxCount ? remaining 
+                                                    : PingReturnMfDataMsg_Auto.Data.MaxCount);
+
+            if (Verbose)
+                PrintToLog ("Sending " + thisMsgCount + " matched filter data");
+
+            PingReturnMfDataMsg_Auto msg = new PingReturnMfDataMsg_Auto ();
+            msg.data.Count = thisMsgCount;
+
+            try
+            { 
+                for (int i=0; i<thisMsgCount; i++)
+                {
+                    msg.data.Sample [i] = MatchedFilter [mfGetIndex++];
+                }
+
+                thisClientSocket.Send (msg.ToBytes ());
+            }
+
+            catch (Exception ex)
+            {
+                PrintToLog ("Exception: " + ex.Message);
+            }
+        }
+
     }
 }
