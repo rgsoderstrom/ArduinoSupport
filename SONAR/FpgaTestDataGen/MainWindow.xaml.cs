@@ -22,6 +22,7 @@ namespace FpgaTestDataGen
         private static readonly short One = (short) (1 << OneBit);
 
         private readonly List<double> Signal   = new List<double> (); // -1 to +1
+        private readonly List<short>  Signal10 = new List<short> ();  // unsigned 10 bit integer, offset binary
         private readonly List<short>  Signal16 = new List<short> ();  // signed integer, 1_5_10
 
         private readonly List<double> Replica   = new List<double> (); // -1 to +1
@@ -41,15 +42,15 @@ namespace FpgaTestDataGen
 
 
 
-        private short  SignalLength = 200; // 256 is maximum allowd in Verilog Testbench
-        private short  ReplicaLength = 32; //  64 is max
+        private short  SignalLength  = 1024; // Check maximum allowed in Verilog Testbench
+        private short  ReplicaLength = 20; 
         private double ReplicaCycles = 1;
-        private int    ReturnStarts = 60;//120;
+        private int    ReturnStarts  = 200;
 
-        private readonly string FileDir     = @"C:\Users\rgsod\Documents\FPGA\Xilinx\projects\Sonar1Chan\Sonar1Chan.sim\sim_1\behav\xsim";
-        private readonly string ReplicaFile = "replica.mem";
-        private readonly string SignalFile  = "signal.mem";
-        private readonly string ResultsFile = "results.txt";
+        private readonly string? FileDir     = @"C:\Users\rgsod\Documents\FPGA\Xilinx\projects\Sonar1Chan\Sonar1Chan.sim\sim_1\behav\xsim";
+        private readonly string? ReplicaFile;// = "replica.mem";
+        private readonly string? SignalFile  = "signal.mem";
+        private readonly string? ResultsFile;// = "results.txt";
 
         public MainWindow ()
         {
@@ -171,6 +172,23 @@ namespace FpgaTestDataGen
                 Signal [ReturnStarts + i] += SA * Replica [i];
             }
 
+            //***************************************************************
+
+            // Convert to Signal10
+            //    - 10 bit offset binary (OB) used by ADC/DAC hardware
+            //    - OB 1024 ==  1 float (can't be stored in 10 bits)
+            //    -  OB 512 ==  0 float
+            //    -    OB 0 == -1 float
+
+            double m = (1024 - 0) / (1 - -1);
+            double b = 512;
+
+            foreach (double x in Signal)
+            {
+                short y = (short)(m * x + b);
+                Signal10.Add (y);
+            }
+
             //******************************************************
 
             // -1 to 1 double => 1_5_10 signed short
@@ -178,8 +196,8 @@ namespace FpgaTestDataGen
             short Pos1 = 1 << 10;
             short Neg1 = (short)(Pos1 * -1);
 
-            double m = (Pos1 - Neg1) / 2;
-            double b = 0;
+            m = (Pos1 - Neg1) / 2;
+            b = 0;
 
             foreach (double x in Signal)
                 Signal16.Add ((short)(m * x + b));
@@ -451,47 +469,63 @@ namespace FpgaTestDataGen
 
         private void WriteFiles ()
         {
-            short count = ReplicaLength;
+            if (FileDir == null) return;
 
-            using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, ReplicaFile)))
-            {
-                outputFile.WriteLine (count.ToString ("X"));
+            short count;
 
-                for (int i = 0; i<count; i++)
+            if (ReplicaFile != null)
+            { 
+                count = ReplicaLength;
+
+                using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, ReplicaFile)))
                 {
-                    short s = Replica10 [i];
-                    outputFile.WriteLine (s.ToString ("X"));
+                    outputFile.WriteLine (count.ToString ("X"));
+
+                    for (int i = 0; i<count; i++)
+                    {
+                        short s = Replica10 [i];
+                        outputFile.WriteLine (s.ToString ("X"));
+                    }
                 }
             }
 
-            count = SignalLength;
+            if (SignalFile != null)
+            { 
+                count = SignalLength;
 
-            using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, SignalFile)))
-            {
-                outputFile.WriteLine (count.ToString ("X"));
-
-                for (int i = 0; i<count; i++)
+                using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, SignalFile)))
                 {
-                    short s = Signal16 [i];
-                    outputFile.WriteLine (s.ToString ("X"));
+                    outputFile.WriteLine (count.ToString ("X"));
+
+                    for (int i = 0; i<count; i++)
+                    {
+                      //short s = Signal16 [i];
+                        short s = Signal10 [i];
+                        outputFile.WriteLine (s.ToString ("X"));
+                    }
                 }
             }
 
-            using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, ResultsFile)))
-            {
-                for (int i = 0; i<Compressed32.Count; i++)
+            if (ResultsFile != null)
+            { 
+                using (StreamWriter outputFile = new StreamWriter (System.IO.Path.Combine (FileDir, ResultsFile)))
                 {
-                    byte s = Compressed32 [i];
-                    outputFile.WriteLine (s.ToString ("x2"));
-                }
+                    for (int i = 0; i<Compressed32.Count; i++)
+                    {
+                        byte s = Compressed32 [i];
+                        outputFile.WriteLine (s.ToString ("x2"));
+                    }
 
-                //for (int i = 0; i<Correlation32.Count; i++)
-                //{
-                //    int s = Correlation32 [i];
-                //    outputFile.WriteLine (s.ToString ("x8"));
-                //}
+                    //for (int i = 0; i<Correlation32.Count; i++)
+                    //{
+                    //    int s = Correlation32 [i];
+                    //    outputFile.WriteLine (s.ToString ("x8"));
+                    //}
+                }
             }
         }
+
+        //*****************************************************************
 
         private void Double_PlotWindowReady (object sender)
         {
