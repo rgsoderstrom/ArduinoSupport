@@ -8,7 +8,7 @@
 <Messages>
 
 	<Option CsDir="C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoInterface"/>
-	<Option CppDir="C:\Users\rgsod\Documents\Arduino\Play\PassThrough\src"/>
+  <!-- Option CppDir="C:\Users\rgsod\Documents\Arduino\Play\PassThrough\src"/ -->
 
     <!-- ****************************************************** -->
 	<!-- PC<->Arduino -->
