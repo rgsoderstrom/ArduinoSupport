@@ -33,9 +33,9 @@ namespace Sonar1Chan
 
                 switch (MsgId)
                 { 
-                    case (ushort)ArduinoMessageIDs.ReadyMsgId:            ReadyMessageHandler        (msgBytes); break;
-                //  case (ushort)ArduinoMessageIDs.PingReturnDataMsgId:   SampleDataMessageHandler   (msgBytes); break;
-                    case (ushort)ArduinoMessageIDs.PingReturnMfDataMsgId: MfSampleDataMessageHandler (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.ReadyMsgId:             ReadyMessageHandler        (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.PingReturnRawDataMsgId: SampleDataMessageHandler   (msgBytes); break;
+                    case (ushort)ArduinoMessageIDs.PingReturnMfDataMsgId:  MfSampleDataMessageHandler (msgBytes); break;
 
                     case (ushort)ArduinoMessageIDs.AcknowledgeMsgId: AcknowledgeMessageHandler (msgBytes); break;
                     case (ushort)ArduinoMessageIDs.TextMsgId:        TextMessageHandler        (msgBytes); break;
@@ -59,8 +59,11 @@ namespace Sonar1Chan
         //
 
         private List<double> Samples = new List<double> ();
-        private List<byte>   MatchedFilter = new List<byte> ();
         private readonly int PeakPickWindow = 16;
+
+        private List<double>  MatchedFilterPing = new List<double> ();
+        private SampleHistory MatchedFilterHistory = new SampleHistory (6);
+
 
         private void MfSampleDataMessageHandler (byte [] msgBytes)
         {
@@ -71,12 +74,14 @@ namespace Sonar1Chan
                 int samplesThisMsg = msg.data.Count;
                 bool lastSamples   = msg.data.Count < PingReturnMfDataMsg_Auto.Data.MaxCount;
 
-                for (int i=0; i<samplesThisMsg; i++)
+                //  MatchedFilterHistory.Add (msg.data.Sample, msg.data.Count);
+
+                for (int i = 0; i<samplesThisMsg; i++)
                 {
                     //double range = TimeTag * SoundSpeed / 2;
                     //Samples.Add (new Point (range, msg.data.Sample [i]));
                     //TimeTag += SampleTime;
-                    MatchedFilter.Add (msg.data.Sample [i]);
+                    MatchedFilterPing.Add (msg.data.Sample [i]);
                 }
 
                 if (Verbosity > 2)      Print ("MF msg received, " + msg.data.Count.ToString () + " samples this message, seq = " + msg.header.SequenceNumber);
@@ -85,12 +90,14 @@ namespace Sonar1Chan
 
                 if (lastSamples)
                 {
+                    MatchedFilterHistory.Add (MatchedFilterPing);
+                    MatchedFilterPing = new List<double> ();
                     DisplayMatchedFilter ();
                  //   PingButton.IsEnabled = true;
                 }
                 else
                 {
-                    RequestSamples ();
+                    RequestMfSamples ();
                 }
 
                 messageQueue.ArduinoReady = true; // tells message queue to send next message
@@ -108,7 +115,7 @@ namespace Sonar1Chan
 
             try
             { 
-                SampleDataMsg_Auto msg = new SampleDataMsg_Auto (msgBytes);
+                PingReturnRawDataMsg_Auto msg = new PingReturnRawDataMsg_Auto (msgBytes);
 
                 int samplesThisMsg = msg.data.Count;
                 bool lastSamples   = msg.data.Count < SampleDataMsg_Auto.Data.MaxCount;
@@ -132,7 +139,7 @@ namespace Sonar1Chan
                 }
                 else
                 {
-                    RequestSamples ();
+                    RequestRawSamples ();
                 }
 
                 messageQueue.ArduinoReady = true; // tells message queue to send next message
@@ -166,10 +173,10 @@ namespace Sonar1Chan
 
 
 
-                LineView lv = new LineView (signalProcessor.Magnitude);
-                lv.Color = Brushes.Red;
+               // LineView lv = new LineView (signalProcessor.Magnitude);
+               // lv.Color = Brushes.Red;
 
-                PlotArea.Plot (lv);
+               // PlotArea.Plot (lv);
                 PlotArea.RectangularGridOn = true;
             }
 
@@ -183,27 +190,44 @@ namespace Sonar1Chan
         {
             const double SoundSpeed = 1125; // feet per second
 
-            double BlankingTime = (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
+            double BlankingTime = 0; // (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
 
             double SampleTime = 1 / SampleRate;
-            double MfTime     = SampleTime * PeakPickWindow;
+            double MfTimeStep = SampleTime * PeakPickWindow;
 
-            double timeTag = BlankingTime + MfTime / 2;
+            double timeTag;// = BlankingTime + MfTimeStep / 2;
 
             try
             {
                 List<Point> mfData = new List<Point> ();
+                List<double> OB = MatchedFilterHistory.GetNewest ();
 
-                foreach (byte b in MatchedFilter)
+                Brush LineColor = Brushes.Red;
+
+                while (OB != null)
                 {
-                    mfData.Add (new Point (timeTag * SoundSpeed / 2, b));
-                    timeTag += MfTime;
+                    mfData.Clear ();
+                    timeTag = BlankingTime + MfTimeStep / 2;
+
+                    foreach (double d in OB)
+                    {
+                        double dd = Math.Pow (2, 12 * d / 200.0); 
+                        mfData.Add (new Point (timeTag * SoundSpeed / 2, dd));
+                      //mfData.Add (new Point (timeTag * SoundSpeed / 2, d));
+                        timeTag += MfTimeStep;
+                    }
+
+                    if (mfData.Count > 1)
+                    { 
+                        LineView lv = new LineView (mfData);
+                        lv.Color = LineColor;
+                        PlotArea.Plot (lv);
+                    }
+
+                    LineColor = Brushes.Pink;
+                    OB = MatchedFilterHistory.GetNext ();
                 }
 
-                LineView lv = new LineView (mfData);
-                lv.Color = Brushes.Red;
-
-                PlotArea.Plot (lv);
                 PlotArea.RectangularGridOn = true;
             }
 

@@ -87,7 +87,7 @@ namespace Sonar1Chan
 
                 const double SoundSpeed = 1125; // feet per second
 
-                double BlankingTime = (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
+                double BlankingTime = 0; // (PingDuration / 1000) + 0.003; // seconds from ping command to first sample
                 double timeTag = BlankingTime;
 
                 //

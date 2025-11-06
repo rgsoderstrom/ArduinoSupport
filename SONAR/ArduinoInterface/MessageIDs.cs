@@ -29,7 +29,6 @@ namespace ArduinoInterface
 
         // PC->Arduino->FPGA
 		ClearSamplesMsgId = 150,
-		SendSamplesMsgId  = 151,
 
         //********************************************************
 
@@ -44,6 +43,7 @@ namespace ArduinoInterface
 		BeginSamplingMsgId = 251,
         AnalogGainMsgId    = 252,
         SampleRateMsgId    = 253,
+		SendSamplesMsgId   = 151,
 
         //********************************************************
 
@@ -52,11 +52,13 @@ namespace ArduinoInterface
         //
 
         // FPGA->Arduino->PC  
-		PingReturnDataMsgId = 301,
-        PingReturnMfDataMsgId = 302,
+		PingReturnRawDataMsgId = 301,
+        PingReturnMfDataMsgId  = 302,
 
         // PC->Arduino->FPGA
-		BeginPingCycleMsgId  = 351,
-        SonarParametersMsgId = 352,
+		BeginPingCycleMsgId  = 351, // 0x15f
+        SonarParametersMsgId = 352, // 0x160
+		SendRawSamplesMsgId  = 353, // 0x161
+		SendMfSamplesMsgId   = 354, // 0x162
     };
 }

@@ -43,12 +43,12 @@ namespace FpgaTestDataGen
 
 
         private short  SignalLength  = 1024; // Check maximum allowed in Verilog Testbench
-        private short  ReplicaLength = 20; 
-        private double ReplicaCycles = 1;
+        private short  ReplicaLength = 100; 
+        private double ReplicaCycles = 40.2;
         private int    ReturnStarts  = 200;
 
         private readonly string? FileDir     = @"C:\Users\rgsod\Documents\FPGA\Xilinx\projects\Sonar1Chan\Sonar1Chan.sim\sim_1\behav\xsim";
-        private readonly string? ReplicaFile;// = "replica.mem";
+        private readonly string? ReplicaFile = "replica.mem";
         private readonly string? SignalFile  = "signal.mem";
         private readonly string? ResultsFile;// = "results.txt";
 
@@ -115,6 +115,21 @@ namespace FpgaTestDataGen
                 }
             }
 
+            //*******************************************************
+
+            // raised cosine window on replica
+
+            List<double> repWindow = new List<double> ();
+
+            for (int i = 0; i<ReplicaLength; i++)
+            {
+                double phase = 2 * Math.PI * i / ReplicaLength;
+                repWindow.Add (0.5 * (1 - Math.Cos (phase)));
+            }
+
+            for (int i = 0; i<ReplicaLength; i++)
+                Replica [i] *= repWindow [i];
+
             //***************************************************************
 
             // Convert to Replica10
@@ -155,8 +170,8 @@ namespace FpgaTestDataGen
         {
             Random random = new Random (12); // provide seed so noise is same every run
 
-            double NA = 0.05; // noise amplitude
-            double SA = 0.5; // signal amplitude
+            double NA = 0.005; // noise amplitude
+            double SA = 0.9; // signal amplitude
 
             // initialize the signal with just noise ...
             for (int i = 0; i<SignalLength; i++)
@@ -166,6 +181,8 @@ namespace FpgaTestDataGen
             }
 
             // ... then add scaled replica
+
+
 
             for (int i = 0; i<ReplicaLength; i++)
             {
@@ -438,24 +455,24 @@ namespace FpgaTestDataGen
                 sig.Color = Brushes.Green;
                 IntegerPlots.Plot (sig);
 
-                LineView corr = new LineView (Correlation32, 2 * OneBit);
-                corr.Color = Brushes.Blue;
-                IntegerPlots.Plot (corr);
+                //LineView corr = new LineView (Correlation32, 2 * OneBit);
+                //corr.Color = Brushes.Blue;
+                //IntegerPlots.Plot (corr);
 
                 //******************************************************
 
-                List<Point> compPoints = new List<Point> ();
+                //List<Point> compPoints = new List<Point> ();
 
-                for (int i=0; i<Compressed32.Count; i++)
-                {
-                    compPoints.Add (new Point ((PeakPickWindow / 2) + PeakPickWindow * i, Compressed32 [i] / 8.0));
-                }
+                //for (int i=0; i<Compressed32.Count; i++)
+                //{
+                //    compPoints.Add (new Point ((PeakPickWindow / 2) + PeakPickWindow * i, Compressed32 [i] / 8.0));
+                //}
 
-                LineView comp = new LineView (compPoints);
-                comp.Color = Brushes.Black;
-                IntegerPlots.Plot (comp);
+                //LineView comp = new LineView (compPoints);
+                //comp.Color = Brushes.Black;
+                //IntegerPlots.Plot (comp);
 
-                IntegerPlots.RectangularGridOn = true;
+                //IntegerPlots.RectangularGridOn = true;
             }
 
             catch (Exception ex)

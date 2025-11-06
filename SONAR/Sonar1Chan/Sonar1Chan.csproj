@@ -81,6 +81,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SampleHistory.cs" />
     <Compile Include="SignalProcessing.cs" />
     <Compile Include="SignalProcessing2.cs" />
     <Compile Include="Utils.cs" />

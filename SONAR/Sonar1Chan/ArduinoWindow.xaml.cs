@@ -293,9 +293,14 @@ namespace Sonar1Chan
         private void ArduinoReadyCallback () {ReadyEllipse.Fill = Brushes.Green;}
         private void ArduinoBusyCallback  () {ReadyEllipse.Fill = Brushes.White;}
 
-        double SampleRate = 100000; // these are written to Matlab "save" file
-        double PingDuration = 1;
+        double SampleRate    = 100000; // these are written to Matlab "save" file
+        double PingDuration  = 1;
         double PingFrequency = 1;
+        double RampStart     = 1;
+        double RampStop      = 1;
+        double BlankingLevel = 1;
+        double RampTime      = 1;
+
 
         private void SendParamsMessage ()
         { 
@@ -307,13 +312,13 @@ namespace Sonar1Chan
                 const double FreqScale     = 1 / 190.0;     // Mercury 2 CORDIC
 
                 // convert user entered data
-                       SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
-                double RampStart     = double.Parse (RampStartTB.Text);     // volts
-                double RampStop      = double.Parse (RampStopTB.Text);      // "
-                double BlankingLevel = double.Parse (BlankingLevelTB.Text); // "
-                double RampTime      = double.Parse (RampTimeTB.Text);      // milliseconds
-                       PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
-                       PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
+                SampleRate    = double.Parse (SampleRateTB.Text);    // samples per second
+                RampStart     = double.Parse (RampStartTB.Text);     // volts
+                RampStop      = double.Parse (RampStopTB.Text);      // "
+                BlankingLevel = double.Parse (BlankingLevelTB.Text); // "
+                RampTime      = double.Parse (RampTimeTB.Text);      // milliseconds
+                PingFrequency = double.Parse (PingFrequencyTB.Text); // Hz
+                PingDuration  = double.Parse (PingDurationTB.Text);  // milliseconds
 
                 // convert to format required by outgoing message. check for overflow or underflow
                 double _sampleClockDiv = (uint) (0.5 + ClockFreq / SampleRate);
@@ -372,9 +377,6 @@ namespace Sonar1Chan
         { 
             try
             {
-                Samples.Clear ();
-                SaveButton.IsEnabled = false;
-
                 ClearSamplesMsg_Auto msg = new ClearSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
@@ -409,20 +411,49 @@ namespace Sonar1Chan
         private void ClearButton_Click       (object sender, RoutedEventArgs e) {SendClearMessage (); }
         private void ParamsButton_Click      (object sender, RoutedEventArgs e) {SendParamsMessage ();}
         private void PingButton_Click        (object sender, RoutedEventArgs e) {SendPingMessage ();}
-        private void SendSamplesButton_Click (object sender, RoutedEventArgs e) {RequestSamples ();}
         **/
+
+        private void SendRawSamplesButton_Click (object sender, RoutedEventArgs e) {RequestRawSamples ();}
+        private void SendMfSamplesButton_Click  (object sender, RoutedEventArgs e) {RequestMfSamples ();}
+
+        //private void SendParamsButton_Click (object sender, RoutedEventArgs e)
+        //{
+        //    try
+        //    {
+        //        if (Verbosity > 0)
+        //            Print ("Queueing SendParams messages");
+
+        //        SendParamsMessage ();
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        EventLog.WriteLine (string.Format ("Exception in Send Params Button click: {0}", ex.Message));
+        //    }
+        //}
 
         private void PingSequenceButton_Click (object sender, RoutedEventArgs e)
         {
             try
             {
+                //Print ("Queueing abbreviated Ping Cycle messages");
+
+                //Samples.Clear ();
+                //SendPingMessage ();
+
+
                 if (Verbosity > 0)
                     Print ("Queueing all Ping Cycle messages");
 
-                SendClearMessage ();
                 SendParamsMessage ();
-                SendPingMessage ();
-                RequestSamples ();
+                Samples.Clear ();
+
+                for (int i = 0; i<1; i++)
+                {
+                    SendClearMessage ();
+                    SendPingMessage ();
+                    //  RequestSamples ();
+                }
             }
 
             catch (Exception ex)
@@ -437,20 +468,37 @@ namespace Sonar1Chan
 
         // send the request message. Invoked after button click and after a sample message is received if there are more 
         // samples expected
-        private void RequestSamples ()
+        private void RequestRawSamples ()
         {
             try
             { 
-                SendSamplesMsg_Auto msg = new SendSamplesMsg_Auto ();
+                SendRawSamplesMsg_Auto msg = new SendRawSamplesMsg_Auto ();
                 messageQueue.AddMessage (msg);
 
                 if (Verbosity > 1) 
-                    Print ("Queueing Sample Request msg " + msg.SequenceNumber);
+                    Print ("Queueing Raw Sample Request msg " + msg.SequenceNumber);
             }
         
             catch (Exception ex)
             {
-                EventLog.WriteLine (string.Format ("Exception in RequestSamples: {0}", ex.Message));
+                EventLog.WriteLine (string.Format ("Exception in RequestRawSamples: {0}", ex.Message));
+            }
+        }
+
+        private void RequestMfSamples ()
+        {
+            try
+            { 
+                SendMfSamplesMsg_Auto msg = new SendMfSamplesMsg_Auto ();
+                messageQueue.AddMessage (msg);
+
+                if (Verbosity > 1) 
+                    Print ("Queueing MF Sample Request msg " + msg.SequenceNumber);
+            }
+        
+            catch (Exception ex)
+            {
+                EventLog.WriteLine (string.Format ("Exception in RequestMfSamples: {0}", ex.Message));
             }
         }
 
@@ -481,21 +529,54 @@ namespace Sonar1Chan
             Print ("Saving samples to file " + fileName);
             StreamWriter samplesFile = new StreamWriter (fileName);
 
-            samplesFile.WriteLine ("Fs = " + SampleRate + "; % sample rate");
-            samplesFile.WriteLine ("PingDuration = " + PingDuration + "; % ping duration, milliseconds");
+            samplesFile.WriteLine ("Fs            = " + SampleRate + "; % sample rate, samples per second");
+            samplesFile.WriteLine ("PingDuration  = " + PingDuration + "; % ping duration, milliseconds");
+            samplesFile.WriteLine ("PingFrequency = " + PingFrequency + "; % Hz");
+            samplesFile.WriteLine ("RampStart     = " + RampStart + "; % volts");
+            samplesFile.WriteLine ("RampStop      = " + RampStop + "; % volts");
+            samplesFile.WriteLine ("BlankingLevel = " + BlankingLevel + "; % volts");
+            samplesFile.WriteLine ("RampTime      = " + RampTime + "; % milliseconds");
 
+            samplesFile.WriteLine (" ");
+
+            // Raw samples
+
+            samplesFile.WriteLine ("% Raw samples:");
             samplesFile.WriteLine ("z = [...");
                     
             for (int i=0; i<Samples.Count-1; i++)
                 samplesFile.WriteLine (Samples [i].ToString () + " ; ...");
 
             samplesFile.WriteLine (Samples [Samples.Count-1].ToString () + "];");
+
+            // Matched filter
+            List<Double> mf = MatchedFilterHistory.GetNewest ();
+
+            if (mf != null)
+            {
+                samplesFile.WriteLine ("");
+                samplesFile.WriteLine ("% Matched filter:");
+                samplesFile.WriteLine ("z2 = [...");
+                    
+                for (int i=0; i<mf.Count-1; i++)
+                    samplesFile.WriteLine (mf [i].ToString () + " ; ...");
+
+                samplesFile.WriteLine (mf [mf.Count-1].ToString () + "];");
+            }
+
             samplesFile.Close ();
         }
 
         //*****************************************************************************************
         //*****************************************************************************************
         //*****************************************************************************************
+
+        private void ClearHistButton_Click (object sender, RoutedEventArgs e)
+        {
+            Samples.Clear ();
+            MatchedFilterHistory.Clear ();
+            SaveButton.IsEnabled = false;
+        }
 
         private void ClearPlotButton_Click (object sender, RoutedEventArgs e)
         {

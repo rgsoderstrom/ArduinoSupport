@@ -47,9 +47,6 @@
     <Message Name="ClearSamplesMsg_Auto">
     </Message>
     
-    <Message Name="SendSamplesMsg_Auto">
-    </Message>
-    
   <!-- ****************************************************** -->
 	<!-- A2D_Test -->
   <!-- ****************************************************** -->
@@ -75,8 +72,11 @@
               unsigned short RateDivisor;
         </Variables>
     </Message>
-    
-    <Message Name="AnalogGainMsg_Auto">
+
+  <Message Name="SendSamplesMsg_Auto">
+  </Message>
+
+  <Message Name="AnalogGainMsg_Auto">
         <Variables>
               unsigned short DacValue;
         </Variables>
@@ -86,7 +86,7 @@
 	<!-- Sonar1Chan -->
   <!-- ****************************************************** -->
 
-  <Message Name="PingReturnDataMsg_Auto">
+  <Message Name="PingReturnRawDataMsg_Auto">
     <Constants>
       unsigned int MaxCount = 256
     </Constants>
@@ -110,9 +110,15 @@
 
   <!-- ******************* -->
   
-    <Message Name="BeginPingCycleMsg_Auto">
-    </Message>
-  
+  <Message Name="BeginPingCycleMsg_Auto">
+  </Message>
+
+  <Message Name="SendRawSamplesMsg_Auto">
+  </Message>
+
+  <Message Name="SendMfSamplesMsg_Auto">
+  </Message>
+
   <!-- ******************* -->
   
     <Message Name="SonarParametersMsg_Auto">

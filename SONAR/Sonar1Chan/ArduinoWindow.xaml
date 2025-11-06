@@ -16,7 +16,11 @@
                     <StackPanel Orientation="Vertical">
                         <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
                             <StackPanel Orientation="Vertical">
-                                <Button Width="190" Margin="3, 1, 3, 2" Content="Ping Cycle"   Name="PingButton"    IsEnabled="True"  Click="PingSequenceButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Ping Cycle"  Name="PingButton"   IsEnabled="True"  Click="PingSequenceButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Send RAW Samples" Click="SendRawSamplesButton_Click"/>
+                                <Button Width="190" Margin="3, 1, 3, 2" Content="Send MF Samples"  Click="SendMfSamplesButton_Click"/>
+
+                                <!-- Button Width="190" Margin="3, 1, 3, 2" Content="Send Params" Name="ParamsButton" IsEnabled="True"  Click="SendParamsButton_Click"/ -->
 
                                 <!--
                                 <Button Width="190" Margin="3, 1, 3, 2" Content="Clear Buffer" Click="ClearButton_Click"/>
@@ -35,7 +39,7 @@
 
                                         <StackPanel Orientation="Horizontal">
                                             <Label Width="120">Ramp Start</Label>
-                                            <TextBox ToolTip="Volts" Name="RampStartTB" HorizontalAlignment="Right" VerticalAlignment="Center">0.250</TextBox>
+                                            <TextBox ToolTip="Volts" Name="RampStartTB" HorizontalAlignment="Right" VerticalAlignment="Center">0.5</TextBox>
                                         </StackPanel>
 
                                         <StackPanel Orientation="Horizontal">
@@ -77,8 +81,9 @@
                             <StackPanel Orientation="Vertical">
                                 <GroupBox BorderBrush="Black" BorderThickness="1" Margin="1,0,1,0" Header="Commands" FontSize="16">
                                     <StackPanel Orientation="Vertical">
-                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Save Samples" Name="SaveButton"      IsEnabled="False" Click="SaveButton_Click"/>
-                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Clear Plot"   Name="ClearPlotButton" IsEnabled="True"  Click="ClearPlotButton_Click"/>
+                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Save Samples"         Name="SaveButton"      IsEnabled="False" Click="SaveButton_Click"/>
+                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Clear Plot"           Name="ClearPlotButton" IsEnabled="True"  Click="ClearPlotButton_Click"/>
+                                        <Button MinWidth="60" Margin="3, 1, 3, 3"  Content="Clear Sample History" Name="ClearHistButton" IsEnabled="True"  Click="ClearHistButton_Click"/>
                                     </StackPanel>
                                 </GroupBox>
 
