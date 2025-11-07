@@ -109,18 +109,26 @@ namespace Sonar1Chan
 
         private void LaunchSimButton_Click (object sender, RoutedEventArgs e)
         {
-            var p = new System.Diagnostics.Process();
-            p.StartInfo.FileName  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";
+            try
+            {
+                var p = new System.Diagnostics.Process();
+                p.StartInfo.FileName  = @"C:\Users\rgsod\Documents\Visual Studio 2022\Projects\ArduinoSupport\SONAR\ArduinoSimulator\bin\Debug\ArduinoSimulator.exe";
 
-            string [] AllArgs = new string [] {"ServerName", System.Net.Dns.GetHostName (),
-                                               "SimName",    "Sonar1Chan"};
-            string args = "";
+                string [] AllArgs = new string [] {"ServerName", System.Net.Dns.GetHostName (),
+                                                   "SimName",    "Sonar1Chan"};
+                string args = "";
 
-            for (int i=0; i<AllArgs.Length; i++)
-                args += AllArgs [i] + " ";
+                for (int i=0; i<AllArgs.Length; i++)
+                    args += AllArgs [i] + " ";
 
-            p.StartInfo.Arguments = args;                        
-            p.Start();
+                p.StartInfo.Arguments = args;                        
+                p.Start();
+            }
+
+            catch (Exception ex)
+            {
+                AddTextToLocalTextBox ("Exception launching sim: " + ex.Message);
+            }
         }
     }
 }
